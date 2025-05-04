@@ -1,0 +1,8 @@
+
+#dependicies
+/node_modules
+
+#misc
+.env
+combined.log
+errors.log
