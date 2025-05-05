@@ -1,0 +1,14 @@
+
+export enum Status {
+    PENDING = "PENDING",
+    ACCEPTED = "ACCEPTED",
+    DECLINED = "DECLINED",
+    CANCELLED = "CANCELLED"
+}
+
+export enum ScheduleStatus {
+    SCHEDULED = "SCHEDULED",
+    COMPLETED = "COMPLETED",
+    CANCELLED = "CANCELLED",
+    RESCHEDULED = "RESCHEDULED"
+}

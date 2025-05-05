@@ -1,5 +1,5 @@
 import { GraphqlSubscriptionServer } from "src/common/interfaces"
-// @ts-ignore (temporary)
+// @ts-expect-errors
 import { useServer } from 'graphql-ws/use/ws';
 import { WebSocketServer } from "ws"
 

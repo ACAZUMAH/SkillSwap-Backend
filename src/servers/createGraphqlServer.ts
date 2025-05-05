@@ -36,7 +36,8 @@ export const createGraphQlServer = async ({ app, httpServer, schema }: GraphqlSe
 
     const apolloExpressMiddlewares = expressMiddleware(server, { context })
 
-    app.use("/grapql", cors(), json(), apolloExpressMiddlewares)
+    // @ts-expect-errors
+    app.use("/graphql", cors(), json(), apolloExpressMiddlewares)
 
     return server
 }

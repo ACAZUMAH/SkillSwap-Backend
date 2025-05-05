@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 export const createExpressApp = () => {
 
     const app = express()
@@ -7,7 +7,9 @@ export const createExpressApp = () => {
 
     app.use(express.json({ limit: "50mb" }))
 
-    app.get('/', (_req, res) => res.send("hello wolrd"))
+    app.get('/', (_req: Request, res: Response) => {
+        res.send("hello wolrd")
+    })
 
     return app 
 };

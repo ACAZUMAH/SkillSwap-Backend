@@ -25,7 +25,7 @@ Before you begin, ensure you have the following installed on your system:
 
 3. **Set Up Environment Variables**
 
-Create a .env file and add te variables from the .env.default there 
+Create a .env file and add te variables from the .env.default variables there 
 
 4. **Generate GraphQL Types (optional)**
    

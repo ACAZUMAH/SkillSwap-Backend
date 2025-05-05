@@ -1,5 +1,9 @@
-
 export const generalTypeDefs = `#graphql
+
+    type Skills {
+        skill: String!,
+        level: Int!
+    }
 
     type Query {
         _empty: String,

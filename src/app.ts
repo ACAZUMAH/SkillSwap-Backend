@@ -1,8 +1,8 @@
 require('express-async-errors')
 import http from 'http'
-import { createExpressApp } from './services/createExpressApp'
+import { createExpressApp } from './servers/createExpressApp'
 import logger from './loggers/logger'
-import { createGraphQlServer } from './services/createGraphqlServer'
+import { createGraphQlServer } from './servers/createGraphqlServer'
 import { schema } from './graphql'
 import createError from 'http-errors'
 import connectDB from './common/helpers/connectDB'
