@@ -1,8 +1,9 @@
-import { createUserInput } from "src/common/interfaces";
-import { checkUserExist, createUser } from "../user";
-import { hashPassword } from "src/common/helpers";
+import { createUserInput, loginUserInput } from "src/common/interfaces";
+import { checkUserExist, createUser, getUserByPhoneOrEmail } from "../user";
+import { comparePassword, hashPassword } from "src/common/helpers";
 import { createAuth } from "./auth";
 import { isDevelopment } from "src/common/constants";
+import createError from "http-errors"
 
 /**
  * Registers a new user by creating their account, hashing their password, and generating an OTP.
@@ -14,15 +15,22 @@ import { isDevelopment } from "src/common/constants";
 export const registerUser = async (data: createUserInput) => {
     const { phoneNumber, email, password } = data
 
-    await checkUserExist(phoneNumber, email)
+    await checkUserExist(phoneNumber, email!)
 
     const hash = await hashPassword(password)
     const  user = await createUser({ ...data, password: hash })
     const otp = await createAuth(user._id, 5)
 
-    if(isDevelopment) return `Your login otp is ${otp}`
+    if(isDevelopment) return { message: `Your login otp is ${otp}` }
 }
 
-export const loginUser = async () => {
-    
+export const loginUser = async (data: loginUserInput) => {
+    const { phoneNumber, email, password } = data
+    const user = await getUserByPhoneOrEmail(phoneNumber!, email!)
+
+    const isMatch = await comparePassword(password, user.password)
+    if(!isMatch) throw createError.BadRequest("Invalid credentials")
+
+    const otp = await createAuth(user._id, 5)
+    if(isDevelopment) return { message: `Your login otp is ${otp}` }
 }

@@ -1,7 +1,12 @@
 export const generalTypeDefs = `#graphql
 
-    type Skills {
-        skill: String!,
+    type Skill {
+        skill: String!  
+        level: Int!
+    }
+
+    input SkillInput {
+        skill: String!
         level: Int!
     }
 

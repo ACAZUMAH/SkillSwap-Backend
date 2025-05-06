@@ -6,6 +6,8 @@ import { createGraphQlServer } from './servers/createGraphqlServer'
 import { schema } from './graphql'
 import createError from 'http-errors'
 import connectDB from './common/helpers/connectDB'
+import { errorHandler } from './middlewares/error-handler'
+import { applyMiddlewares } from './middlewares'
 
 const PORT = process.env.PORT || 8800
 
@@ -16,11 +18,14 @@ const startServer = async () => {
 
     await connectDB()
 
+    applyMiddlewares(app)
+
     await createGraphQlServer({ app, httpServer, schema })
 
+    app.use(errorHandler)
 
-    app.all('*', (req, res, next) => {
-        next(createError(400, "Unable to retrive the request resource!"))
+    app.all('*', (_req, _res, next) => {
+       return next(createError(400, "Unable to retrive the request resource!"))
     })
 
     await new Promise<void>((resolve) => httpServer.listen({ port: PORT }, resolve))

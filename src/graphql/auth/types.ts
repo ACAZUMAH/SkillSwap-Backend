@@ -1,20 +1,24 @@
 export const authTypeDefs = `#graphql
 
     type Authenticated {
-        user: User!,
-        token: 
+        user: User!
+        token: String
+    }
+
+    type Response {
+        message: String
     }
 
     input createUserInput {
-        firstName: String,
-        lastNama: String,
-        email: String,
-        phoneNumber: String!,
-        password: String
+        firstName: String
+        lastNama: String
+        email: String
+        phoneNumber: String!
+        password: String!
     }
 
     extend type Mutation {
-        createUserAccount(data: createUserInput!): String!
+        createUserAccount(data: createUserInput!): Response!
         completeAuthAndSignToken(otp: String!): Authenticated!
     }
 `;

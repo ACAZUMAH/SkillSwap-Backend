@@ -18,14 +18,14 @@ ajv.addFormat("phone", {
 
 })
 
-ajv.addFormat("password", {
-    type: 'string',
-    validate: (value: string) => {
-        const passwordRegex =
-          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
-        return passwordRegex.test(value)
-    }
-})
+// ajv.addFormat("password", {
+//     type: 'string',
+//     validate: (value: string) => {
+//         const passwordRegex =
+//           /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
+//         return passwordRegex.test(value)
+//     }
+// })
 
 const userValidationSchema = {
   type: "object",
@@ -35,13 +35,14 @@ const userValidationSchema = {
     lastName: { type: "string" },
     email: { type: "string", format: "email" },
     phoneNumber: { type: "string", format: "phone" },
-    password: { type: "string", format: "password" },
+    password: { type: "string"  },
   },
 
-  required: ["phoneNumber"],
+  additionalProperties: false,
+
+  required: ["phoneNumber", "password"],
 
   errorMessage: {
-
     properties: {
       firstName: "First name must be a string",
       lastName: "Last name must be a string",
@@ -51,14 +52,13 @@ const userValidationSchema = {
     },
 
     required: {
-      phoneNumber: "Phone Number is required",
+      phoneNumber: "Phone number is required",
       password: "Password is required",
     },
   },
 };
 
 export const validateCreateUserData = (data: createUserInput) => {
-
     const validate = ajv.compile(userValidationSchema)
 
     const isValid = validate(data)

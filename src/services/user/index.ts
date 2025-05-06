@@ -1,48 +1,101 @@
-import { createUserInput } from "src/common/interfaces";
+import { createUserInput, updateUserInput } from "src/common/interfaces";
 import { userModel } from "src/models";
 import { validateCreateUserData } from "./user-validation";
-import createError from "http-errors"
+import createError from "http-errors";
 import { Types } from "mongoose";
 
 /**
  * Creates a new user in the database.
- * 
- * @param data - The input data for creating a user
+ *
+ * @param data - The input data for creating a user.
  * @returns The created user document.
  * @throws Will throw an error if the input data is invalid.
  */
 export const createUser = async (data: createUserInput) => {
   validateCreateUserData(data);
 
-  const user = userModel.create({ data });
+  const user = userModel.create({ ...data });
 
   return user;
 };
 
+/**
+ * Checks if a user already exists in the database based on phone number or email.
+ *
+ * @param phone - The phone number to check.
+ * @param email - The email to check.
+ * @throws Will throw an error if the phone number or email is already taken.
+ */
 export const checkUserExist = async (phone: string, email: string) => {
-    if(await userModel.exists({ $or: [{ phoneNumber: phone, email }]})){
-        throw createError.BadRequest("Email or phone number taken")
-    }
-}
+  if (await userModel.exists({ $or: [{ phoneNumber: phone, email }] })) {
+    throw createError.BadRequest("Email or phone number taken");
+  }
+};
 
-export const upsertUser = async () => {
-
-}
-
+/**
+ * Retrieves a user from the database by their ID.
+ *
+ * @param id - The ID of the user to retrieve.
+ * @returns The user document if found.
+ * @throws Will throw an error if the ID is invalid or the user is not found.
+ */
 export const getUserById = async (id: Types.ObjectId | string) => {
-    if(!Types.ObjectId.isValid(id)){
-        throw createError.BadRequest("Invalid user id")
-    }
+  if (!Types.ObjectId.isValid(id)) {
+    throw createError.BadRequest("Invalid user id");
+  }
 
-    const user = await userModel.findById(id)
+  const user = await userModel.findById(id);
 
-    if(!user){
-        throw createError.NotFound("User with this id not found")
-    }
+  if (!user) {
+    throw createError.NotFound("User with this id not found");
+  }
+  return user;
+};
 
-    return user
-}
+/**
+ * Retrieves a user from the database by their phone number or email.
+ *
+ * @param phone - The phone number to search for.
+ * @param email - The email to search for.
+ * @returns The user document if found.
+ * @throws Will throw an error if the user does not exist.
+ */
+export const getUserByPhoneOrEmail = async (phone: string, email: string) => {
+  const user = await userModel.findOne({ phoneNumber: phone, email });
+  if (!user) {
+    throw createError.NotFound("User does not exist");
+  }
+  return user;
+};
 
+/**
+ * Updates the `isAuthenticated` status of a user in the database.
+ *
+ * @param id - The ID of the user to update.
+ * @param bool - The new authentication status.
+ * @returns The updated user document.
+ */
 export const updateIsAuthenticated = async (id: Types.ObjectId, bool: boolean) => {
-    return await userModel.findByIdAndUpdate({ _id: id }, { isAuthenticated: bool })
-}
+  return await userModel.findByIdAndUpdate(
+    { _id: id },
+    { isAuthenticated: bool }
+  );
+};
+
+
+export const updateUserProfile = async (data: updateUserInput) => {
+  const user = await getUserById(data.id)
+
+  const update = {
+    ...(data.firstName && { firstName: data.firstName }),
+    ...(data.lastName && { lastName: data.lastName }),
+    ...(data.profile_img && { profile_img: data.profile_img }),
+    ...(data.email && { email: data.email }),
+    ...(data.bio && { bio: data.bio }),
+    ...(data.availability && { availability: data.availability }),
+    ...(data.skillsOffered?.length && { skillsOffered: data.skillsOffered }),
+    ...(data.skillsWanted?.length && { skillsWanted: data.skillsWanted }),
+  };
+
+  return await userModel.findByIdAndUpdate({ _id: user._id }, { $set: update }, { new: true })
+};
