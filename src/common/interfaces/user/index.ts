@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { skillDocument } from "../skills";
+import { skillDocument, SkillInput } from "../skills";
 
 export interface userDocument {
     _id: Types.ObjectId
@@ -20,9 +20,29 @@ export interface userDocument {
 }
 
 export interface createUserInput {
-    firstName: String
-    lastNama: string
-    email: string
+    firstName?: String | null
+    lastNama?: string | null
+    email?: string | null
     phoneNumber: string
     password: string
+}
+
+export interface loginUserInput {
+    phoneNumber?: string | null
+    email?: string | null
+    password: string
+}
+
+export interface updateUserInput {
+  id: Types.ObjectId | string
+  profile_img?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  email?: string | null;
+  bio?: string | null;
+  availability?: String | null;
+
+  skillsOffered?: Array<SkillInput | null> | null;
+
+  skillsWanted?: Array<SkillInput | null> | null;
 }

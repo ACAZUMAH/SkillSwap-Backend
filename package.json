@@ -19,6 +19,7 @@
     "express": "^4.21.2",
     "express-async-errors": "^3.1.1",
     "graphql": "^16.11.0",
+    "graphql-scalars": "^1.24.2",
     "graphql-ws": "^6.0.4",
     "http-errors": "^2.0.0",
     "jsonwebtoken": "^9.0.2",

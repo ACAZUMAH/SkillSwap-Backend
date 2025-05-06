@@ -5,3 +5,8 @@ export interface skillDocument {
     skill: string,
     level: number,
 }
+
+export interface SkillInput {
+    skill: string,
+    level: number
+}
