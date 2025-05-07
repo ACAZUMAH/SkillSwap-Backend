@@ -75,16 +75,22 @@ export const getUserByPhoneOrEmail = async (phone: string, email: string) => {
  * @param bool - The new authentication status.
  * @returns The updated user document.
  */
-export const updateIsAuthenticated = async (id: Types.ObjectId, bool: boolean) => {
+export const updateIsAuthenticated = async (id: Types.ObjectId,bool: boolean) => {
   return await userModel.findByIdAndUpdate(
     { _id: id },
     { isAuthenticated: bool }
   );
 };
 
-
+/**
+ * Updates a user's profile in the database with the provided data.
+ *
+ * @param data - The input data for updating the user's profile, including optional fields like firstName, lastName, profile_img, email, bio, availability, skillsOffered, and skillsWanted.
+ * @returns The updated user document.
+ * @throws Will throw an error if the user ID is invalid or the user is not found.
+ */
 export const updateUserProfile = async (data: updateUserInput) => {
-  const user = await getUserById(data.id)
+  const user = await getUserById(data.id);
 
   const update = {
     ...(data.firstName && { firstName: data.firstName }),
@@ -97,5 +103,9 @@ export const updateUserProfile = async (data: updateUserInput) => {
     ...(data.skillsWanted?.length && { skillsWanted: data.skillsWanted }),
   };
 
-  return await userModel.findByIdAndUpdate({ _id: user._id }, { $set: update }, { new: true })
+  return await userModel.findByIdAndUpdate(
+    { _id: user._id },
+    { $set: update },
+    { new: true }
+  );
 };
