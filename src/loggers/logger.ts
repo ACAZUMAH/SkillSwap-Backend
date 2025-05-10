@@ -1,5 +1,4 @@
 import winston from "winston";
-
 const { combine, errors, json, timestamp, colorize } = winston.format;
 
 const logger = winston.createLogger({

@@ -96,6 +96,7 @@ export type Mutation = {
   _empty?: Maybe<Scalars['String']['output']>;
   completeAuthAndSignToken: Authenticated;
   createUserAccount: Response;
+  login?: Maybe<Response>;
   updateUser: User;
 };
 
@@ -107,6 +108,11 @@ export type MutationCompleteAuthAndSignTokenArgs = {
 
 export type MutationCreateUserAccountArgs = {
   data: CreateUserInput;
+};
+
+
+export type MutationLoginArgs = {
+  data: LoginUserInput;
 };
 
 
@@ -167,6 +173,12 @@ export type CreateUserInput = {
   phoneNumber: Scalars['String']['input'];
 };
 
+export type LoginUserInput = {
+  email?: InputMaybe<Scalars['String']['input']>;
+  password: Scalars['String']['input'];
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateUserInput = {
   availability?: InputMaybe<Scalars['String']['input']>;
   bio?: InputMaybe<Scalars['String']['input']>;
@@ -174,8 +186,8 @@ export type UpdateUserInput = {
   firstName?: InputMaybe<Scalars['String']['input']>;
   lastNama?: InputMaybe<Scalars['String']['input']>;
   profile_img?: InputMaybe<Scalars['String']['input']>;
-  skillsOffered?: InputMaybe<Array<InputMaybe<SkillInput>>>;
-  skillsWanted?: InputMaybe<Array<InputMaybe<SkillInput>>>;
+  skillsOffered?: InputMaybe<Array<SkillInput>>;
+  skillsWanted?: InputMaybe<Array<SkillInput>>;
 };
 
 
@@ -331,6 +343,7 @@ export type ResolversTypes = {
   UtcOffset: ResolverTypeWrapper<Scalars['UtcOffset']['output']>;
   Void: ResolverTypeWrapper<Scalars['Void']['output']>;
   createUserInput: CreateUserInput;
+  loginUserInput: LoginUserInput;
   updateUserInput: UpdateUserInput;
 };
 
@@ -418,6 +431,7 @@ export type ResolversParentTypes = {
   UtcOffset: Scalars['UtcOffset']['output'];
   Void: Scalars['Void']['output'];
   createUserInput: CreateUserInput;
+  loginUserInput: LoginUserInput;
   updateUserInput: UpdateUserInput;
 };
 
@@ -591,6 +605,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   _empty?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   completeAuthAndSignToken?: Resolver<ResolversTypes['Authenticated'], ParentType, ContextType, RequireFields<MutationCompleteAuthAndSignTokenArgs, 'otp'>>;
   createUserAccount?: Resolver<ResolversTypes['Response'], ParentType, ContextType, RequireFields<MutationCreateUserAccountArgs, 'data'>>;
+  login?: Resolver<Maybe<ResolversTypes['Response']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'data'>>;
   updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, Partial<MutationUpdateUserArgs>>;
 };
 
