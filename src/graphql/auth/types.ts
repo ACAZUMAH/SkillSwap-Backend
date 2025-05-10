@@ -17,8 +17,15 @@ export const authTypeDefs = `#graphql
         password: String!
     }
 
+    input loginUserInput {
+        email: String
+        phoneNumber: String
+        password: String!
+    }
+
     extend type Mutation {
         createUserAccount(data: createUserInput!): Response!
         completeAuthAndSignToken(otp: String!): Authenticated!
+        login(data: loginUserInput!): Response
     }
 `;
