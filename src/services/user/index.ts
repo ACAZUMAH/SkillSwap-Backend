@@ -109,3 +109,7 @@ export const updateUserProfile = async (data: updateUserInput) => {
     { new: true }
   );
 };
+
+export const searchUsersOrSkills = () => {
+  
+}
