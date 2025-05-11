@@ -1,6 +1,15 @@
 import mongoose from "mongoose";
 import { userDocument } from "src/common/interfaces";
 import { skills } from "../skills";
+import { Education } from "src/common/interfaces/education";
+import { EducationLevel } from "src/common/enums";
+
+const educationSchema = new mongoose.Schema<Education>({
+    level: { type: String, enum: Object.values(EducationLevel) },
+    institution: { type: String, required: true },
+    degree: { type: String, required: true },
+    endDate: { type: Date }
+})
 
 const userSchema = new mongoose.Schema<userDocument>({
     profile_img: { type: String },
@@ -10,12 +19,15 @@ const userSchema = new mongoose.Schema<userDocument>({
     phoneNumber: { type: String, required: true },
     bio: { type: String  },
     availability: { type: String },
+
+    education: educationSchema,
+
     password: { type: String, required: true },
     isAuthenticated: { type: Boolean },
 
-    skillsOffered: [skills],
+    skillsProficientAt: [skills],
 
-    skillsWanted: [skills],
+    skillsToLearn: [skills],
     
 }, {
     timestamps: true 
