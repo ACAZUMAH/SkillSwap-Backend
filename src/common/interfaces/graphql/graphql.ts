@@ -91,6 +91,27 @@ export type Authenticated = {
   user: User;
 };
 
+export type Education = {
+  __typename?: 'Education';
+  degree?: Maybe<Scalars['String']['output']>;
+  endDate?: Maybe<Scalars['DateTime']['output']>;
+  institution?: Maybe<Scalars['String']['output']>;
+  level?: Maybe<EducationLevel>;
+};
+
+export type EducationInput = {
+  degree: Scalars['String']['input'];
+  endDate: Scalars['DateTime']['input'];
+  institution: Scalars['String']['input'];
+  level: EducationLevel;
+};
+
+export enum EducationLevel {
+  COLLEGE = 'COLLEGE',
+  HIGH_SCHOOL = 'HIGH_SCHOOL',
+  MIDDLE_SCHOOL = 'MIDDLE_SCHOOL'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
   _empty?: Maybe<Scalars['String']['output']>;
@@ -150,18 +171,23 @@ export type Subscription = {
 export type User = {
   __typename?: 'User';
   availability?: Maybe<Scalars['String']['output']>;
+  averageRating?: Maybe<Scalars['Int']['output']>;
   bio?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
+  education?: Maybe<Education>;
   email?: Maybe<Scalars['String']['output']>;
   firstName?: Maybe<Scalars['String']['output']>;
+  gitHub?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   isAuthenticated?: Maybe<Scalars['Boolean']['output']>;
-  lastNama?: Maybe<Scalars['String']['output']>;
+  lastName?: Maybe<Scalars['String']['output']>;
+  linkedIn?: Maybe<Scalars['String']['output']>;
   password?: Maybe<Scalars['String']['output']>;
   phoneNumber: Scalars['String']['output'];
+  portfolio?: Maybe<Scalars['String']['output']>;
   profile_img?: Maybe<Scalars['String']['output']>;
-  skillsOffered?: Maybe<Array<Maybe<Skill>>>;
-  skillsWanted?: Maybe<Array<Maybe<Skill>>>;
+  skillsProficientAt?: Maybe<Array<Maybe<Skill>>>;
+  skillsToLearn?: Maybe<Array<Maybe<Skill>>>;
   updateAt: Scalars['DateTime']['output'];
 };
 
@@ -182,12 +208,16 @@ export type LoginUserInput = {
 export type UpdateUserInput = {
   availability?: InputMaybe<Scalars['String']['input']>;
   bio?: InputMaybe<Scalars['String']['input']>;
+  education?: InputMaybe<EducationInput>;
   email?: InputMaybe<Scalars['String']['input']>;
   firstName?: InputMaybe<Scalars['String']['input']>;
-  lastNama?: InputMaybe<Scalars['String']['input']>;
+  gitHub?: InputMaybe<Scalars['String']['input']>;
+  lastName?: InputMaybe<Scalars['String']['input']>;
+  linkedIn?: InputMaybe<Scalars['String']['input']>;
+  portfolio?: InputMaybe<Scalars['String']['input']>;
   profile_img?: InputMaybe<Scalars['String']['input']>;
-  skillsOffered?: InputMaybe<Array<SkillInput>>;
-  skillsWanted?: InputMaybe<Array<SkillInput>>;
+  skillsProficientAt?: InputMaybe<Array<SkillInput>>;
+  skillsToLearn?: InputMaybe<Array<SkillInput>>;
 };
 
 
@@ -276,6 +306,9 @@ export type ResolversTypes = {
   DateTimeISO: ResolverTypeWrapper<Scalars['DateTimeISO']['output']>;
   DeweyDecimal: ResolverTypeWrapper<Scalars['DeweyDecimal']['output']>;
   Duration: ResolverTypeWrapper<Scalars['Duration']['output']>;
+  Education: ResolverTypeWrapper<Education>;
+  EducationInput: EducationInput;
+  EducationLevel: EducationLevel;
   EmailAddress: ResolverTypeWrapper<Scalars['EmailAddress']['output']>;
   GUID: ResolverTypeWrapper<Scalars['GUID']['output']>;
   GeoJSON: ResolverTypeWrapper<Scalars['GeoJSON']['output']>;
@@ -364,6 +397,8 @@ export type ResolversParentTypes = {
   DateTimeISO: Scalars['DateTimeISO']['output'];
   DeweyDecimal: Scalars['DeweyDecimal']['output'];
   Duration: Scalars['Duration']['output'];
+  Education: Education;
+  EducationInput: EducationInput;
   EmailAddress: Scalars['EmailAddress']['output'];
   GUID: Scalars['GUID']['output'];
   GeoJSON: Scalars['GeoJSON']['output'];
@@ -492,6 +527,14 @@ export interface DeweyDecimalScalarConfig extends GraphQLScalarTypeConfig<Resolv
 export interface DurationScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Duration'], any> {
   name: 'Duration';
 }
+
+export type EducationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Education'] = ResolversParentTypes['Education']> = {
+  degree?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  endDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  institution?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  level?: Resolver<Maybe<ResolversTypes['EducationLevel']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export interface EmailAddressScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['EmailAddress'], any> {
   name: 'EmailAddress';
@@ -739,18 +782,23 @@ export interface UnsignedIntScalarConfig extends GraphQLScalarTypeConfig<Resolve
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   availability?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  averageRating?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   bio?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  education?: Resolver<Maybe<ResolversTypes['Education']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  gitHub?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isAuthenticated?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  lastNama?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  linkedIn?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   password?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   phoneNumber?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  portfolio?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   profile_img?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  skillsOffered?: Resolver<Maybe<Array<Maybe<ResolversTypes['Skill']>>>, ParentType, ContextType>;
-  skillsWanted?: Resolver<Maybe<Array<Maybe<ResolversTypes['Skill']>>>, ParentType, ContextType>;
+  skillsProficientAt?: Resolver<Maybe<Array<Maybe<ResolversTypes['Skill']>>>, ParentType, ContextType>;
+  skillsToLearn?: Resolver<Maybe<Array<Maybe<ResolversTypes['Skill']>>>, ParentType, ContextType>;
   updateAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -778,6 +826,7 @@ export type Resolvers<ContextType = any> = {
   DateTimeISO?: GraphQLScalarType;
   DeweyDecimal?: GraphQLScalarType;
   Duration?: GraphQLScalarType;
+  Education?: EducationResolvers<ContextType>;
   EmailAddress?: GraphQLScalarType;
   GUID?: GraphQLScalarType;
   GeoJSON?: GraphQLScalarType;

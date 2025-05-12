@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "nodemon",
-    "generate": "graphql-codegen --config codegen.ts"
+    "generate": "graphql-codegen --config codegen.ts",
+    "populate": "ts-node src/common/constants/skillPopulate.ts"
   },
   "dependencies": {
     "@apollo/server": "^4.12.0",

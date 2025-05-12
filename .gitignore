@@ -6,3 +6,8 @@
 .env
 combined.log
 errors.log
+dummy.txt
+
+#ignore
+/src/common/constants/dataSet.ts
+/src/common/constants/skillPopulate.ts

@@ -19,6 +19,10 @@ export const createUser = async (data: createUserInput) => {
   return user;
 };
 
+export const getAllUsers = async () => {
+  return await userModel.find({ __v: 0, password: 0})
+}
+
 /**
  * Checks if a user already exists in the database based on phone number or email.
  *
@@ -98,9 +102,15 @@ export const updateUserProfile = async (data: updateUserInput) => {
     ...(data.profile_img && { profile_img: data.profile_img }),
     ...(data.email && { email: data.email }),
     ...(data.bio && { bio: data.bio }),
+    ...(data.gitHub && { gitHub: data.gitHub }),
+    ...(data.linkedIn && { linkedIn: data.linkedIn }),
+    ...(data.portfolio && { portfolio: data.portfolio }),
+    ...(data.education && { education: data.education }),
     ...(data.availability && { availability: data.availability }),
-    ...(data.skillsOffered?.length && { skillsOffered: data.skillsOffered }),
-    ...(data.skillsWanted?.length && { skillsWanted: data.skillsWanted }),
+    ...(data.skillsProficientAt?.length && {
+      skillsProficientAt: data.skillsProficientAt,
+    }),
+    ...(data.skillsToLearn?.length && { skillsToLearn: data.skillsToLearn }),
   };
 
   return await userModel.findByIdAndUpdate(

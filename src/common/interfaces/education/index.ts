@@ -8,3 +8,10 @@ export interface Education {
     degree: string
     endDate: Date
 }
+
+export interface EducationInput {
+  level: EducationLevel;
+  institution: string;
+  degree: string;
+  endDate: Date;
+}

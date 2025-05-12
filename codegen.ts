@@ -10,7 +10,7 @@ const config: CodegenConfig = {
   },
   config: {
     namingConvention: {
-      enumValues: "change-case-all#UpperCase",
+      enumValues: "change-case-all#upperCase",
     },
   },
 };

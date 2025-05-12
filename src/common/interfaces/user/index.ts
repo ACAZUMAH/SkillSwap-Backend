@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 import { skillDocument, SkillInput } from "../skills";
-import { Education } from "../education";
+import { Education, EducationInput } from "../education";
 
 export interface userDocument {
   _id: Types.ObjectId;
@@ -11,10 +11,10 @@ export interface userDocument {
   phoneNumber: string;
   bio?: string;
   gitHub?: string
-  linkedIn: string
+  linkedIn?: string
   portfolio?: string
   availability?: String;
-
+  averageRating?: number
   education: Education
 
   password: string;
@@ -46,11 +46,17 @@ export interface updateUserInput {
   lastName?: string | null;
   email?: string | null;
   bio?: string | null;
+  gitHub?: string | null
+  linkedIn?: string | null
+  portfolio?: string | null
+
+  education?: EducationInput | null
+
   availability?: String | null;
 
-  skillsOffered?: Array<SkillInput | null> | null;
+  skillsProficientAt?: Array<SkillInput | null> | null;
 
-  skillsWanted?: Array<SkillInput | null> | null;
+  skillsToLearn?: Array<SkillInput | null> | null;
 }
 
 export interface filters {
@@ -58,5 +64,4 @@ export interface filters {
   lastName?: string | null;
   availability?: string | null;
   bio?: string | null
-
 }

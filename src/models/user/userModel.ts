@@ -18,12 +18,16 @@ const userSchema = new mongoose.Schema<userDocument>({
     email: { type: String },
     phoneNumber: { type: String, required: true },
     bio: { type: String  },
+    gitHub: { type: String },
+    linkedIn: { type: String },
+    portfolio: { type: String },
+    averageRating: { type: Number, default: 0 },
     availability: { type: String },
 
     education: educationSchema,
 
     password: { type: String, required: true },
-    isAuthenticated: { type: Boolean },
+    isAuthenticated: { type: Boolean, default: false },
 
     skillsProficientAt: [skills],
 

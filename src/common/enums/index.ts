@@ -14,8 +14,8 @@ export enum ScheduleStatus {
 }
 
 export enum EducationLevel {
-    HIGH_SCHOOL = "HIGH SCHOOL",
-    MIDDLE_SCHOOL = "MIDDLE SCHOOL",
-    COLLAGE = "COLLAGE",
+    HIGH_SCHOOL = "HIGH_SCHOOL",
+    MIDDLE_SCHOOL = "MIDDLE_SCHOOL",
+    COLLEGE = "COLLEGE",
 }
 
