@@ -2,7 +2,7 @@ import Ajv from 'ajv'
 import addFormats from 'ajv-formats'
 import addErrors from 'ajv-errors'
 import createError from 'http-errors'
-import { createUserInput } from 'src/common/interfaces'
+import { CreateUser } from 'src/common/interfaces'
 
 const ajv = new Ajv({ allErrors: true })
 
@@ -58,7 +58,7 @@ const userValidationSchema = {
   },
 };
 
-export const validateCreateUserData = (data: createUserInput) => {
+export const validateCreateUserData = (data: CreateUser) => {
     const validate = ajv.compile(userValidationSchema)
 
     const isValid = validate(data)

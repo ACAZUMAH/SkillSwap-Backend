@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 
-export interface authDocument {
+export interface AuthDocument {
     _id: Types.ObjectId
     userId: Types.ObjectId
     otp: string

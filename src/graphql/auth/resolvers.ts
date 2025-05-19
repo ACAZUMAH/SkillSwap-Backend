@@ -1,9 +1,9 @@
 import { MutationCompleteAuthAndSignTokenArgs, MutationCreateUserAccountArgs, MutationLoginArgs } from "src/common/interfaces"
-import { registerUser, loginUser } from "src/services/auth"
+import { register, loginUser } from "src/services/auth"
 import { verifyOtpAndSignJwt } from "src/services/auth/auth"
 
 const createUserAccount = (_: any, args:MutationCreateUserAccountArgs) => {
-    return registerUser({ ...args.data })
+    return register({ ...args.data })
 }
 
 const completeAuthAndSignToken = (_:any, { otp }: MutationCompleteAuthAndSignTokenArgs) => {

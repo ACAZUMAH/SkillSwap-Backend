@@ -1,8 +1,8 @@
 import { Types } from "mongoose";
-import { skillDocument, SkillInput } from "../skills";
-import { Education } from "../education";
+import { SkillDocument, UserSkill } from "../skills";
+import { Education, EducationInput } from "../education";
 
-export interface userDocument {
+export interface UserDocument {
   _id: Types.ObjectId;
   profile_img?: string;
   firstName?: string;
@@ -11,21 +11,21 @@ export interface userDocument {
   phoneNumber: string;
   bio?: string;
   gitHub?: string
-  linkedIn: string
+  linkedIn?: string
   portfolio?: string
   availability?: String;
-
+  averageRating?: number
   education: Education
 
   password: string;
   isAuthenticated: boolean;
 
-  skillsProficientAt: [skillDocument];
+  skillsProficientAt: SkillDocument[];
 
-  skillsToLearn: [skillDocument];
+  skillsToLearn: SkillDocument[];
 }
 
-export interface createUserInput {
+export interface CreateUser {
   firstName?: String | null;
   lastNama?: string | null;
   email?: string | null;
@@ -33,30 +33,37 @@ export interface createUserInput {
   password: string;
 }
 
-export interface loginUserInput {
-  phoneNumber?: string | null;
+export interface LoginUser {
+  phoneNumber?: string | null; 
   email?: string | null;
   password: string;
 }
 
-export interface updateUserInput {
+export interface UpdateUser {
   id: Types.ObjectId | string;
   profile_img?: string | null;
   firstName?: string | null;
   lastName?: string | null;
   email?: string | null;
   bio?: string | null;
+  gitHub?: string | null
+  linkedIn?: string | null
+  portfolio?: string | null
+
+  education?: EducationInput | null
+
   availability?: String | null;
 
-  skillsOffered?: Array<SkillInput | null> | null;
+  skillsProficientAt?: Array<UserSkill | null> | null;
 
-  skillsWanted?: Array<SkillInput | null> | null;
+  skillsToLearn?: Array<UserSkill | null> | null;
 }
 
-export interface filters {
+export interface UserFilters {
+  limit?: number | null
+  page?: number | null
   firstName?: string | null;
   lastName?: string | null;
   availability?: string | null;
-  bio?: string | null
-
+  search?: string | null
 }

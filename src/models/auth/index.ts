@@ -1,10 +1,10 @@
 import { Schema, model } from "mongoose";
-import { authDocument } from "src/common/interfaces"; 
+import { AuthDocument } from "src/common/interfaces"; 
 
-const authSchema = new Schema<authDocument>({
+const authSchema = new Schema<AuthDocument>({
     userId: { type: Schema.Types.ObjectId, required: true, ref: "users" },
     otp: { type: String, required: true },
     expiresIn: { type: Date, required: true }
 })
 
-export const authModel = model<authDocument>('auth', authSchema)
+export const authModel = model<AuthDocument>('auth', authSchema)

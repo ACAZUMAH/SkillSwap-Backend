@@ -1,12 +1,24 @@
 export const generalTypeDefs = `#graphql
 
+    type PageInfo {
+        hasNextPage: Boolean!
+        page: Int!
+        limit: Int!
+        total: Int!
+    }
+
+    type PageConnection {
+        edges: [User!]
+        pageInfo: PageInfo!
+    }
+
     type Skill {
-        skill: String!  
+        name: String!  
         level: Int!
     }
 
     input SkillInput {
-        skill: String!
+        name: String!
         level: Int!
     }
 

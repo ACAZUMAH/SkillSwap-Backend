@@ -1,12 +1,12 @@
 import { Types } from "mongoose"
 
-export interface skillDocument {
+export interface SkillDocument {
     _id: Types.ObjectId,
-    skill: string,
+    name: string,
     level: number,
 }
 
-export interface SkillInput {
-    skill: string,
+export interface UserSkill {
+    name: string,
     level: number
 }

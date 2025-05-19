@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
-import logger from "src/loggers/logger";
+import logger from "../../loggers/logger";
 
 const connectDB = async () => {
+
     const url = String(process.env.MONGODB_URL)
 
     mongoose.connection.on('connect', () => {

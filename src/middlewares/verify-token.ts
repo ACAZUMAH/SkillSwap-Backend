@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express"
 import { jwtVerify } from "src/common/helpers";
-import { userDocument } from "src/common/interfaces";
+import { UserDocument } from "src/common/interfaces";
 import { getUserById } from "src/services/user";
 import createError from "http-errors"
 
@@ -19,7 +19,7 @@ export const verifyToken = async (req: Request, _res: Response, next: NextFuncti
         
         if(!data?.id) return next()
 
-        const user: userDocument = await getUserById(data.id)
+        const user: UserDocument = await getUserById(data.id)
 
         req.user = user
 

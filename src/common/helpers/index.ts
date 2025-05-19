@@ -55,6 +55,34 @@ export const comparePassword = async (password: string, hash: string) => {
   }
 };
 
+export const getSanitizeLimit = (limit?: string | number | null) => {
+  const limitNumber = Number(limit)
+
+  if(Number.isNaN(limitNumber)) return 15
+
+  return Math.min(Math.max(limitNumber, 1), 100)
+}
+
+export const getSanitizePage = (page?: string | number | null) => {
+  const pageNumber = Number(page)
+
+  if(Number.isNaN(pageNumber)) return 1
+
+  return Math.max(pageNumber, 1)
+}
+
+export const getSanitizeOffset = (limit: number, page: number) => {
+  return (page - 1) * limit
+}
+
+export const getPageConnection = <T>(data: Array<T>, page: Number, limit: number) => {
+  const hasNextPage = data.length > limit
+  const edges = hasNextPage ? data.slice(0, limit) : data
+  const pageInfo = { hasNextPage, limit, page, total: data.length }
+
+  return { edges, pageInfo }
+}
+
 /**
  * Constructs a standardized HTTP response object.
  *

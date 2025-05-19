@@ -1,8 +1,14 @@
-import { createUserInput, updateUserInput } from "src/common/interfaces";
+import {
+  CreateUser,
+  UserFilters,
+  UpdateUser,
+  UserDocument,
+} from "src/common/interfaces";
 import { userModel } from "src/models";
 import { validateCreateUserData } from "./user-validation";
 import createError from "http-errors";
-import { Types } from "mongoose";
+import { FilterQuery, QueryOptions, Types } from "mongoose";
+import { getPageConnection, getSanitizeLimit, getSanitizeOffset, getSanitizePage } from "src/common/helpers";
 
 /**
  * Creates a new user in the database.
@@ -11,12 +17,16 @@ import { Types } from "mongoose";
  * @returns The created user document.
  * @throws Will throw an error if the input data is invalid.
  */
-export const createUser = async (data: createUserInput) => {
+export const createUser = async (data: CreateUser) => {
   validateCreateUserData(data);
 
   const user = userModel.create({ ...data });
 
   return user;
+};
+
+export const getAllUsers = async () => {
+  return await userModel.find().lean();
 };
 
 /**
@@ -75,7 +85,10 @@ export const getUserByPhoneOrEmail = async (phone: string, email: string) => {
  * @param bool - The new authentication status.
  * @returns The updated user document.
  */
-export const updateIsAuthenticated = async (id: Types.ObjectId,bool: boolean) => {
+export const updateIsAuthenticated = async (
+  id: Types.ObjectId,
+  bool: boolean
+) => {
   return await userModel.findByIdAndUpdate(
     { _id: id },
     { isAuthenticated: bool }
@@ -85,11 +98,13 @@ export const updateIsAuthenticated = async (id: Types.ObjectId,bool: boolean) =>
 /**
  * Updates a user's profile in the database with the provided data.
  *
- * @param data - The input data for updating the user's profile, including optional fields like firstName, lastName, profile_img, email, bio, availability, skillsOffered, and skillsWanted.
+ * @param data - The input data for updating the user's profile,
+ * including optional fields like firstName, lastName, profile_img,
+ * email, bio, availability, skillsOffered, and skillsWanted.
  * @returns The updated user document.
  * @throws Will throw an error if the user ID is invalid or the user is not found.
  */
-export const updateUserProfile = async (data: updateUserInput) => {
+export const updateUserProfile = async (data: UpdateUser) => {
   const user = await getUserById(data.id);
 
   const update = {
@@ -98,9 +113,15 @@ export const updateUserProfile = async (data: updateUserInput) => {
     ...(data.profile_img && { profile_img: data.profile_img }),
     ...(data.email && { email: data.email }),
     ...(data.bio && { bio: data.bio }),
+    ...(data.gitHub && { gitHub: data.gitHub }),
+    ...(data.linkedIn && { linkedIn: data.linkedIn }),
+    ...(data.portfolio && { portfolio: data.portfolio }),
+    ...(data.education && { education: data.education }),
     ...(data.availability && { availability: data.availability }),
-    ...(data.skillsOffered?.length && { skillsOffered: data.skillsOffered }),
-    ...(data.skillsWanted?.length && { skillsWanted: data.skillsWanted }),
+    ...(data.skillsProficientAt?.length && {
+      skillsProficientAt: data.skillsProficientAt,
+    }),
+    ...(data.skillsToLearn?.length && { skillsToLearn: data.skillsToLearn }),
   };
 
   return await userModel.findByIdAndUpdate(
@@ -110,6 +131,37 @@ export const updateUserProfile = async (data: updateUserInput) => {
   );
 };
 
-export const searchUsersOrSkills = () => {
-  
-}
+export const searchUsersOrSkills = async (data: UserFilters) => {
+  const query: FilterQuery<UserDocument> = {
+    ...(data.firstName && { firstName: data.firstName }),
+    ...(data.lastName && { lastName: data.lastName }),
+    ...(data.availability && { availability: data.availability }),
+    ...(data.search && {
+      $or: [
+        { firstName: { $regex: data.search, $options: "i" } },
+        { lastName: { $regex: data.search, $options: "i" } },
+        { bio: { $regex: data.search, $options: "i" } },
+        { availability: { $regex: data.search, $options: "i" } },
+        { "education.institution": { $regex: data.search, $options: "i" } },
+        { "skillsProficientAt.name": { $regex: data.search, $options: "i" } },
+      ],
+    }),
+  };
+
+  const limit = getSanitizeLimit(data.limit)
+  const page = getSanitizePage(data.page)
+  const skip = getSanitizeOffset(limit, page)
+
+  const oprions: QueryOptions = {
+    limit: limit + 1,
+    page,
+    skip,
+    sort: { createdAt: 1 }
+  }
+
+  const result = await userModel.find(query, null, oprions)
+
+  //console.log(result)
+
+  return getPageConnection(result, page, limit)
+};

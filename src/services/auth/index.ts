@@ -1,4 +1,4 @@
-import { createUserInput, loginUserInput } from "src/common/interfaces";
+import { CreateUser, LoginUser } from "src/common/interfaces";
 import { checkUserExist, createUser, getUserByPhoneOrEmail } from "../user";
 import { comparePassword, hashPassword } from "src/common/helpers";
 import { createAuth } from "./auth";
@@ -12,7 +12,7 @@ import createError from "http-errors";
 * @returns An object containing the created user and the generated OTP if in development mode.
 * @throws Will throw an error if the phone number or email already exists.
 */
-export const registerUser = async (data: createUserInput) => {
+export const register = async (data: CreateUser) => {
   const { phoneNumber, email, password } = data;
 
   await checkUserExist(phoneNumber, email!);
@@ -31,7 +31,7 @@ export const registerUser = async (data: createUserInput) => {
 * @returns An object containing the generated OTP if in development mode.
 * @throws Will throw an error if the credentials are invalid.
 */
-export const loginUser = async (data: loginUserInput) => {
+export const loginUser = async (data: LoginUser) => {
   const { phoneNumber, email, password } = data;
   const user = await getUserByPhoneOrEmail(phoneNumber!, email!);
 
