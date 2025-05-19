@@ -62,8 +62,6 @@ export interface UpdateUser {
 export interface UserFilters {
   limit?: number | null
   page?: number | null
-  firstName?: string | null;
-  lastName?: string | null;
-  availability?: string | null;
+  userId: string | Types.ObjectId
   search?: string | null
 }

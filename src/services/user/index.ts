@@ -133,9 +133,7 @@ export const updateUserProfile = async (data: UpdateUser) => {
 
 export const searchUsersOrSkills = async (data: UserFilters) => {
   const query: FilterQuery<UserDocument> = {
-    ...(data.firstName && { firstName: data.firstName }),
-    ...(data.lastName && { lastName: data.lastName }),
-    ...(data.availability && { availability: data.availability }),
+    ...(data.userId && { _Id: data.userId }),
     ...(data.search && {
       $or: [
         { firstName: { $regex: data.search, $options: "i" } },
@@ -144,6 +142,7 @@ export const searchUsersOrSkills = async (data: UserFilters) => {
         { availability: { $regex: data.search, $options: "i" } },
         { "education.institution": { $regex: data.search, $options: "i" } },
         { "skillsProficientAt.name": { $regex: data.search, $options: "i" } },
+        { "skillsToLearn.name": { $regex: data.search, $options: "i" } }
       ],
     }),
   };
