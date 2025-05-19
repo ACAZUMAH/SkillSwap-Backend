@@ -1,31 +1,24 @@
 export const generalTypeDefs = `#graphql
-    enum EducationLevel {
-        HIGH_SCHOOL
-        MIDDLE_SCHOOL
-        COLLEGE
-    }
-    
-    type Education {
-        level: EducationLevel
-        institution: String
-        degree: String
-        endDate: DateTime
+
+    type PageInfo {
+        hasNextPage: Boolean!
+        page: Int!
+        limit: Int!
+        total: Int!
     }
 
-    input EducationInput {
-        level: EducationLevel!
-        institution: String!
-        degree: String!
-        endDate: Date!
+    type PageConnection {
+        edges: [User!]
+        pageInfo: PageInfo!
     }
 
     type Skill {
-        skill: String!  
+        name: String!  
         level: Int!
     }
 
     input SkillInput {
-        skill: String!
+        name: String!
         level: Int!
     }
 

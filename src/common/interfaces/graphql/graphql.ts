@@ -96,21 +96,24 @@ export type Education = {
   degree?: Maybe<Scalars['String']['output']>;
   endDate?: Maybe<Scalars['DateTime']['output']>;
   institution?: Maybe<Scalars['String']['output']>;
-  level?: Maybe<EducationLevel>;
+  level?: Maybe<Scalars['String']['output']>;
 };
 
 export type EducationInput = {
   degree: Scalars['String']['input'];
-  endDate: Scalars['DateTime']['input'];
+  endDate: Scalars['Date']['input'];
   institution: Scalars['String']['input'];
-  level: EducationLevel;
+  level: Scalars['String']['input'];
 };
 
-export enum EducationLevel {
-  COLLEGE = 'COLLEGE',
-  HIGH_SCHOOL = 'HIGH_SCHOOL',
-  MIDDLE_SCHOOL = 'MIDDLE_SCHOOL'
-}
+export type Filters = {
+  availability?: InputMaybe<Scalars['String']['input']>;
+  firstName?: InputMaybe<Scalars['String']['input']>;
+  lastName?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+};
 
 export type Mutation = {
   __typename?: 'Mutation';
@@ -141,10 +144,39 @@ export type MutationUpdateUserArgs = {
   data?: InputMaybe<UpdateUserInput>;
 };
 
+export type PageConnection = {
+  __typename?: 'PageConnection';
+  edges?: Maybe<Array<User>>;
+  pageInfo: PageInfo;
+};
+
+export type PageInfo = {
+  __typename?: 'PageInfo';
+  hasNextPage: Scalars['Boolean']['output'];
+  limit: Scalars['Int']['output'];
+  page: Scalars['Int']['output'];
+  total: Scalars['Int']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   _empty?: Maybe<Scalars['String']['output']>;
   hello?: Maybe<Scalars['String']['output']>;
+  recommendation?: Maybe<Array<Maybe<Recomendation>>>;
+  search?: Maybe<PageConnection>;
+};
+
+
+export type QuerySearchArgs = {
+  filters?: InputMaybe<Filters>;
+};
+
+export type Recomendation = {
+  __typename?: 'Recomendation';
+  levelDifference?: Maybe<Scalars['Int']['output']>;
+  matchScore?: Maybe<Scalars['Float']['output']>;
+  matchedSkill?: Maybe<Scalars['String']['output']>;
+  user?: Maybe<User>;
 };
 
 export type Response = {
@@ -155,17 +187,32 @@ export type Response = {
 export type Skill = {
   __typename?: 'Skill';
   level: Scalars['Int']['output'];
-  skill: Scalars['String']['output'];
+  name: Scalars['String']['output'];
 };
 
 export type SkillInput = {
   level: Scalars['Int']['input'];
-  skill: Scalars['String']['input'];
+  name: Scalars['String']['input'];
 };
 
 export type Subscription = {
   __typename?: 'Subscription';
   _empty?: Maybe<Scalars['String']['output']>;
+};
+
+export type UpdateUserInput = {
+  availability?: InputMaybe<Scalars['String']['input']>;
+  bio?: InputMaybe<Scalars['String']['input']>;
+  education?: InputMaybe<EducationInput>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  firstName?: InputMaybe<Scalars['String']['input']>;
+  gitHub?: InputMaybe<Scalars['String']['input']>;
+  lastName?: InputMaybe<Scalars['String']['input']>;
+  linkedIn?: InputMaybe<Scalars['String']['input']>;
+  portfolio?: InputMaybe<Scalars['String']['input']>;
+  profile_img?: InputMaybe<Scalars['String']['input']>;
+  skillsProficientAt?: InputMaybe<Array<SkillInput>>;
+  skillsToLearn?: InputMaybe<Array<SkillInput>>;
 };
 
 export type User = {
@@ -203,21 +250,6 @@ export type LoginUserInput = {
   email?: InputMaybe<Scalars['String']['input']>;
   password: Scalars['String']['input'];
   phoneNumber?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type UpdateUserInput = {
-  availability?: InputMaybe<Scalars['String']['input']>;
-  bio?: InputMaybe<Scalars['String']['input']>;
-  education?: InputMaybe<EducationInput>;
-  email?: InputMaybe<Scalars['String']['input']>;
-  firstName?: InputMaybe<Scalars['String']['input']>;
-  gitHub?: InputMaybe<Scalars['String']['input']>;
-  lastName?: InputMaybe<Scalars['String']['input']>;
-  linkedIn?: InputMaybe<Scalars['String']['input']>;
-  portfolio?: InputMaybe<Scalars['String']['input']>;
-  profile_img?: InputMaybe<Scalars['String']['input']>;
-  skillsProficientAt?: InputMaybe<Array<SkillInput>>;
-  skillsToLearn?: InputMaybe<Array<SkillInput>>;
 };
 
 
@@ -308,8 +340,9 @@ export type ResolversTypes = {
   Duration: ResolverTypeWrapper<Scalars['Duration']['output']>;
   Education: ResolverTypeWrapper<Education>;
   EducationInput: EducationInput;
-  EducationLevel: EducationLevel;
   EmailAddress: ResolverTypeWrapper<Scalars['EmailAddress']['output']>;
+  Filters: Filters;
+  Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   GUID: ResolverTypeWrapper<Scalars['GUID']['output']>;
   GeoJSON: ResolverTypeWrapper<Scalars['GeoJSON']['output']>;
   HSL: ResolverTypeWrapper<Scalars['HSL']['output']>;
@@ -347,6 +380,8 @@ export type ResolversTypes = {
   NonPositiveFloat: ResolverTypeWrapper<Scalars['NonPositiveFloat']['output']>;
   NonPositiveInt: ResolverTypeWrapper<Scalars['NonPositiveInt']['output']>;
   ObjectID: ResolverTypeWrapper<Scalars['ObjectID']['output']>;
+  PageConnection: ResolverTypeWrapper<PageConnection>;
+  PageInfo: ResolverTypeWrapper<PageInfo>;
   PhoneNumber: ResolverTypeWrapper<Scalars['PhoneNumber']['output']>;
   Port: ResolverTypeWrapper<Scalars['Port']['output']>;
   PositiveFloat: ResolverTypeWrapper<Scalars['PositiveFloat']['output']>;
@@ -355,6 +390,7 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   RGB: ResolverTypeWrapper<Scalars['RGB']['output']>;
   RGBA: ResolverTypeWrapper<Scalars['RGBA']['output']>;
+  Recomendation: ResolverTypeWrapper<Recomendation>;
   Response: ResolverTypeWrapper<Response>;
   RoutingNumber: ResolverTypeWrapper<Scalars['RoutingNumber']['output']>;
   SESSN: ResolverTypeWrapper<Scalars['SESSN']['output']>;
@@ -372,12 +408,12 @@ export type ResolversTypes = {
   UUID: ResolverTypeWrapper<Scalars['UUID']['output']>;
   UnsignedFloat: ResolverTypeWrapper<Scalars['UnsignedFloat']['output']>;
   UnsignedInt: ResolverTypeWrapper<Scalars['UnsignedInt']['output']>;
+  UpdateUserInput: UpdateUserInput;
   User: ResolverTypeWrapper<User>;
   UtcOffset: ResolverTypeWrapper<Scalars['UtcOffset']['output']>;
   Void: ResolverTypeWrapper<Scalars['Void']['output']>;
   createUserInput: CreateUserInput;
   loginUserInput: LoginUserInput;
-  updateUserInput: UpdateUserInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -400,6 +436,8 @@ export type ResolversParentTypes = {
   Education: Education;
   EducationInput: EducationInput;
   EmailAddress: Scalars['EmailAddress']['output'];
+  Filters: Filters;
+  Float: Scalars['Float']['output'];
   GUID: Scalars['GUID']['output'];
   GeoJSON: Scalars['GeoJSON']['output'];
   HSL: Scalars['HSL']['output'];
@@ -437,6 +475,8 @@ export type ResolversParentTypes = {
   NonPositiveFloat: Scalars['NonPositiveFloat']['output'];
   NonPositiveInt: Scalars['NonPositiveInt']['output'];
   ObjectID: Scalars['ObjectID']['output'];
+  PageConnection: PageConnection;
+  PageInfo: PageInfo;
   PhoneNumber: Scalars['PhoneNumber']['output'];
   Port: Scalars['Port']['output'];
   PositiveFloat: Scalars['PositiveFloat']['output'];
@@ -445,6 +485,7 @@ export type ResolversParentTypes = {
   Query: {};
   RGB: Scalars['RGB']['output'];
   RGBA: Scalars['RGBA']['output'];
+  Recomendation: Recomendation;
   Response: Response;
   RoutingNumber: Scalars['RoutingNumber']['output'];
   SESSN: Scalars['SESSN']['output'];
@@ -462,12 +503,12 @@ export type ResolversParentTypes = {
   UUID: Scalars['UUID']['output'];
   UnsignedFloat: Scalars['UnsignedFloat']['output'];
   UnsignedInt: Scalars['UnsignedInt']['output'];
+  UpdateUserInput: UpdateUserInput;
   User: User;
   UtcOffset: Scalars['UtcOffset']['output'];
   Void: Scalars['Void']['output'];
   createUserInput: CreateUserInput;
   loginUserInput: LoginUserInput;
-  updateUserInput: UpdateUserInput;
 };
 
 export interface AccountNumberScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['AccountNumber'], any> {
@@ -532,7 +573,7 @@ export type EducationResolvers<ContextType = any, ParentType extends ResolversPa
   degree?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   endDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   institution?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  level?: Resolver<Maybe<ResolversTypes['EducationLevel']>, ParentType, ContextType>;
+  level?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -684,6 +725,20 @@ export interface ObjectIdScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'ObjectID';
 }
 
+export type PageConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['PageConnection'] = ResolversParentTypes['PageConnection']> = {
+  edges?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PageInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['PageInfo'] = ResolversParentTypes['PageInfo']> = {
+  hasNextPage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  limit?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  page?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export interface PhoneNumberScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['PhoneNumber'], any> {
   name: 'PhoneNumber';
 }
@@ -707,6 +762,8 @@ export interface PostalCodeScalarConfig extends GraphQLScalarTypeConfig<Resolver
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   _empty?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   hello?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  recommendation?: Resolver<Maybe<Array<Maybe<ResolversTypes['Recomendation']>>>, ParentType, ContextType>;
+  search?: Resolver<Maybe<ResolversTypes['PageConnection']>, ParentType, ContextType, Partial<QuerySearchArgs>>;
 };
 
 export interface RgbScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['RGB'], any> {
@@ -716,6 +773,14 @@ export interface RgbScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes[
 export interface RgbaScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['RGBA'], any> {
   name: 'RGBA';
 }
+
+export type RecomendationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Recomendation'] = ResolversParentTypes['Recomendation']> = {
+  levelDifference?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  matchScore?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  matchedSkill?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export type ResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['Response'] = ResolversParentTypes['Response']> = {
   message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -740,7 +805,7 @@ export interface SemVerScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
 
 export type SkillResolvers<ContextType = any, ParentType extends ResolversParentTypes['Skill'] = ResolversParentTypes['Skill']> = {
   level?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  skill?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -863,6 +928,8 @@ export type Resolvers<ContextType = any> = {
   NonPositiveFloat?: GraphQLScalarType;
   NonPositiveInt?: GraphQLScalarType;
   ObjectID?: GraphQLScalarType;
+  PageConnection?: PageConnectionResolvers<ContextType>;
+  PageInfo?: PageInfoResolvers<ContextType>;
   PhoneNumber?: GraphQLScalarType;
   Port?: GraphQLScalarType;
   PositiveFloat?: GraphQLScalarType;
@@ -871,6 +938,7 @@ export type Resolvers<ContextType = any> = {
   Query?: QueryResolvers<ContextType>;
   RGB?: GraphQLScalarType;
   RGBA?: GraphQLScalarType;
+  Recomendation?: RecomendationResolvers<ContextType>;
   Response?: ResponseResolvers<ContextType>;
   RoutingNumber?: GraphQLScalarType;
   SESSN?: GraphQLScalarType;

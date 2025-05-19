@@ -1,4 +1,10 @@
 export const userTypeDefs = `#graphql 
+    type Education {
+        level: String
+        institution: String
+        degree: String
+        endDate: DateTime
+    }
 
     type User {
         id: ID!
@@ -24,7 +30,30 @@ export const userTypeDefs = `#graphql
         updateAt: DateTime!
     }
 
-    input updateUserInput {
+    type Recomendation {
+        user: User
+        matchScore: Float
+        matchedSkill: String
+        levelDifference: Int
+    }
+
+    input Filters {
+        limit: Int
+        page: Int
+        firstName: String
+        lastName: String
+        availability: String
+        search: String
+    }
+    
+    input EducationInput {
+        level: String!
+        institution: String!
+        degree: String!
+        endDate: Date!
+    }
+
+    input UpdateUserInput {
         profile_img: String
         firstName: String
         lastName: String
@@ -39,7 +68,12 @@ export const userTypeDefs = `#graphql
         skillsToLearn: [SkillInput!]
     }
 
+    extend type Query {
+        search(filters: Filters): PageConnection
+        recommendation: [Recomendation]
+    }
+
     extend type Mutation {
-        updateUser(data: updateUserInput): User!
+        updateUser(data: UpdateUserInput): User!
     }
 `;

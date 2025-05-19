@@ -13,9 +13,3 @@ export enum ScheduleStatus {
     RESCHEDULED = "RESCHEDULED"
 }
 
-export enum EducationLevel {
-    HIGH_SCHOOL = "HIGH_SCHOOL",
-    MIDDLE_SCHOOL = "MIDDLE_SCHOOL",
-    COLLEGE = "COLLEGE",
-}
-
