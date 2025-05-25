@@ -2,14 +2,13 @@ import mongoose from "mongoose";
 import logger from "../../loggers/logger";
 
 const connectDB = async () => {
-
     const url = String(process.env.MONGODB_URL)
 
-    mongoose.connection.on('connect', () => {
+    mongoose.connection.on('connected', () => {
         logger.info("Connected to the mongoDB")
     })
 
-    mongoose.connection.on('disconnect', () => {
+    mongoose.connection.on('disconnected', () => {
         logger.error("Database disconnected")
     })
 
@@ -17,7 +16,7 @@ const connectDB = async () => {
         logger.error("Database error", err)
     })
 
-    return mongoose.connect(url)
+    return await mongoose.connect(url)
 }
 
 export default connectDB

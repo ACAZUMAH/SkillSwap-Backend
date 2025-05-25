@@ -30,20 +30,32 @@ export const userTypeDefs = `#graphql
         updateAt: DateTime!
     }
 
-    type Recomendation {
+    type Recomendation { 
         user: User
         matchScore: Float
         matchedSkill: String
         levelDifference: Int
     }
 
+    type UserConnection {
+        edges: [User]
+        pageInfo: PageInfo
+    }
+
     input Filters {
         limit: Int
         page: Int
+        userId: String
         firstName: String
         lastName: String
         availability: String
         search: String
+    }
+
+    extend type Query {
+        me: User
+        search(filters: Filters): UserConnection
+        recommendation: [Recomendation]
     }
     
     input EducationInput {
@@ -66,11 +78,6 @@ export const userTypeDefs = `#graphql
         education: EducationInput
         skillsProficientAt: [SkillInput!]
         skillsToLearn: [SkillInput!]
-    }
-
-    extend type Query {
-        search(filters: Filters): PageConnection
-        recommendation: [Recomendation]
     }
 
     extend type Mutation {

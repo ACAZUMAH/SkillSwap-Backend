@@ -1,15 +1,36 @@
 import { Types } from "mongoose";
-import { skillDocument } from "../skills";
+import { SwappedSkill } from "../skills";
 import { Status } from "src/common/enums";
-import { Session, TimeTable } from "../timeTable";
+import { SwapSession, SwapTimeTable } from "../timeTable";
 
 export interface swapDocument {
-    userOffering: Types.ObjectId
-    userRequesting: Types.ObjectId
-    skillsOffered: [skillDocument]
-    skillsWanted: [skillDocument]
+    _id: Types.ObjectId
+    senderId: Types.ObjectId
+    receiverId: Types.ObjectId
+    skills?: SwappedSkill[]
     status: Status
 
-    timeTable?: [TimeTable]
-    sessions?: [Session]
+    timeTable?: [SwapTimeTable]
+    sessions?: [SwapSession]
 }
+
+export interface SwapRequest {
+    senderId: string | Types.ObjectId
+    receiverId: string | Types.ObjectId
+    skills?: SwappedSkill[] | null
+}
+
+export interface AcceptOrDeclineSwap {
+    swapId: string | Types.ObjectId
+    userId: string | Types.ObjectId
+    status: Status
+}
+
+export interface Request {
+    swapId?: string | Types.ObjectId | null
+    senderId?: string | Types.ObjectId | null
+    receiverId?: string | Types.ObjectId | null
+    status?: Status | null
+    limit?: number | null
+    page?: number | null
+} 
