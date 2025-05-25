@@ -6,14 +6,13 @@ import {
   SwapRequest,
 } from "src/common/interfaces";
 import createError from "http-errors";
-import { swapModel, userModel } from "src/models";
+import { swapModel } from "src/models";
 import {
   getPageConnection,
   getSanitizeLimit,
   getSanitizeOffset,
   getSanitizePage,
-} from "src/common/helpers";
-import { get } from "http";
+} from "src/common/helpers"; 
 import { createChat } from "../chats";
 
 /**
@@ -24,12 +23,8 @@ import { createChat } from "../chats";
  * @returns The created swap request.
  */
 export const upsertSwapRequest = async (data: SwapRequest) => {
-  if (
-    !(
-      Types.ObjectId.isValid(data.senderId) &&
-      Types.ObjectId.isValid(data.receiverId)
-    )
-  ) {
+  if (!(Types.ObjectId.isValid(data.senderId) &&
+      Types.ObjectId.isValid(data.receiverId))) {
     throw createError.BadRequest("Invalid user ids");
   }
 
@@ -54,16 +49,11 @@ export const upsertSwapRequest = async (data: SwapRequest) => {
  * @returns The canceled swap request.
  */
 export const cancelSwapRequest = async (filter: Request) => {
-  if (
-    !Types.ObjectId.isValid(filter.senderId!) &&
-    !Types.ObjectId.isValid(filter.swapId!)
-  )
+  if (!Types.ObjectId.isValid(filter.senderId!) &&
+    !Types.ObjectId.isValid(filter.swapId!))
     throw createError.BadRequest("Invalid user or swap id");
 
-  return await swapModel.findOneAndDelete({
-    _id: filter.swapId,
-    senderId: filter.senderId,
-  });
+  return await swapModel.findOneAndDelete({ _id: filter.swapId, senderId: filter.senderId });
 };
 
 /**
@@ -99,11 +89,10 @@ export const acceptOrDeclineSwapRequest = async (data: AcceptOrDeclineSwap) => {
  * @returns The swap request if found.
  */
 export const getSwapRequest = async (data: Request) => {
-  if (
-    !Types.ObjectId.isValid(data?.senderId!) ||
+  if (!Types.ObjectId.isValid(data?.senderId!) ||
     !Types.ObjectId.isValid(data?.receiverId!) ||
-    !Types.ObjectId.isValid(data?.swapId!)
-  ) {
+    !Types.ObjectId.isValid(data?.swapId!)) 
+    {
     throw createError.BadRequest("Invalid user or swap id");
   }
 
@@ -132,11 +121,7 @@ export const getSwapRequests = async (filter: Request) => {
   const page = getSanitizePage(filter.page);
   const skip = getSanitizeOffset(limit, page);
 
-  const oprions: QueryOptions = {
-    skip,
-    limit,
-    sort: { createdAt: -1 },
-  };
+  const oprions: QueryOptions = { skip, limit, sort: { createdAt: -1 } };
 
   const swaps = await swapModel.find(query, null, oprions);
 
@@ -150,15 +135,11 @@ export const getSwapRequests = async (filter: Request) => {
  * @throws Will throw an error if the swap ID is invalid or not found.
  */
 export const getSwapById = async (swapId: string) => {
-  if (!Types.ObjectId.isValid(swapId)) {
-    throw createError.BadRequest("Invalid swap id");
-  }
+  if (!Types.ObjectId.isValid(swapId)) throw createError.BadRequest("Invalid swap id");
 
   const swap = await swapModel.findById(swapId);
 
-  if (!swap) {
-    throw createError.NotFound("Swap request not found");
-  }
+  if (!swap) throw createError.NotFound("Swap request not found");
 
   return swap;
 };
@@ -178,8 +159,7 @@ export const updateSwap = async (data: any) => {
   const swap = await getSwapById(data.swapId);
 
   const update = {
-    ...(data.skillsToOffer && { skillsToOffer: data.skillsToOffer }),
-    ...(data.skillsToLearn && { skillsToLearn: data.skillsToLearn }),
+    ...(data.skills?.length! > 0 && { skills: data.skills }),
     ...(data.timeTable && { timeTable: data.timeTable }),
     ...(data.session && { sessions: [...swap?.sessions!, data.session] }),
     ...(data.status && { status: data.status }),

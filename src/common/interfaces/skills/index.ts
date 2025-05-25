@@ -10,3 +10,7 @@ export interface UserSkill {
     name: string,
     level: number
 }
+
+export interface SwappedSkill extends UserSkill {
+    By: Types.ObjectId
+}

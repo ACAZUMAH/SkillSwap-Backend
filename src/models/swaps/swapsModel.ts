@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 import { SwapSession, swapDocument, SwapTimeTable } from "src/common/interfaces";
-import { skills } from "../skills";
+import { swappedskillSchema } from "../skills";
 import { ScheduleStatus, Status } from "src/common/enums";
 
 const timeTableSchema = new Schema<SwapTimeTable>({
@@ -26,8 +26,7 @@ const swapSchema = new Schema<swapDocument>({
     receiverId: { type: Schema.Types.ObjectId, required: true, ref: "users"},
     status: { type: String, enum: Object.values(Status), default: Status.PENDING },
 
-    skillsToOffer: [skills],
-    skillsToLearn: [skills],
+    skills: { type: [swappedskillSchema] },
 
     timeTable: [timeTableSchema],
     sessions: [sessionsSchema]

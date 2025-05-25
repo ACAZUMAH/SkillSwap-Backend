@@ -30,13 +30,18 @@ export const swapsTypeDef = `#graphql
         status: ScheduleStatus!
     }
 
+    type SwappedSkill {
+        By: ID!
+        name: String!
+        level: Int!
+    }
+
     type Swap {
         id: ID!
         status: Status!
         senderId: ID!
         receiverId: ID!
-        skillsToOffer: [Skill]
-        skillsToLearn: [Skill]
+        skills: [SwappedSkill]
         timeTable: [TimeTable]
         sessions: [Session]
         createdAt: DateTime!
@@ -76,9 +81,42 @@ export const swapsTypeDef = `#graphql
         userId: ID!
     }
 
+    input SwappedSkillInput {
+        By: ID!
+        name: String!
+        level: Int!
+    }
+
+    input TimeTableInput {
+        skill: String!
+        taughtBy: ID!
+        dayOfweek: String!
+        time: String!
+        durationInWeeks: Int!
+        startDate: Date!
+    }
+
+    input SessionInput {
+        taughtBy: ID!
+        recievedBy: ID!
+        skill: String!
+        date: Date!
+        time: String!
+        status: ScheduleStatus
+    }
+
+    input updateSwapInput {
+        id: ID!
+        status: Status
+        skills: [SwappedSkillInput]
+        timeTable: [TimeTableInput]
+        sessions: [SessionInput]
+    }
+
     extend type Mutation {
-        createSwapRequest(input: SwapRequestInput!): Swap
-        acceptOrDeclineSwapRequest(input: AcceptOrDeclineSwapInput!): Swap
-        cancelSwapRequest(input: CancelSwapRequestInput!): Swap
+        createSwapRequest(input: SwapRequestInput!): Swap!
+        acceptOrDeclineSwapRequest(input: AcceptOrDeclineSwapInput!): Swap!
+        cancelSwapRequest(input: CancelSwapRequestInput!): Swap!
+        updateSwap(input: updateSwapInput!): Swap!
     }
 `;

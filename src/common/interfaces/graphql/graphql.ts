@@ -129,12 +129,13 @@ export type Filters = {
 export type Mutation = {
   __typename?: 'Mutation';
   _empty?: Maybe<Scalars['String']['output']>;
-  acceptOrDeclineSwapRequest?: Maybe<Swap>;
-  cancelSwapRequest?: Maybe<Swap>;
+  acceptOrDeclineSwapRequest: Swap;
+  cancelSwapRequest: Swap;
   completeAuthAndSignToken: Authenticated;
-  createSwapRequest?: Maybe<Swap>;
-  createUserAccount: Response;
+  createAccount: Response;
+  createSwapRequest: Swap;
   login?: Maybe<Response>;
+  updateSwap: Swap;
   updateUser: User;
 };
 
@@ -154,18 +155,23 @@ export type MutationCompleteAuthAndSignTokenArgs = {
 };
 
 
+export type MutationCreateAccountArgs = {
+  data: CreateUserInput;
+};
+
+
 export type MutationCreateSwapRequestArgs = {
   input: SwapRequestInput;
 };
 
 
-export type MutationCreateUserAccountArgs = {
-  data: CreateUserInput;
+export type MutationLoginArgs = {
+  data: LoginUserInput;
 };
 
 
-export type MutationLoginArgs = {
-  data: LoginUserInput;
+export type MutationUpdateSwapArgs = {
+  input: UpdateSwapInput;
 };
 
 
@@ -236,6 +242,15 @@ export type Session = {
   time: Scalars['String']['output'];
 };
 
+export type SessionInput = {
+  date: Scalars['Date']['input'];
+  recievedBy: Scalars['ID']['input'];
+  skill: Scalars['String']['input'];
+  status?: InputMaybe<ScheduleStatus>;
+  taughtBy: Scalars['ID']['input'];
+  time: Scalars['String']['input'];
+};
+
 export type Skill = {
   __typename?: 'Skill';
   id: Scalars['ID']['output'];
@@ -269,8 +284,7 @@ export type Swap = {
   sender?: Maybe<User>;
   senderId: Scalars['ID']['output'];
   sessions?: Maybe<Array<Maybe<Session>>>;
-  skillsToLearn?: Maybe<Array<Maybe<Skill>>>;
-  skillsToOffer?: Maybe<Array<Maybe<Skill>>>;
+  skills?: Maybe<Array<Maybe<SwappedSkill>>>;
   status: Status;
   timeTable?: Maybe<Array<Maybe<TimeTable>>>;
   updatedAt: Scalars['DateTime']['output'];
@@ -292,6 +306,19 @@ export type SwapRequestInput = {
   receiverId: Scalars['ID']['input'];
 };
 
+export type SwappedSkill = {
+  __typename?: 'SwappedSkill';
+  By: Scalars['ID']['output'];
+  level: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type SwappedSkillInput = {
+  By: Scalars['ID']['input'];
+  level: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+};
+
 export type TimeTable = {
   __typename?: 'TimeTable';
   dayOfweek: Scalars['String']['output'];
@@ -300,6 +327,15 @@ export type TimeTable = {
   startDate: Scalars['Date']['output'];
   taughtBy: Scalars['ID']['output'];
   time: Scalars['String']['output'];
+};
+
+export type TimeTableInput = {
+  dayOfweek: Scalars['String']['input'];
+  durationInWeeks: Scalars['Int']['input'];
+  skill: Scalars['String']['input'];
+  startDate: Scalars['Date']['input'];
+  taughtBy: Scalars['ID']['input'];
+  time: Scalars['String']['input'];
 };
 
 export type UpdateUserInput = {
@@ -358,6 +394,14 @@ export type LoginUserInput = {
   email?: InputMaybe<Scalars['String']['input']>;
   password: Scalars['String']['input'];
   phoneNumber?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateSwapInput = {
+  id: Scalars['ID']['input'];
+  sessions?: InputMaybe<Array<InputMaybe<SessionInput>>>;
+  skills?: InputMaybe<Array<InputMaybe<SwappedSkillInput>>>;
+  status?: InputMaybe<Status>;
+  timeTable?: InputMaybe<Array<InputMaybe<TimeTableInput>>>;
 };
 
 
@@ -507,6 +551,7 @@ export type ResolversTypes = {
   ScheduleStatus: ScheduleStatus;
   SemVer: ResolverTypeWrapper<Scalars['SemVer']['output']>;
   Session: ResolverTypeWrapper<Session>;
+  SessionInput: SessionInput;
   Skill: ResolverTypeWrapper<Skill>;
   SkillInput: SkillInput;
   Status: Status;
@@ -516,8 +561,11 @@ export type ResolversTypes = {
   SwapConnection: ResolverTypeWrapper<SwapConnection>;
   SwapFilter: SwapFilter;
   SwapRequestInput: SwapRequestInput;
+  SwappedSkill: ResolverTypeWrapper<SwappedSkill>;
+  SwappedSkillInput: SwappedSkillInput;
   Time: ResolverTypeWrapper<Scalars['Time']['output']>;
   TimeTable: ResolverTypeWrapper<TimeTable>;
+  TimeTableInput: TimeTableInput;
   TimeZone: ResolverTypeWrapper<Scalars['TimeZone']['output']>;
   Timestamp: ResolverTypeWrapper<Scalars['Timestamp']['output']>;
   URL: ResolverTypeWrapper<Scalars['URL']['output']>;
@@ -532,6 +580,7 @@ export type ResolversTypes = {
   Void: ResolverTypeWrapper<Scalars['Void']['output']>;
   createUserInput: CreateUserInput;
   loginUserInput: LoginUserInput;
+  updateSwapInput: UpdateSwapInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -611,6 +660,7 @@ export type ResolversParentTypes = {
   SafeInt: Scalars['SafeInt']['output'];
   SemVer: Scalars['SemVer']['output'];
   Session: Session;
+  SessionInput: SessionInput;
   Skill: Skill;
   SkillInput: SkillInput;
   String: Scalars['String']['output'];
@@ -619,8 +669,11 @@ export type ResolversParentTypes = {
   SwapConnection: SwapConnection;
   SwapFilter: SwapFilter;
   SwapRequestInput: SwapRequestInput;
+  SwappedSkill: SwappedSkill;
+  SwappedSkillInput: SwappedSkillInput;
   Time: Scalars['Time']['output'];
   TimeTable: TimeTable;
+  TimeTableInput: TimeTableInput;
   TimeZone: Scalars['TimeZone']['output'];
   Timestamp: Scalars['Timestamp']['output'];
   URL: Scalars['URL']['output'];
@@ -635,6 +688,7 @@ export type ResolversParentTypes = {
   Void: Scalars['Void']['output'];
   createUserInput: CreateUserInput;
   loginUserInput: LoginUserInput;
+  updateSwapInput: UpdateSwapInput;
 };
 
 export interface AccountNumberScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['AccountNumber'], any> {
@@ -813,12 +867,13 @@ export interface MacScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes[
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   _empty?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  acceptOrDeclineSwapRequest?: Resolver<Maybe<ResolversTypes['Swap']>, ParentType, ContextType, RequireFields<MutationAcceptOrDeclineSwapRequestArgs, 'input'>>;
-  cancelSwapRequest?: Resolver<Maybe<ResolversTypes['Swap']>, ParentType, ContextType, RequireFields<MutationCancelSwapRequestArgs, 'input'>>;
+  acceptOrDeclineSwapRequest?: Resolver<ResolversTypes['Swap'], ParentType, ContextType, RequireFields<MutationAcceptOrDeclineSwapRequestArgs, 'input'>>;
+  cancelSwapRequest?: Resolver<ResolversTypes['Swap'], ParentType, ContextType, RequireFields<MutationCancelSwapRequestArgs, 'input'>>;
   completeAuthAndSignToken?: Resolver<ResolversTypes['Authenticated'], ParentType, ContextType, RequireFields<MutationCompleteAuthAndSignTokenArgs, 'otp'>>;
-  createSwapRequest?: Resolver<Maybe<ResolversTypes['Swap']>, ParentType, ContextType, RequireFields<MutationCreateSwapRequestArgs, 'input'>>;
-  createUserAccount?: Resolver<ResolversTypes['Response'], ParentType, ContextType, RequireFields<MutationCreateUserAccountArgs, 'data'>>;
+  createAccount?: Resolver<ResolversTypes['Response'], ParentType, ContextType, RequireFields<MutationCreateAccountArgs, 'data'>>;
+  createSwapRequest?: Resolver<ResolversTypes['Swap'], ParentType, ContextType, RequireFields<MutationCreateSwapRequestArgs, 'input'>>;
   login?: Resolver<Maybe<ResolversTypes['Response']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'data'>>;
+  updateSwap?: Resolver<ResolversTypes['Swap'], ParentType, ContextType, RequireFields<MutationUpdateSwapArgs, 'input'>>;
   updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, Partial<MutationUpdateUserArgs>>;
 };
 
@@ -958,8 +1013,7 @@ export type SwapResolvers<ContextType = any, ParentType extends ResolversParentT
   sender?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   senderId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   sessions?: Resolver<Maybe<Array<Maybe<ResolversTypes['Session']>>>, ParentType, ContextType>;
-  skillsToLearn?: Resolver<Maybe<Array<Maybe<ResolversTypes['Skill']>>>, ParentType, ContextType>;
-  skillsToOffer?: Resolver<Maybe<Array<Maybe<ResolversTypes['Skill']>>>, ParentType, ContextType>;
+  skills?: Resolver<Maybe<Array<Maybe<ResolversTypes['SwappedSkill']>>>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['Status'], ParentType, ContextType>;
   timeTable?: Resolver<Maybe<Array<Maybe<ResolversTypes['TimeTable']>>>, ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -969,6 +1023,13 @@ export type SwapResolvers<ContextType = any, ParentType extends ResolversParentT
 export type SwapConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['SwapConnection'] = ResolversParentTypes['SwapConnection']> = {
   edges?: Resolver<Maybe<Array<ResolversTypes['Swap']>>, ParentType, ContextType>;
   pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type SwappedSkillResolvers<ContextType = any, ParentType extends ResolversParentTypes['SwappedSkill'] = ResolversParentTypes['SwappedSkill']> = {
+  By?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  level?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1123,6 +1184,7 @@ export type Resolvers<ContextType = any> = {
   Subscription?: SubscriptionResolvers<ContextType>;
   Swap?: SwapResolvers<ContextType>;
   SwapConnection?: SwapConnectionResolvers<ContextType>;
+  SwappedSkill?: SwappedSkillResolvers<ContextType>;
   Time?: GraphQLScalarType;
   TimeTable?: TimeTableResolvers<ContextType>;
   TimeZone?: GraphQLScalarType;

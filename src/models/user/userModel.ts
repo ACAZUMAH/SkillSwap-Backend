@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { UserDocument } from "src/common/interfaces";
-import { skills } from "../skills";
+import { skillSchema } from "../skills";
 import { Education } from "src/common/interfaces/education";
 
 const educationSchema = new mongoose.Schema<Education>({
@@ -28,10 +28,10 @@ const userSchema = new mongoose.Schema<UserDocument>({
     password: { type: String, required: true },
     isAuthenticated: { type: Boolean, default: false },
 
-    skillsProficientAt: [skills],
+    skillsProficientAt: [skillSchema],
 
-    skillsToLearn: [skills],
-    
+    skillsToLearn: [skillSchema],
+
 }, {
     timestamps: true 
 })

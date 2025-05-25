@@ -23,7 +23,7 @@ export const authTypeDefs = `#graphql
     }
 
     extend type Mutation {
-        createUserAccount(data: createUserInput!): Response!
+        createAccount(data: createUserInput!): Response!
         completeAuthAndSignToken(otp: String!): Authenticated!
         login(data: loginUserInput!): Response
     }
