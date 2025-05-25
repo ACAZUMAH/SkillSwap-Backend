@@ -3,6 +3,7 @@ import { ExpressContextFunctionArgument } from "@apollo/server/dist/esm/express4
 import { Express } from "express"
 import { GraphQLSchema } from "graphql"
 import { Server } from "http"
+import { createDataloaders } from "src/dataloaders"
 
 declare global {
     namespace Express {
@@ -13,12 +14,13 @@ declare global {
     }
 }
 
-
-export interface GraphqlContext extends BaseContext {
+type DataLoaderMap = ReturnType<typeof createDataloaders>
+export interface GraphqlContext extends BaseContext, DataLoaderMap {
   user?: any;
   token?: string;
   skillRecommender: any;
 }
+
 
 export interface GraphqlServer {
   app: Express;

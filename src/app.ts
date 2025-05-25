@@ -8,9 +8,9 @@ import createError from 'http-errors'
 import connectDB from './common/helpers/connectDB'
 import { errorHandler } from './middlewares/error-handler'
 import { applyMiddlewares } from './middlewares'
-import { SkillRecommender } from './services/recomendations/model'
 import { createContext } from './servers/context'
 import { SkillSwapRecommender } from './services/recomendations/recommender'
+import { createSocketIoServer } from './servers/createSocketIoServer'
 
 const PORT = process.env.PORT || 8800
 
@@ -19,13 +19,12 @@ const startServer = async () => {
 
     const httpServer = http.createServer(app)
     
-    await connectDB()
-
     applyMiddlewares(app)
 
-    
-    const skillRecommender = new SkillSwapRecommender();
+    await connectDB()
 
+    const skillRecommender = new SkillSwapRecommender();
+    
     await skillRecommender.initialize().catch((err) => {
       logger.error("Failed to initialize recomendation system", err);
     });
@@ -33,9 +32,10 @@ const startServer = async () => {
     const context = createContext(skillRecommender)
     
     await createGraphQlServer({ app, httpServer, schema, context })
-    
 
-    app.use(errorHandler)
+    createSocketIoServer(httpServer)
+
+    app.use(errorHandler as any)
 
     app.all('*', (_req, _res, next) => {
        return next(createError(400, "Unable to retrive the request resource!"))

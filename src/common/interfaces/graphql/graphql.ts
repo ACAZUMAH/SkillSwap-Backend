@@ -85,10 +85,20 @@ export type Scalars = {
   Void: { input: any; output: any; }
 };
 
+export type AcceptOrDeclineSwapInput = {
+  status: Status;
+  swapId: Scalars['ID']['input'];
+};
+
 export type Authenticated = {
   __typename?: 'Authenticated';
   token?: Maybe<Scalars['String']['output']>;
   user: User;
+};
+
+export type CancelSwapRequestInput = {
+  swapId: Scalars['ID']['input'];
+  userId: Scalars['ID']['input'];
 };
 
 export type Education = {
@@ -113,20 +123,39 @@ export type Filters = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   page?: InputMaybe<Scalars['Int']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
   _empty?: Maybe<Scalars['String']['output']>;
+  acceptOrDeclineSwapRequest?: Maybe<Swap>;
+  cancelSwapRequest?: Maybe<Swap>;
   completeAuthAndSignToken: Authenticated;
+  createSwapRequest?: Maybe<Swap>;
   createUserAccount: Response;
   login?: Maybe<Response>;
   updateUser: User;
 };
 
 
+export type MutationAcceptOrDeclineSwapRequestArgs = {
+  input: AcceptOrDeclineSwapInput;
+};
+
+
+export type MutationCancelSwapRequestArgs = {
+  input: CancelSwapRequestInput;
+};
+
+
 export type MutationCompleteAuthAndSignTokenArgs = {
   otp: Scalars['String']['input'];
+};
+
+
+export type MutationCreateSwapRequestArgs = {
+  input: SwapRequestInput;
 };
 
 
@@ -144,12 +173,6 @@ export type MutationUpdateUserArgs = {
   data?: InputMaybe<UpdateUserInput>;
 };
 
-export type PageConnection = {
-  __typename?: 'PageConnection';
-  edges?: Maybe<Array<User>>;
-  pageInfo: PageInfo;
-};
-
 export type PageInfo = {
   __typename?: 'PageInfo';
   hasNextPage: Scalars['Boolean']['output'];
@@ -161,9 +184,22 @@ export type PageInfo = {
 export type Query = {
   __typename?: 'Query';
   _empty?: Maybe<Scalars['String']['output']>;
+  getRequestedSwaps?: Maybe<SwapConnection>;
+  getSwapRequests?: Maybe<SwapConnection>;
   hello?: Maybe<Scalars['String']['output']>;
+  me?: Maybe<User>;
   recommendation?: Maybe<Array<Maybe<Recomendation>>>;
-  search?: Maybe<PageConnection>;
+  search?: Maybe<UserConnection>;
+};
+
+
+export type QueryGetRequestedSwapsArgs = {
+  filter?: InputMaybe<SwapFilter>;
+};
+
+
+export type QueryGetSwapRequestsArgs = {
+  filter?: InputMaybe<SwapFilter>;
 };
 
 
@@ -184,8 +220,25 @@ export type Response = {
   message?: Maybe<Scalars['String']['output']>;
 };
 
+export enum ScheduleStatus {
+  CANCELLED = 'CANCELLED',
+  COMPLETED = 'COMPLETED',
+  SCHEDULED = 'SCHEDULED'
+}
+
+export type Session = {
+  __typename?: 'Session';
+  date: Scalars['Date']['output'];
+  recievedBy: Scalars['ID']['output'];
+  skill: Scalars['String']['output'];
+  status: ScheduleStatus;
+  taughtBy: Scalars['ID']['output'];
+  time: Scalars['String']['output'];
+};
+
 export type Skill = {
   __typename?: 'Skill';
+  id: Scalars['ID']['output'];
   level: Scalars['Int']['output'];
   name: Scalars['String']['output'];
 };
@@ -195,9 +248,58 @@ export type SkillInput = {
   name: Scalars['String']['input'];
 };
 
+export enum Status {
+  ACCEPTED = 'ACCEPTED',
+  COMPLETED = 'COMPLETED',
+  DECLINED = 'DECLINED',
+  PENDING = 'PENDING'
+}
+
 export type Subscription = {
   __typename?: 'Subscription';
   _empty?: Maybe<Scalars['String']['output']>;
+};
+
+export type Swap = {
+  __typename?: 'Swap';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  receiver?: Maybe<User>;
+  receiverId: Scalars['ID']['output'];
+  sender?: Maybe<User>;
+  senderId: Scalars['ID']['output'];
+  sessions?: Maybe<Array<Maybe<Session>>>;
+  skillsToLearn?: Maybe<Array<Maybe<Skill>>>;
+  skillsToOffer?: Maybe<Array<Maybe<Skill>>>;
+  status: Status;
+  timeTable?: Maybe<Array<Maybe<TimeTable>>>;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type SwapConnection = {
+  __typename?: 'SwapConnection';
+  edges?: Maybe<Array<Swap>>;
+  pageInfo?: Maybe<PageInfo>;
+};
+
+export type SwapFilter = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  status?: InputMaybe<Status>;
+};
+
+export type SwapRequestInput = {
+  receiverId: Scalars['ID']['input'];
+};
+
+export type TimeTable = {
+  __typename?: 'TimeTable';
+  dayOfweek: Scalars['String']['output'];
+  durationInWeeks: Scalars['Int']['output'];
+  skill: Scalars['String']['output'];
+  startDate: Scalars['Date']['output'];
+  taughtBy: Scalars['ID']['output'];
+  time: Scalars['String']['output'];
 };
 
 export type UpdateUserInput = {
@@ -236,6 +338,12 @@ export type User = {
   skillsProficientAt?: Maybe<Array<Maybe<Skill>>>;
   skillsToLearn?: Maybe<Array<Maybe<Skill>>>;
   updateAt: Scalars['DateTime']['output'];
+};
+
+export type UserConnection = {
+  __typename?: 'UserConnection';
+  edges?: Maybe<Array<Maybe<User>>>;
+  pageInfo?: Maybe<PageInfo>;
 };
 
 export type CreateUserInput = {
@@ -323,11 +431,13 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
+  AcceptOrDeclineSwapInput: AcceptOrDeclineSwapInput;
   AccountNumber: ResolverTypeWrapper<Scalars['AccountNumber']['output']>;
   Authenticated: ResolverTypeWrapper<Authenticated>;
   BigInt: ResolverTypeWrapper<Scalars['BigInt']['output']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Byte: ResolverTypeWrapper<Scalars['Byte']['output']>;
+  CancelSwapRequestInput: CancelSwapRequestInput;
   CountryCode: ResolverTypeWrapper<Scalars['CountryCode']['output']>;
   CountryName: ResolverTypeWrapper<Scalars['CountryName']['output']>;
   Cuid: ResolverTypeWrapper<Scalars['Cuid']['output']>;
@@ -380,7 +490,6 @@ export type ResolversTypes = {
   NonPositiveFloat: ResolverTypeWrapper<Scalars['NonPositiveFloat']['output']>;
   NonPositiveInt: ResolverTypeWrapper<Scalars['NonPositiveInt']['output']>;
   ObjectID: ResolverTypeWrapper<Scalars['ObjectID']['output']>;
-  PageConnection: ResolverTypeWrapper<PageConnection>;
   PageInfo: ResolverTypeWrapper<PageInfo>;
   PhoneNumber: ResolverTypeWrapper<Scalars['PhoneNumber']['output']>;
   Port: ResolverTypeWrapper<Scalars['Port']['output']>;
@@ -395,12 +504,20 @@ export type ResolversTypes = {
   RoutingNumber: ResolverTypeWrapper<Scalars['RoutingNumber']['output']>;
   SESSN: ResolverTypeWrapper<Scalars['SESSN']['output']>;
   SafeInt: ResolverTypeWrapper<Scalars['SafeInt']['output']>;
+  ScheduleStatus: ScheduleStatus;
   SemVer: ResolverTypeWrapper<Scalars['SemVer']['output']>;
+  Session: ResolverTypeWrapper<Session>;
   Skill: ResolverTypeWrapper<Skill>;
   SkillInput: SkillInput;
+  Status: Status;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Subscription: ResolverTypeWrapper<{}>;
+  Swap: ResolverTypeWrapper<Swap>;
+  SwapConnection: ResolverTypeWrapper<SwapConnection>;
+  SwapFilter: SwapFilter;
+  SwapRequestInput: SwapRequestInput;
   Time: ResolverTypeWrapper<Scalars['Time']['output']>;
+  TimeTable: ResolverTypeWrapper<TimeTable>;
   TimeZone: ResolverTypeWrapper<Scalars['TimeZone']['output']>;
   Timestamp: ResolverTypeWrapper<Scalars['Timestamp']['output']>;
   URL: ResolverTypeWrapper<Scalars['URL']['output']>;
@@ -410,6 +527,7 @@ export type ResolversTypes = {
   UnsignedInt: ResolverTypeWrapper<Scalars['UnsignedInt']['output']>;
   UpdateUserInput: UpdateUserInput;
   User: ResolverTypeWrapper<User>;
+  UserConnection: ResolverTypeWrapper<UserConnection>;
   UtcOffset: ResolverTypeWrapper<Scalars['UtcOffset']['output']>;
   Void: ResolverTypeWrapper<Scalars['Void']['output']>;
   createUserInput: CreateUserInput;
@@ -418,11 +536,13 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
+  AcceptOrDeclineSwapInput: AcceptOrDeclineSwapInput;
   AccountNumber: Scalars['AccountNumber']['output'];
   Authenticated: Authenticated;
   BigInt: Scalars['BigInt']['output'];
   Boolean: Scalars['Boolean']['output'];
   Byte: Scalars['Byte']['output'];
+  CancelSwapRequestInput: CancelSwapRequestInput;
   CountryCode: Scalars['CountryCode']['output'];
   CountryName: Scalars['CountryName']['output'];
   Cuid: Scalars['Cuid']['output'];
@@ -475,7 +595,6 @@ export type ResolversParentTypes = {
   NonPositiveFloat: Scalars['NonPositiveFloat']['output'];
   NonPositiveInt: Scalars['NonPositiveInt']['output'];
   ObjectID: Scalars['ObjectID']['output'];
-  PageConnection: PageConnection;
   PageInfo: PageInfo;
   PhoneNumber: Scalars['PhoneNumber']['output'];
   Port: Scalars['Port']['output'];
@@ -491,11 +610,17 @@ export type ResolversParentTypes = {
   SESSN: Scalars['SESSN']['output'];
   SafeInt: Scalars['SafeInt']['output'];
   SemVer: Scalars['SemVer']['output'];
+  Session: Session;
   Skill: Skill;
   SkillInput: SkillInput;
   String: Scalars['String']['output'];
   Subscription: {};
+  Swap: Swap;
+  SwapConnection: SwapConnection;
+  SwapFilter: SwapFilter;
+  SwapRequestInput: SwapRequestInput;
   Time: Scalars['Time']['output'];
+  TimeTable: TimeTable;
   TimeZone: Scalars['TimeZone']['output'];
   Timestamp: Scalars['Timestamp']['output'];
   URL: Scalars['URL']['output'];
@@ -505,6 +630,7 @@ export type ResolversParentTypes = {
   UnsignedInt: Scalars['UnsignedInt']['output'];
   UpdateUserInput: UpdateUserInput;
   User: User;
+  UserConnection: UserConnection;
   UtcOffset: Scalars['UtcOffset']['output'];
   Void: Scalars['Void']['output'];
   createUserInput: CreateUserInput;
@@ -687,7 +813,10 @@ export interface MacScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes[
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   _empty?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  acceptOrDeclineSwapRequest?: Resolver<Maybe<ResolversTypes['Swap']>, ParentType, ContextType, RequireFields<MutationAcceptOrDeclineSwapRequestArgs, 'input'>>;
+  cancelSwapRequest?: Resolver<Maybe<ResolversTypes['Swap']>, ParentType, ContextType, RequireFields<MutationCancelSwapRequestArgs, 'input'>>;
   completeAuthAndSignToken?: Resolver<ResolversTypes['Authenticated'], ParentType, ContextType, RequireFields<MutationCompleteAuthAndSignTokenArgs, 'otp'>>;
+  createSwapRequest?: Resolver<Maybe<ResolversTypes['Swap']>, ParentType, ContextType, RequireFields<MutationCreateSwapRequestArgs, 'input'>>;
   createUserAccount?: Resolver<ResolversTypes['Response'], ParentType, ContextType, RequireFields<MutationCreateUserAccountArgs, 'data'>>;
   login?: Resolver<Maybe<ResolversTypes['Response']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'data'>>;
   updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, Partial<MutationUpdateUserArgs>>;
@@ -725,12 +854,6 @@ export interface ObjectIdScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'ObjectID';
 }
 
-export type PageConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['PageConnection'] = ResolversParentTypes['PageConnection']> = {
-  edges?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;
-  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
 export type PageInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['PageInfo'] = ResolversParentTypes['PageInfo']> = {
   hasNextPage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   limit?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -761,9 +884,12 @@ export interface PostalCodeScalarConfig extends GraphQLScalarTypeConfig<Resolver
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   _empty?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  getRequestedSwaps?: Resolver<Maybe<ResolversTypes['SwapConnection']>, ParentType, ContextType, Partial<QueryGetRequestedSwapsArgs>>;
+  getSwapRequests?: Resolver<Maybe<ResolversTypes['SwapConnection']>, ParentType, ContextType, Partial<QueryGetSwapRequestsArgs>>;
   hello?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   recommendation?: Resolver<Maybe<Array<Maybe<ResolversTypes['Recomendation']>>>, ParentType, ContextType>;
-  search?: Resolver<Maybe<ResolversTypes['PageConnection']>, ParentType, ContextType, Partial<QuerySearchArgs>>;
+  search?: Resolver<Maybe<ResolversTypes['UserConnection']>, ParentType, ContextType, Partial<QuerySearchArgs>>;
 };
 
 export interface RgbScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['RGB'], any> {
@@ -803,7 +929,18 @@ export interface SemVerScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
   name: 'SemVer';
 }
 
+export type SessionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Session'] = ResolversParentTypes['Session']> = {
+  date?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  recievedBy?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  skill?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['ScheduleStatus'], ParentType, ContextType>;
+  taughtBy?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  time?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type SkillResolvers<ContextType = any, ParentType extends ResolversParentTypes['Skill'] = ResolversParentTypes['Skill']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   level?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -813,9 +950,41 @@ export type SubscriptionResolvers<ContextType = any, ParentType extends Resolver
   _empty?: SubscriptionResolver<Maybe<ResolversTypes['String']>, "_empty", ParentType, ContextType>;
 };
 
+export type SwapResolvers<ContextType = any, ParentType extends ResolversParentTypes['Swap'] = ResolversParentTypes['Swap']> = {
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  receiver?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  receiverId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  sender?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  senderId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  sessions?: Resolver<Maybe<Array<Maybe<ResolversTypes['Session']>>>, ParentType, ContextType>;
+  skillsToLearn?: Resolver<Maybe<Array<Maybe<ResolversTypes['Skill']>>>, ParentType, ContextType>;
+  skillsToOffer?: Resolver<Maybe<Array<Maybe<ResolversTypes['Skill']>>>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['Status'], ParentType, ContextType>;
+  timeTable?: Resolver<Maybe<Array<Maybe<ResolversTypes['TimeTable']>>>, ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type SwapConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['SwapConnection'] = ResolversParentTypes['SwapConnection']> = {
+  edges?: Resolver<Maybe<Array<ResolversTypes['Swap']>>, ParentType, ContextType>;
+  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export interface TimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Time'], any> {
   name: 'Time';
 }
+
+export type TimeTableResolvers<ContextType = any, ParentType extends ResolversParentTypes['TimeTable'] = ResolversParentTypes['TimeTable']> = {
+  dayOfweek?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  durationInWeeks?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  skill?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  startDate?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  taughtBy?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  time?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export interface TimeZoneScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['TimeZone'], any> {
   name: 'TimeZone';
@@ -865,6 +1034,12 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   skillsProficientAt?: Resolver<Maybe<Array<Maybe<ResolversTypes['Skill']>>>, ParentType, ContextType>;
   skillsToLearn?: Resolver<Maybe<Array<Maybe<ResolversTypes['Skill']>>>, ParentType, ContextType>;
   updateAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserConnection'] = ResolversParentTypes['UserConnection']> = {
+  edges?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
+  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -928,7 +1103,6 @@ export type Resolvers<ContextType = any> = {
   NonPositiveFloat?: GraphQLScalarType;
   NonPositiveInt?: GraphQLScalarType;
   ObjectID?: GraphQLScalarType;
-  PageConnection?: PageConnectionResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;
   PhoneNumber?: GraphQLScalarType;
   Port?: GraphQLScalarType;
@@ -944,9 +1118,13 @@ export type Resolvers<ContextType = any> = {
   SESSN?: GraphQLScalarType;
   SafeInt?: GraphQLScalarType;
   SemVer?: GraphQLScalarType;
+  Session?: SessionResolvers<ContextType>;
   Skill?: SkillResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
+  Swap?: SwapResolvers<ContextType>;
+  SwapConnection?: SwapConnectionResolvers<ContextType>;
   Time?: GraphQLScalarType;
+  TimeTable?: TimeTableResolvers<ContextType>;
   TimeZone?: GraphQLScalarType;
   Timestamp?: GraphQLScalarType;
   URL?: GraphQLScalarType;
@@ -955,6 +1133,7 @@ export type Resolvers<ContextType = any> = {
   UnsignedFloat?: GraphQLScalarType;
   UnsignedInt?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
+  UserConnection?: UserConnectionResolvers<ContextType>;
   UtcOffset?: GraphQLScalarType;
   Void?: GraphQLScalarType;
 };

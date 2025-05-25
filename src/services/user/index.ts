@@ -65,13 +65,13 @@ export const getUserById = async (id: Types.ObjectId | string) => {
 /**
  * Retrieves a user from the database by their phone number or email.
  *
- * @param phone - The phone number to search for.
+ * @param phoneNumber - The phone number to search for.
  * @param email - The email to search for.
  * @returns The user document if found.
  * @throws Will throw an error if the user does not exist.
  */
-export const getUserByPhoneOrEmail = async (phone: string, email: string) => {
-  const user = await userModel.findOne({ phoneNumber: phone, email });
+export const getUserByPhoneOrEmail = async (phoneNumber: string, email: string) => {
+  const user = await userModel.findOne({ $or: [{ phoneNumber }, { email }] });
   if (!user) {
     throw createError.NotFound("User does not exist");
   }
@@ -153,14 +153,13 @@ export const searchUsersOrSkills = async (data: UserFilters) => {
 
   const oprions: QueryOptions = {
     limit: limit + 1,
+    lean: true,
     page,
     skip,
     sort: { createdAt: 1 }
   }
 
   const result = await userModel.find(query, null, oprions)
-
-  //console.log(result)
 
   return getPageConnection(result, page, limit)
 };

@@ -1,16 +1,17 @@
 import { Types } from "mongoose"
 import { ScheduleStatus } from "src/common/enums"
 
-export interface TimeTable {
-    skill: String
+export interface SwapTimeTable {
+    _id: Types.ObjectId
     taughtBy: Types.ObjectId
+    skill: String
     dayOfweek: String
     time: String
     durationInWeeks: Number
     startDate: Date
 }
-
-export interface Session {
+export interface SwapSession {
+    _id: Types.ObjectId
     date: Date
     time: string
     skill: string

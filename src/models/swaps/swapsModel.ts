@@ -1,9 +1,9 @@
 import { Schema, model } from "mongoose";
-import { Session, swapDocument, TimeTable } from "src/common/interfaces";
+import { SwapSession, swapDocument, SwapTimeTable } from "src/common/interfaces";
 import { skills } from "../skills";
 import { ScheduleStatus, Status } from "src/common/enums";
 
-const timeTableSchema = new Schema<TimeTable>({
+const timeTableSchema = new Schema<SwapTimeTable>({
     skill: { type: String },
     taughtBy: { type: Schema.Types.ObjectId, required: true, ref: "users" },
     dayOfweek: { type: String, required: true },
@@ -12,7 +12,7 @@ const timeTableSchema = new Schema<TimeTable>({
     startDate: { type: Date, required: true }
 })
 
-const sessionsSchema = new Schema<Session>({
+const sessionsSchema = new Schema<SwapSession>({
   taughtBy: { type: Schema.Types.ObjectId, required: true, ref: "users" },
   recievedBy: { type: Schema.Types.ObjectId, required: true, ref: "users" },
   skill: { type: String, required: true },
@@ -22,12 +22,12 @@ const sessionsSchema = new Schema<Session>({
 });
 
 const swapSchema = new Schema<swapDocument>({
-    userOffering: { type: Schema.Types.ObjectId, required: true, ref: "users" },
-    userRequesting: { type: Schema.Types.ObjectId, required: true, ref: "users"},
+    senderId: { type: Schema.Types.ObjectId, required: true, ref: "users" },
+    receiverId: { type: Schema.Types.ObjectId, required: true, ref: "users"},
     status: { type: String, enum: Object.values(Status), default: Status.PENDING },
 
-    skillsOffered: [skills],
-    skillsWanted: [skills],
+    skillsToOffer: [skills],
+    skillsToLearn: [skills],
 
     timeTable: [timeTableSchema],
     sessions: [sessionsSchema]

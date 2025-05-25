@@ -1,18 +1,13 @@
 export const generalTypeDefs = `#graphql
-
     type PageInfo {
         hasNextPage: Boolean!
         page: Int!
         limit: Int!
         total: Int!
     }
-
-    type PageConnection {
-        edges: [User!]
-        pageInfo: PageInfo!
-    }
-
+    
     type Skill {
+        id: ID!
         name: String!  
         level: Int!
     }
@@ -34,6 +29,4 @@ export const generalTypeDefs = `#graphql
     type Mutation {
         _empty: String
     }
-
-    
 `;

@@ -3,7 +3,7 @@ export enum Status {
     PENDING = "PENDING",
     ACCEPTED = "ACCEPTED",
     DECLINED = "DECLINED",
-    CANCELLED = "CANCELLED"
+    COMPLETED = "COMPLETED"
 }
 
 export enum ScheduleStatus {
@@ -13,3 +13,9 @@ export enum ScheduleStatus {
     RESCHEDULED = "RESCHEDULED"
 }
 
+export enum MessageType {
+    TEXT = "TEXT",
+    IMAGE = "IMAGE",
+    VIDEO = "VIDEO",
+    DOCUMENT = "DOCUMENT"
+}
