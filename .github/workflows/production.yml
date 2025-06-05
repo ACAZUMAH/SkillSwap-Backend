@@ -1,131 +1,93 @@
-name: Vercel Preview Deployment
-env: 
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+name: Vercel Production Deployment
 
 on: 
   push:
     branches:
-      - '**'
-  
-  workflow_dispatch:
-
+      - main
 jobs: 
   install: 
-    name: Install Dependencies
+    name: Install
     runs-on: ubuntu-latest
 
-    outputs: 
-      cache-hits: ${{ steps.cache.outputs.cache-hit }}
-
-    steps:
+    steps: 
       - name: Checkout Code 
         uses: actions/checkout@v3
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
-        with:
+        with: 
           node-version: '20.x'
-          
-      - name: Cache Dependencies
-        id: cache-deps
-        uses: actions/cache@v4
-        with:
-          path: |
-            node_modules
-            .yarn/cache
-          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          cache: 'yarn'
 
       - name: Install Dependencies
-        run: yarn install 
+        run: yarn install --frozen-lockfile
+
+      - name: Upload node_modules
+        uses: actions/upload-artifact@v4
+        with: 
+          name: yarn-dependencies
+          path: |
+            node_modules/
+            .yarn/cache/
+          relation-days: 1
 
   build: 
-    name: Build Project
+    name: Build
     needs: install
     runs-on: ubuntu-latest
-    
+
     steps: 
-      - name: Checkout Code
+      - name: Checkout Code 
         uses: actions/checkout@v3
+
+      - name: Download cached dependencies
+        uses: actions/download-artifact@v4
+        with: 
+          name: yarn-dependencies
+          path: .
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
-        with:
+        with: 
           node-version: '20.x'
-
-      - name: Install Dependencies
-        run: yarn install
-
-      - name: Install Vercel CLI
-        run: yarn global add vercel
-
-      - name: Pull Vercel Configuration
-        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build Project
-        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
       
+      - name: Build Project
+        run: yarn build
+
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
-        with:
-          name: vercel-output
-          path: .vercel/output/
+        with: 
+          name: dist
+          path: |
+            dist/
+            package.json
+            yarn.lock
+            vercel.json
+          relation-days: 1
 
-  Preview:
-    name: Deploy to Vercel (Preview)
+  deploy:
+    name: Production Deployment
     needs: build
-    if: github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    steps: 
+      - name: download build Artifacts
+        uses: actions/download-artifact@v4
+        with: 
+          name: dist
+          path: .
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
-        with:
+        with: 
           node-version: '20.x'
-
-      - name: Download Build Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: vercel-output
-          path: .vercel/output/
 
       - name: Install Vercel CLI
         run: yarn global add vercel
 
-      - name: Deploy Project Artifacts to vercel
-        run: |
-         vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} > domain.txt 
-         vercel alias --scope ${{ secrets.VERCEL_ORG_ID }} --token=${{ secrets.VERCEL_TOKEN }} set `cat domain.txt` skill-swap-preview.vercel.app
-
-  Production:
-    name: Deploy to Vercel (Production)
-    needs: build
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20.x'
-
-      - name: Download Build Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: vercel-output
-          path: .vercel/output/
-
-      - name: Install Vercel CLI
-        run: yarn global add vercel
-        
-      - name: Deploy Project Artifacts to vercel
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} 
+      - name: Deploy to Vercel
+        run: vercel --prod --token ${{ secrets.VERCEL_TOKEN }} 
+        env: 
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
