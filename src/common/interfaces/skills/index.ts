@@ -11,6 +11,6 @@ export interface UserSkill {
     level: number
 }
 
-export interface SwappedSkill extends UserSkill {
+export interface Swapped extends UserSkill {
     By: Types.ObjectId
 }

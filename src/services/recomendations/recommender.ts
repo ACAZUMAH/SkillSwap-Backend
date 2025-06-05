@@ -1,8 +1,7 @@
 import * as tf from "@tensorflow/tfjs";
-import { UserDocument } from "src/common/interfaces";
+import { SkillRecommendations, UserDocument } from "src/common/interfaces";
 import { getAllUsers } from "../user";
 import logger from "src/loggers/logger";
-import { SkillRecommendations } from "src/common/interfaces/recomendations";
 
 export class SkillSwapRecommender {
   private users: UserDocument[] = [];
