@@ -3,7 +3,7 @@ import { Swapped } from "../skills";
 import { Status } from "src/common/enums";
 import { SwapSession, SwapTimeTable } from "../timeTable";
 
-export interface swapDocument {
+export interface SwapDocument {
     _id: Types.ObjectId
     senderId: Types.ObjectId
     receiverId: Types.ObjectId
