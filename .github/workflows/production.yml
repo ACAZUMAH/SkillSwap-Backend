@@ -45,12 +45,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
-      
+          
+      - name: Install tsc-alias
+        run: yarn global add tsc-alias
+
       - name: Build Project
         run: | 
-          yarn build:CLI
-          # verify the output
-          ls -la dist/
+          yarn build
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
