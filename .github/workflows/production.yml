@@ -59,7 +59,7 @@ jobs:
         run: yarn install
 
       - name: Build Project
-        run: yarn build
+        run: npx vercel build --token=${{ secrets.VERCEL_TOKEN }}
       
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
