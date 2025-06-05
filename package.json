@@ -33,7 +33,6 @@
     "typescript": "^5.8.3",
     "winston": "^3.17.0",
     "ws": "^8.18.1",
-    "tsc-alias": "^1.8.16"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.5",

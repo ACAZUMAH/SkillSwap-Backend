@@ -5,58 +5,27 @@ on:
     branches:
       - main
 jobs: 
-  install: 
-    name: Install
+  install_and_build:
+    name: Install and Build
     runs-on: ubuntu-latest
-
-    steps: 
-      - name: Checkout Code 
-        uses: actions/checkout@v3
-
+    steps:
+      - uses: actions/checkout@v4
+      
       - name: Setup Node.js
         uses: actions/setup-node@v3
-        with: 
+        with:
           node-version: '20.x'
           cache: 'yarn'
-
-      - name: Install Dependencies
-        run: yarn install --frozen-lockfile
-
-      - name: Upload node_modules
-        uses: actions/upload-artifact@v4
-        with: 
-          name: yarn-dependencies
-          path: |
-            node_modules/
-            .yarn/cache/
-          retention-days: 1
-
-  build: 
-    name: Build
-    needs: install
-    runs-on: ubuntu-latest
-
-    steps: 
-      - name: Checkout Code 
-        uses: actions/checkout@v3
-
-      - name: Download cached dependencies
-        uses: actions/download-artifact@v4
-        with: 
-          name: yarn-dependencies
-          path: .
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with: 
-          node-version: '20.x'
       
-      - name: Build Project
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      
+      - name: Build project
         run: yarn build
-
-      - name: Upload Build Artifacts
+      
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
-        with: 
+        with:
           name: dist
           path: |
             dist/
