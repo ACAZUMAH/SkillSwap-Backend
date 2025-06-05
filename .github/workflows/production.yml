@@ -36,7 +36,8 @@ jobs:
 
   deploy:
     name: Production Deployment
-    needs: build
+    needs: build_and_install
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps: 
       - name: download build Artifacts
