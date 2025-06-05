@@ -29,7 +29,7 @@ jobs:
           path: |
             node_modules/
             .yarn/cache/
-          relation-days: 1
+          retention-days: 1
 
   build: 
     name: Build
@@ -63,7 +63,7 @@ jobs:
             package.json
             yarn.lock
             vercel.json
-          relation-days: 1
+          retention-days: 1
 
   deploy:
     name: Production Deployment
