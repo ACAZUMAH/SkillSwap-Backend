@@ -11,3 +11,4 @@ dummy.txt
 #ignore
 test.ts
 populate.ts
+.vercel

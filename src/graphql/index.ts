@@ -25,4 +25,4 @@ const resolvers = [
     swapResolver
 ]
 
-export const schema = mergeSchemas({ typeDefs, resolvers })
+export const schema = mergeSchemas({ typeDefs, resolvers }) 
