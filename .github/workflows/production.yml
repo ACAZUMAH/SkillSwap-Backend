@@ -64,8 +64,8 @@ jobs:
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: dist
-          path: dist/
+          name: vercel-output
+          path: .vercel/output/
 
   Preview:
     name: Deploy to Vercel (Preview)
@@ -82,14 +82,14 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: Install Vercel CLI
-        run: yarn global add vercel
-
       - name: Download Build Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: dist
-          path: dist/ 
+          name: vercel-output
+          path: .vercel/output/
+
+      - name: Install Vercel CLI
+        run: yarn global add vercel
 
       - name: Deploy Project Artifacts to vercel
         run: |
@@ -111,15 +111,15 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: Install Vercel CLI
-        run: yarn global add vercel
-
-
       - name: Download Build Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: dist
-          path: dist/
+          name: vercel-output
+          path: .vercel/output/
+
+      - name: Install Vercel CLI
+        run: yarn global add vercel
         
       - name: Deploy Project Artifacts to vercel
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} --confirm
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} 
+
