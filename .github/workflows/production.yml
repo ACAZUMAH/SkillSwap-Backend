@@ -20,9 +20,7 @@ jobs:
           cache: 'yarn'
 
       - name: Install Dependencies
-        run: |
-          yarn install --frozen-lockfile --production=false
-          yarn list | grep tsc-alias  # Verify installation
+        run: yarn install --frozen-lockfile
 
       - name: Upload node_modules
         uses: actions/upload-artifact@v4
