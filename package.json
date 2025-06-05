@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon",
     "start": "node dist/src/main.js",
-    "build": "tsc && npx tsc-alias",
+    "build": "tsc && tsc-alias",
     "generate": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
@@ -32,7 +32,8 @@
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.8.3",
     "winston": "^3.17.0",
-    "ws": "^8.18.1"
+    "ws": "^8.18.1",
+    "tsc-alias": "^1.8.16"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.5",
@@ -49,7 +50,6 @@
     "@types/node": "^22.15.3",
     "@types/ws": "^8.18.1",
     "nodemon": "^3.1.10",
-    "ts-node": "^10.9.2",
-    "tsc-alias": "^1.8.16"
+    "ts-node": "^10.9.2"
   }
 }
