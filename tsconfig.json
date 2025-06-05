@@ -10,8 +10,7 @@
     "outDir": "./dist",
     "baseUrl": ".",
     "paths": {
-      "src/*": ["src/*"],
-      "tests/*": ["tests/*"]
+      "src/*": ["src/*"]
     },
     "types": ["node"],
     "resolveJsonModule": true,
@@ -20,6 +19,7 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["src/", "tests"],
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"],
   "ts-node": { "files": true }
 }
