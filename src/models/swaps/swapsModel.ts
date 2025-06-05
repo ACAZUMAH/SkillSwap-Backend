@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { SwapSession, swapDocument, SwapTimeTable } from "src/common/interfaces";
+import { SwapSession, SwapDocument, SwapTimeTable } from "src/common/interfaces";
 import { swappedskillSchema } from "../skills";
 import { ScheduleStatus, Status } from "src/common/enums";
 
@@ -21,7 +21,7 @@ const sessionsSchema = new Schema<SwapSession>({
   status: { type: String, enum: Object.values(ScheduleStatus), default: ScheduleStatus.SCHEDULED },
 });
 
-const swapSchema = new Schema<swapDocument>({
+const swapSchema = new Schema<SwapDocument>({
     senderId: { type: Schema.Types.ObjectId, required: true, ref: "users" },
     receiverId: { type: Schema.Types.ObjectId, required: true, ref: "users"},
     status: { type: String, enum: Object.values(Status), default: Status.PENDING },
@@ -34,4 +34,4 @@ const swapSchema = new Schema<swapDocument>({
     timestamps: true 
 })
 
-export const swapModel = model<swapDocument>('swaps', swapSchema)
+export const swapModel = model<SwapDocument>('swaps', swapSchema)

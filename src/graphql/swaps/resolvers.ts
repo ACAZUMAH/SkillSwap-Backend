@@ -4,7 +4,7 @@ import {
   MutationCreateSwapRequestArgs,
   QueryGetRequestedSwapsArgs,
   QueryGetSwapRequestsArgs,
-  swapDocument,
+  SwapDocument,
 } from "src/common/interfaces";
 import * as services from "src/services/swaps";
 
@@ -28,13 +28,13 @@ const getRequestedSwaps = async (_: any, args: QueryGetRequestedSwapsArgs, { use
   return await services.getSwapRequests({ senderId: user._id, ...args?.filter });
 };
 
-const id = (parent: swapDocument) => parent._id.toString();
+const id = (parent: SwapDocument) => parent._id.toString();
 
-const sender = (parent: swapDocument, _: any,  { userLoader }: GraphqlContext ) => {
+const sender = (parent: SwapDocument, _: any,  { userLoader }: GraphqlContext ) => {
   return parent.senderId ? userLoader.load(parent.senderId.toString()) : null;
 }
 
-const receiver = (parent: swapDocument, _: any, { userLoader }: GraphqlContext) => {
+const receiver = (parent: SwapDocument, _: any, { userLoader }: GraphqlContext) => {
   return parent.receiverId ? userLoader.load(parent.receiverId.toString()) : null;
 }
 

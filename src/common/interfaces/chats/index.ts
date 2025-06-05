@@ -1,12 +1,12 @@
 import { Types } from "mongoose";
 import { MessageType } from "src/common/enums";
 
-export interface chatUsersDocument{
+export interface ChatUsersDocument{
     sender: Types.ObjectId;
     receiver?: Types.ObjectId;
 }
 
-export interface messageDocument {
+export interface MessageDocument {
     _id: Types.ObjectId;
     messageType: MessageType;
     message?: string; 
@@ -18,10 +18,10 @@ export interface messageDocument {
     updatedAt?: Date;
 }
 
-export interface chatDocument {
+export interface ChatDocument {
     _id: Types.ObjectId;
-    users: chatUsersDocument[];
-    messages: messageDocument[];
+    users: ChatUsersDocument[];
+    messages: MessageDocument[];
     createdAt?: Date;
     updatedAt?: Date;
 }

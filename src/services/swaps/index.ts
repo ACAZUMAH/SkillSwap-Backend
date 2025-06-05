@@ -2,7 +2,7 @@ import { FilterQuery, QueryOptions, Types } from "mongoose";
 import {
   AcceptOrDeclineSwap,
   Request,
-  swapDocument,
+  SwapDocument,
   SwapRequest,
 } from "src/common/interfaces";
 import createError from "http-errors";
@@ -113,7 +113,7 @@ export const getSwapRequest = async (data: Request) => {
  * @returns An array of swap requests.
  */
 export const getSwapRequests = async (filter: Request) => {
-  const query: FilterQuery<swapDocument> = {
+  const query: FilterQuery<SwapDocument> = {
     $or: [{ senderId: filter.senderId }, { receiverId: filter.receiverId }],
   };
 
