@@ -385,7 +385,7 @@ export type UserConnection = {
 export type CreateUserInput = {
   email?: InputMaybe<Scalars['String']['input']>;
   firstName?: InputMaybe<Scalars['String']['input']>;
-  lastNama?: InputMaybe<Scalars['String']['input']>;
+  lastName?: InputMaybe<Scalars['String']['input']>;
   password: Scalars['String']['input'];
   phoneNumber: Scalars['String']['input'];
 };

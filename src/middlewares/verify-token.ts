@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express"
+import e, { NextFunction, Request, Response } from "express"
 import { jwtVerify } from "src/common/helpers";
 import { UserDocument } from "src/common/interfaces";
 import { getUserById } from "src/services/user";
@@ -25,6 +25,6 @@ export const verifyToken = async (req: Request, _res: Response, next: NextFuncti
 
         return next()
     } catch (error: any) {
-        throw createError.Unauthorized(error?.message || "Expired token")
+        throw createError.Unauthorized("Invalid token")
     }
 } 

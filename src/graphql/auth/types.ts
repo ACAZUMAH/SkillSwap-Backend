@@ -10,7 +10,7 @@ export const authTypeDefs = `#graphql
 
     input createUserInput {
         firstName: String
-        lastNama: String
+        lastName: String
         email: String
         phoneNumber: String!
         password: String!
