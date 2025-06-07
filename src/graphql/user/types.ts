@@ -27,7 +27,7 @@ export const userTypeDefs = `#graphql
         skillsToLearn: [Skill]
 
         createdAt: DateTime!
-        updateAt: DateTime!
+        updatedAt: DateTime!
     }
 
     type Recomendation { 

@@ -373,7 +373,7 @@ export type User = {
   profile_img?: Maybe<Scalars['String']['output']>;
   skillsProficientAt?: Maybe<Array<Maybe<Skill>>>;
   skillsToLearn?: Maybe<Array<Maybe<Skill>>>;
-  updateAt: Scalars['DateTime']['output'];
+  updatedAt: Scalars['DateTime']['output'];
 };
 
 export type UserConnection = {
@@ -1094,7 +1094,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   profile_img?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   skillsProficientAt?: Resolver<Maybe<Array<Maybe<ResolversTypes['Skill']>>>, ParentType, ContextType>;
   skillsToLearn?: Resolver<Maybe<Array<Maybe<ResolversTypes['Skill']>>>, ParentType, ContextType>;
-  updateAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
