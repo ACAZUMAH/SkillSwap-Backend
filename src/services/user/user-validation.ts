@@ -18,14 +18,14 @@ ajv.addFormat("phone", {
 
 })
 
-// ajv.addFormat("password", {
-//     type: 'string',
-//     validate: (value: string) => {
-//         const passwordRegex =
-//           /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
-//         return passwordRegex.test(value)
-//     }
-// })
+ajv.addFormat("password", {
+    type: 'string',
+    validate: (value: string) => {
+        const passwordRegex =
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
+        return passwordRegex.test(value)
+    }
+})
 
 const userValidationSchema = {
   type: "object",
