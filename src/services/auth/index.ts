@@ -32,7 +32,9 @@ export const register = async (data: CreateUser) => {
 
   if (isDevelopment) return { message: `Your login otp is ${otp}` };
 
-  return { message: "User created successfully, please check your phone for the OTP."}
+  return {
+    message: "User created successfully, please check your phone for the OTP.",
+  };
 };
 
 /**
@@ -52,5 +54,18 @@ export const loginUser = async (data: LoginUser) => {
   if (!isMatch) throw createError.BadRequest("Invalid credentials");
 
   const otp = await createAuth(user._id, 5);
+
+  const message = `Your SkillSwap OTP is ${otp}`;
+
+  if (!(await sendNaloSms({ to: phoneNumber!, message }))) {
+    throw createError.InternalServerError(
+      "Failed to send OTP code at the moment, please try again later."
+    );
+  }
+
   if (isDevelopment) return { message: `Your login otp is ${otp}` };
+
+  return {
+    message: "User created successfully, please check your phone for the OTP.",
+  };
 };
