@@ -21,10 +21,9 @@ const userSchema = new mongoose.Schema<UserDocument>({
     linkedIn: { type: String },
     portfolio: { type: String },
     averageRating: { type: Number, default: 0 },
-    availability: { type: String },
-
+    availability: [{ type: String }],
     education: educationSchema,
-
+    isProfileComplete: { type: Boolean, default: true },
     password: { type: String, required: true },
     isAuthenticated: { type: Boolean, default: false },
 

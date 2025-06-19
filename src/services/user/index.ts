@@ -8,11 +8,11 @@ import { userModel } from "src/models";
 import { validateCreateUserData } from "./user-validation";
 import createError from "http-errors";
 import { FilterQuery, QueryOptions, Types } from "mongoose";
-import { 
-  getPageConnection, 
-  getSanitizeLimit, 
-  getSanitizeOffset, 
-  getSanitizePage 
+import {
+  getPageConnection,
+  getSanitizeLimit,
+  getSanitizeOffset,
+  getSanitizePage,
 } from "src/common/helpers";
 
 /**
@@ -60,7 +60,8 @@ export const checkUserExist = async (phone: string, email: string) => {
  * @throws Will throw an error if the ID is invalid or the user is not found.
  */
 export const getUserById = async (id: Types.ObjectId | string) => {
-  if (!Types.ObjectId.isValid(id)) throw createError.BadRequest("Invalid user id");
+  if (!Types.ObjectId.isValid(id))
+    throw createError.BadRequest("Invalid user id");
 
   const user = await userModel.findById(id);
 
@@ -77,7 +78,10 @@ export const getUserById = async (id: Types.ObjectId | string) => {
  * @returns The user document if found.
  * @throws Will throw an error if the user does not exist.
  */
-export const getUserByPhoneOrEmail = async (phoneNumber: string, email: string) => {
+export const getUserByPhoneOrEmail = async (
+  phoneNumber: string,
+  email: string
+) => {
   const user = await userModel.findOne({ $or: [{ phoneNumber }, { email }] });
 
   if (!user) throw createError.NotFound("User does not exist");
@@ -92,8 +96,14 @@ export const getUserByPhoneOrEmail = async (phoneNumber: string, email: string) 
  * @param bool - The new authentication status.
  * @returns The updated user document.
  */
-export const updateIsAuthenticated = async (id: Types.ObjectId, bool: boolean) => {
-  return await userModel.findByIdAndUpdate({ _id: id }, { isAuthenticated: bool });
+export const updateIsAuthenticated = async (
+  id: Types.ObjectId,
+  bool: boolean
+) => {
+  return await userModel.findByIdAndUpdate(
+    { _id: id },
+    { isAuthenticated: bool }
+  );
 };
 
 /**
@@ -118,15 +128,23 @@ export const updateUserProfile = async (data: UpdateUser) => {
     ...(data.linkedIn && { linkedIn: data.linkedIn }),
     ...(data.portfolio && { portfolio: data.portfolio }),
     ...(data.education && { education: data.education }),
-    ...(data.availability && { availability: data.availability }),
+    ...(data.isProfileComplete !== undefined && {
+      isProfileComplete: data.isProfileComplete,
+    }),
+    ...(data.availability?.length! > 0 && { availability: data.availability }),
     ...(data.skillsProficientAt?.length! > 0 && {
       skillsProficientAt: data.skillsProficientAt,
     }),
-    ...(data.skillsToLearn?.length! > 0 && { skillsToLearn: data.skillsToLearn }),
+    ...(data.skillsToLearn?.length! > 0 && {
+      skillsToLearn: data.skillsToLearn,
+    }),
   };
 
-  return await userModel.findByIdAndUpdate({ _id: user._id }, { $set: update }, { new: true });
-
+  return await userModel.findByIdAndUpdate(
+    { _id: user._id },
+    { $set: update },
+    { new: true }
+  );
 };
 
 export const searchUsersOrSkills = async (data: UserFilters) => {
@@ -140,18 +158,24 @@ export const searchUsersOrSkills = async (data: UserFilters) => {
         { availability: { $regex: data.search, $options: "i" } },
         { "education.institution": { $regex: data.search, $options: "i" } },
         { "skillsProficientAt.name": { $regex: data.search, $options: "i" } },
-        { "skillsToLearn.name": { $regex: data.search, $options: "i" } }
+        { "skillsToLearn.name": { $regex: data.search, $options: "i" } },
       ],
     }),
   };
 
-  const limit = getSanitizeLimit(data.limit)
-  const page = getSanitizePage(data.page)
-  const skip = getSanitizeOffset(limit, page)
+  const limit = getSanitizeLimit(data.limit);
+  const page = getSanitizePage(data.page);
+  const skip = getSanitizeOffset(limit, page);
 
-  const oprions: QueryOptions = { limit: limit + 1, lean: true, page, skip, sort: { createdAt: 1 } };
+  const oprions: QueryOptions = {
+    limit: limit + 1,
+    lean: true,
+    page,
+    skip,
+    sort: { createdAt: 1 },
+  };
 
-  const result = await userModel.find(query, null, oprions)
+  const result = await userModel.find(query, null, oprions);
 
-  return getPageConnection(result, page, limit)
+  return getPageConnection(result, page, limit);
 };

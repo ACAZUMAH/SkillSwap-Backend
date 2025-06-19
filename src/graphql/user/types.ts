@@ -2,6 +2,7 @@ export const userTypeDefs = `#graphql
     type Education {
         level: String
         institution: String
+        fieldOfStudy: String
         degree: String
         endDate: DateTime
     }
@@ -18,8 +19,9 @@ export const userTypeDefs = `#graphql
         linkedIn: String
         portfolio: String
         averageRating: Int
-        availability: String
+        availability: [String]
         education: Education
+        isProfileComplete: Boolean
         password: String
         isAuthenticated: Boolean
 
@@ -61,6 +63,7 @@ export const userTypeDefs = `#graphql
     input EducationInput {
         level: String!
         institution: String!
+        fieldOfStudy: String
         degree: String!
         endDate: Date!
     }
@@ -74,10 +77,11 @@ export const userTypeDefs = `#graphql
         gitHub: String
         linkedIn: String
         portfolio: String
-        availability: String
+        availability: [String]
         education: EducationInput
-        skillsProficientAt: [SkillInput!]
-        skillsToLearn: [SkillInput!]
+        isProfileComplete: Boolean
+        skillsProficientAt: [SkillInput]
+        skillsToLearn: [SkillInput]
     }
 
     extend type Mutation {

@@ -339,12 +339,13 @@ export type TimeTableInput = {
 };
 
 export type UpdateUserInput = {
-  availability?: InputMaybe<Scalars['String']['input']>;
+  availability?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   bio?: InputMaybe<Scalars['String']['input']>;
   education?: InputMaybe<EducationInput>;
   email?: InputMaybe<Scalars['String']['input']>;
   firstName?: InputMaybe<Scalars['String']['input']>;
   gitHub?: InputMaybe<Scalars['String']['input']>;
+  isProfileComplete?: InputMaybe<Scalars['Boolean']['input']>;
   lastName?: InputMaybe<Scalars['String']['input']>;
   linkedIn?: InputMaybe<Scalars['String']['input']>;
   portfolio?: InputMaybe<Scalars['String']['input']>;
@@ -355,7 +356,7 @@ export type UpdateUserInput = {
 
 export type User = {
   __typename?: 'User';
-  availability?: Maybe<Scalars['String']['output']>;
+  availability?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   averageRating?: Maybe<Scalars['Int']['output']>;
   bio?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
@@ -365,6 +366,7 @@ export type User = {
   gitHub?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   isAuthenticated?: Maybe<Scalars['Boolean']['output']>;
+  isProfileComplete?: Maybe<Scalars['Boolean']['output']>;
   lastName?: Maybe<Scalars['String']['output']>;
   linkedIn?: Maybe<Scalars['String']['output']>;
   password?: Maybe<Scalars['String']['output']>;
@@ -1076,7 +1078,7 @@ export interface UnsignedIntScalarConfig extends GraphQLScalarTypeConfig<Resolve
 }
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-  availability?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  availability?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   averageRating?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   bio?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -1086,6 +1088,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   gitHub?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isAuthenticated?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  isProfileComplete?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   linkedIn?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   password?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

@@ -4,6 +4,7 @@ export interface Education {
     _id: Types.ObjectId
     level: string
     institution: string
+    fieldOfStudy?: string
     degree: string
     endDate: Date
 }

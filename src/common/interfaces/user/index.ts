@@ -13,10 +13,10 @@ export interface UserDocument {
   gitHub?: string
   linkedIn?: string
   portfolio?: string
-  availability?: String;
+  availability?: String[];
   averageRating?: number
   education: Education
-
+  isProfileComplete: boolean;
   password: string;
   isAuthenticated: boolean;
 
@@ -49,11 +49,10 @@ export interface UpdateUser {
   gitHub?: string | null
   linkedIn?: string | null
   portfolio?: string | null
-
   education?: EducationInput | null
-
-  availability?: String | null;
-
+  availability?: Array<String | null> | null;
+  isProfileComplete?: boolean | null;
+  
   skillsProficientAt?: Array<UserSkill | null> | null;
 
   skillsToLearn?: Array<UserSkill | null> | null;

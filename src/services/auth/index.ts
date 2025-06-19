@@ -45,12 +45,9 @@ export const register = async (data: CreateUser) => {
  * @throws Will throw an error if the credentials are invalid.
  */
 export const loginUser = async (data: LoginUser) => {
-  console.log("data:", data);
   const { phoneNumber, email, password } = data;
   const user = await getUserByPhoneOrEmail(phoneNumber!, email!);
-  console.log("user:", user);
   const isMatch = await comparePassword(password, user.password);
-  console.log("isMatch:", isMatch);
   if (!isMatch) throw createError.BadRequest("Invalid credentials");
 
   const otp = await createAuth(user._id, 5);
