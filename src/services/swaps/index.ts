@@ -2,8 +2,10 @@ import { FilterQuery, QueryOptions, Types } from "mongoose";
 import {
   AcceptOrDeclineSwap,
   Request,
+  swapByUsers,
   SwapDocument,
   SwapRequest,
+  updateSwapData,
 } from "src/common/interfaces";
 import createError from "http-errors";
 import { swapModel } from "src/models";
@@ -12,7 +14,7 @@ import {
   getSanitizeLimit,
   getSanitizeOffset,
   getSanitizePage,
-} from "src/common/helpers"; 
+} from "src/common/helpers";
 import { createChat } from "../chats";
 
 /**
@@ -23,8 +25,12 @@ import { createChat } from "../chats";
  * @returns The created swap request.
  */
 export const upsertSwapRequest = async (data: SwapRequest) => {
-  if (!(Types.ObjectId.isValid(data.senderId) &&
-      Types.ObjectId.isValid(data.receiverId))) {
+  if (
+    !(
+      Types.ObjectId.isValid(data.senderId) &&
+      Types.ObjectId.isValid(data.receiverId)
+    )
+  ) {
     throw createError.BadRequest("Invalid user ids");
   }
 
@@ -49,11 +55,16 @@ export const upsertSwapRequest = async (data: SwapRequest) => {
  * @returns The canceled swap request.
  */
 export const cancelSwapRequest = async (filter: Request) => {
-  if (!Types.ObjectId.isValid(filter.senderId!) &&
-    !Types.ObjectId.isValid(filter.swapId!))
+  if (
+    !Types.ObjectId.isValid(filter.senderId!) &&
+    !Types.ObjectId.isValid(filter.swapId!)
+  )
     throw createError.BadRequest("Invalid user or swap id");
 
-  return await swapModel.findOneAndDelete({ _id: filter.swapId, senderId: filter.senderId });
+  return await swapModel.findOneAndDelete({
+    _id: filter.swapId,
+    senderId: filter.senderId,
+  });
 };
 
 /**
@@ -65,7 +76,10 @@ export const cancelSwapRequest = async (filter: Request) => {
  * @returns The updated swap request.
  */
 export const acceptOrDeclineSwapRequest = async (data: AcceptOrDeclineSwap) => {
-  if (!Types.ObjectId.isValid(data.swapId) && !Types.ObjectId.isValid(data.userId))
+  if (
+    !Types.ObjectId.isValid(data.swapId) &&
+    !Types.ObjectId.isValid(data.userId)
+  )
     throw createError.BadRequest("Invalid user or swap id");
 
   const swap = await swapModel.findOneAndUpdate(
@@ -89,10 +103,7 @@ export const acceptOrDeclineSwapRequest = async (data: AcceptOrDeclineSwap) => {
  * @returns The swap request if found.
  */
 export const getSwapRequest = async (data: Request) => {
-  if (!Types.ObjectId.isValid(data?.senderId!) ||
-    !Types.ObjectId.isValid(data?.receiverId!) ||
-    !Types.ObjectId.isValid(data?.swapId!)) 
-    {
+  if (!Types.ObjectId.isValid(data?.swapId!)) {
     throw createError.BadRequest("Invalid user or swap id");
   }
 
@@ -134,14 +145,31 @@ export const getSwapRequests = async (filter: Request) => {
  * @returns The swap request if found.
  * @throws Will throw an error if the swap ID is invalid or not found.
  */
-export const getSwapById = async (swapId: string) => {
-  if (!Types.ObjectId.isValid(swapId)) throw createError.BadRequest("Invalid swap id");
+export const getSwapById = async (swapId: string | Types.ObjectId) => {
+  if (!Types.ObjectId.isValid(swapId))
+    throw createError.BadRequest("Invalid swap id");
 
   const swap = await swapModel.findById(swapId);
 
   if (!swap) throw createError.NotFound("Swap request not found");
 
   return swap;
+};
+
+/**
+ * Retrieves a swap request by the sender and receiver user IDs.
+ * @param data - The input data containing sender and receiver user IDs.
+ * @param data.senderId - The ID of the user who sent the swap request.
+ * @param data.receiverId - The ID of the user receiving the swap request.
+ * @returns The swap request if found.
+ */
+export const getSwapByUserIds = async (data: swapByUsers) => {
+  return await swapModel.findOne({
+    $or: [
+      { senderId: data.senderId, receiverId: data.receiverId },
+      { senderId: data.receiverId, receiverId: data.senderId },
+    ],
+  });
 };
 
 /**
@@ -155,7 +183,7 @@ export const getSwapById = async (swapId: string) => {
  * @param data.status - The status of the swap request.
  * @returns The updated swap request.
  */
-export const updateSwap = async (data: any) => {
+export const updateSwap = async (data: updateSwapData) => {
   const swap = await getSwapById(data.swapId);
 
   const update = {

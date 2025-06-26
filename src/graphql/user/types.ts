@@ -56,6 +56,7 @@ export const userTypeDefs = `#graphql
 
     extend type Query {
         me: User
+        user(id: ID!): User
         search(filters: Filters): UserConnection
         recommendation: [Recomendation]
     }

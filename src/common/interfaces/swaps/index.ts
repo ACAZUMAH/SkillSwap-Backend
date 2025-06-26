@@ -17,7 +17,6 @@ export interface SwapDocument {
 export interface SwapRequest {
     senderId: string | Types.ObjectId
     receiverId: string | Types.ObjectId
-    skills?: Swapped[] | null
 }
 
 export interface AcceptOrDeclineSwap {
@@ -34,3 +33,16 @@ export interface Request {
     limit?: number | null
     page?: number | null
 } 
+
+export interface swapByUsers {
+    senderId: string | Types.ObjectId
+    receiverId: string | Types.ObjectId
+}
+
+export interface updateSwapData {
+    swapId: string | Types.ObjectId
+    skills?: Swapped[] | null
+    status?: Status
+    timeTable?: SwapTimeTable[] | null
+    session?: SwapSession[] | null
+}

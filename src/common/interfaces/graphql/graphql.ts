@@ -105,6 +105,7 @@ export type Education = {
   __typename?: 'Education';
   degree?: Maybe<Scalars['String']['output']>;
   endDate?: Maybe<Scalars['DateTime']['output']>;
+  fieldOfStudy?: Maybe<Scalars['String']['output']>;
   institution?: Maybe<Scalars['String']['output']>;
   level?: Maybe<Scalars['String']['output']>;
 };
@@ -112,6 +113,7 @@ export type Education = {
 export type EducationInput = {
   degree: Scalars['String']['input'];
   endDate: Scalars['Date']['input'];
+  fieldOfStudy?: InputMaybe<Scalars['String']['input']>;
   institution: Scalars['String']['input'];
   level: Scalars['String']['input'];
 };
@@ -191,16 +193,29 @@ export type Query = {
   __typename?: 'Query';
   _empty?: Maybe<Scalars['String']['output']>;
   getRequestedSwaps?: Maybe<SwapConnection>;
+  getSwapByUsers?: Maybe<Swap>;
+  getSwapRequest?: Maybe<Swap>;
   getSwapRequests?: Maybe<SwapConnection>;
   hello?: Maybe<Scalars['String']['output']>;
   me?: Maybe<User>;
   recommendation?: Maybe<Array<Maybe<Recomendation>>>;
   search?: Maybe<UserConnection>;
+  user?: Maybe<User>;
 };
 
 
 export type QueryGetRequestedSwapsArgs = {
   filter?: InputMaybe<SwapFilter>;
+};
+
+
+export type QueryGetSwapByUsersArgs = {
+  data?: InputMaybe<SwapByUsers>;
+};
+
+
+export type QueryGetSwapRequestArgs = {
+  swapId: Scalars['ID']['input'];
 };
 
 
@@ -211,6 +226,11 @@ export type QueryGetSwapRequestsArgs = {
 
 export type QuerySearchArgs = {
   filters?: InputMaybe<Filters>;
+};
+
+
+export type QueryUserArgs = {
+  id: Scalars['ID']['input'];
 };
 
 export type Recomendation = {
@@ -290,6 +310,11 @@ export type Swap = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+export type SwapByUsers = {
+  receiverId: Scalars['ID']['input'];
+  senderId: Scalars['ID']['input'];
+};
+
 export type SwapConnection = {
   __typename?: 'SwapConnection';
   edges?: Maybe<Array<Swap>>;
@@ -350,8 +375,8 @@ export type UpdateUserInput = {
   linkedIn?: InputMaybe<Scalars['String']['input']>;
   portfolio?: InputMaybe<Scalars['String']['input']>;
   profile_img?: InputMaybe<Scalars['String']['input']>;
-  skillsProficientAt?: InputMaybe<Array<SkillInput>>;
-  skillsToLearn?: InputMaybe<Array<SkillInput>>;
+  skillsProficientAt?: InputMaybe<Array<InputMaybe<SkillInput>>>;
+  skillsToLearn?: InputMaybe<Array<InputMaybe<SkillInput>>>;
 };
 
 export type User = {
@@ -560,6 +585,7 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Subscription: ResolverTypeWrapper<{}>;
   Swap: ResolverTypeWrapper<Swap>;
+  SwapByUsers: SwapByUsers;
   SwapConnection: ResolverTypeWrapper<SwapConnection>;
   SwapFilter: SwapFilter;
   SwapRequestInput: SwapRequestInput;
@@ -668,6 +694,7 @@ export type ResolversParentTypes = {
   String: Scalars['String']['output'];
   Subscription: {};
   Swap: Swap;
+  SwapByUsers: SwapByUsers;
   SwapConnection: SwapConnection;
   SwapFilter: SwapFilter;
   SwapRequestInput: SwapRequestInput;
@@ -754,6 +781,7 @@ export interface DurationScalarConfig extends GraphQLScalarTypeConfig<ResolversT
 export type EducationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Education'] = ResolversParentTypes['Education']> = {
   degree?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   endDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  fieldOfStudy?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   institution?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   level?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -942,11 +970,14 @@ export interface PostalCodeScalarConfig extends GraphQLScalarTypeConfig<Resolver
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   _empty?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   getRequestedSwaps?: Resolver<Maybe<ResolversTypes['SwapConnection']>, ParentType, ContextType, Partial<QueryGetRequestedSwapsArgs>>;
+  getSwapByUsers?: Resolver<Maybe<ResolversTypes['Swap']>, ParentType, ContextType, Partial<QueryGetSwapByUsersArgs>>;
+  getSwapRequest?: Resolver<Maybe<ResolversTypes['Swap']>, ParentType, ContextType, RequireFields<QueryGetSwapRequestArgs, 'swapId'>>;
   getSwapRequests?: Resolver<Maybe<ResolversTypes['SwapConnection']>, ParentType, ContextType, Partial<QueryGetSwapRequestsArgs>>;
   hello?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   recommendation?: Resolver<Maybe<Array<Maybe<ResolversTypes['Recomendation']>>>, ParentType, ContextType>;
   search?: Resolver<Maybe<ResolversTypes['UserConnection']>, ParentType, ContextType, Partial<QuerySearchArgs>>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
 };
 
 export interface RgbScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['RGB'], any> {

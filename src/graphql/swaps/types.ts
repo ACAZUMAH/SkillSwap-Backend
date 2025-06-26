@@ -62,9 +62,16 @@ export const swapsTypeDef = `#graphql
         page: Int
     }
 
+    input SwapByUsers {
+        senderId: ID!
+        receiverId: ID!
+    }
+
     extend type Query {
         getSwapRequests(filter: SwapFilter): SwapConnection
         getRequestedSwaps(filter: SwapFilter): SwapConnection
+        getSwapRequest(swapId: ID!): Swap
+        getSwapByUsers(data: SwapByUsers): Swap
     }
    
     input SwapRequestInput {
