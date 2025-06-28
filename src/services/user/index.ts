@@ -14,6 +14,7 @@ import {
   getSanitizeOffset,
   getSanitizePage,
 } from "src/common/helpers";
+import { RecommendationManager } from "../ai/manger";
 
 /**
  * Creates a new user in the database.
@@ -140,11 +141,13 @@ export const updateUserProfile = async (data: UpdateUser) => {
     }),
   };
 
-  return await userModel.findByIdAndUpdate(
+  const updated = await userModel.findByIdAndUpdate(
     { _id: user._id },
     { $set: update },
     { new: true }
   );
+
+  return updated;
 };
 
 export const searchUsersOrSkills = async (data: UserFilters) => {

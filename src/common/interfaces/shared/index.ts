@@ -4,6 +4,7 @@ import { Express } from "express"
 import { GraphQLSchema } from "graphql"
 import { Server } from "http"
 import { createDataloaders } from "src/dataloaders"
+import { RecommendationManager } from "src/services/ai/manger"
 
 declare global {
     namespace Express {
@@ -18,9 +19,8 @@ type DataLoaderMap = ReturnType<typeof createDataloaders>
 export interface GraphqlContext extends BaseContext, DataLoaderMap {
   user?: any;
   token?: string;
-  skillRecommender: any;
+  skillRecommender: InstanceType<typeof RecommendationManager>;
 }
-
 
 export interface GraphqlServer {
   app: Express;

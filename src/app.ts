@@ -9,7 +9,8 @@ import connectDB from './common/helpers/connectDB'
 import { errorHandler } from './middlewares/error-handler'
 import { applyMiddlewares } from './middlewares'
 import { createContext } from './servers/context'
-import { SkillSwapRecommender } from './services/recomendations/recommender'
+import { SkillSwapRecommender } from './services/ai/recommender'
+import { RecommendationManager } from './services/ai/manger'
 import { createSocketIoServer } from './servers/createSocketIoServer'
 
 const PORT = process.env.PORT || 8800
@@ -24,12 +25,12 @@ const startServer = async () => {
     await connectDB()
 
     const skillRecommender = new SkillSwapRecommender();
-    
-    await skillRecommender.initialize().catch((err) => {
+    const recommendationManager = new RecommendationManager(skillRecommender);
+    await recommendationManager.InitializeOnce().catch((err) => {
       logger.error("Failed to initialize recomendation system", err);
     });
 
-    const context = createContext(skillRecommender)
+    const context = createContext(recommendationManager)
     
     await createGraphQlServer({ app, httpServer, schema, context })
 
