@@ -10,6 +10,8 @@ const helmetOptions: HelmetOptions = {
 
 const corsOptions = {
     maxAge: 600, 
+    credentials: true,
+    preflightContinue: true,
     origin: (origin: any, callback: (err: Error | null, allowed?: boolean) => void) => {
         if(!origin) { 
             return callback(null, true);
