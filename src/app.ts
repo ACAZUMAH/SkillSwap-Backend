@@ -24,13 +24,13 @@ const startServer = async () => {
 
     await connectDB()
 
-    const skillRecommender = new SkillSwapRecommender();
-    const recommendationManager = new RecommendationManager(skillRecommender);
-    await recommendationManager.InitializeOnce().catch((err) => {
-      logger.error("Failed to initialize recomendation system", err);
-    });
+    // const skillRecommender = new SkillSwapRecommender();
+    // const recommendationManager = new RecommendationManager(skillRecommender);
+    // await recommendationManager.InitializeOnce().catch((err) => {
+    //   logger.error("Failed to initialize recomendation system", err);
+    // });
 
-    const context = createContext(recommendationManager)
+    const context = createContext()
     
     await createGraphQlServer({ app, httpServer, schema, context })
 

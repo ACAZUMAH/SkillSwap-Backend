@@ -24,7 +24,7 @@ const search = (_: any, args: QuerySearchArgs) => {
 };
 
 const recommendation = async (_: any, __: any, { user, skillRecommender }: GraphqlContext) => {
-  return await skillRecommender.getRecommender().getRecommendations(user._id.toString());
+  return await skillRecommender?.getRecommender().getRecommendations(user._id.toString());
 };
 
 const id = (parent: UserDocument) => parent._id.toString();

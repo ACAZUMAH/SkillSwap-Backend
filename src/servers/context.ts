@@ -4,7 +4,7 @@ import { createDataloaders } from "src/dataloaders";
 import { RecommendationManager } from "src/services/ai/manger";
 
 export const createContext = (
-  skillRecommender: InstanceType<typeof RecommendationManager>
+  skillRecommender?: InstanceType<typeof RecommendationManager>
 ) => {
   return async ({
     req,

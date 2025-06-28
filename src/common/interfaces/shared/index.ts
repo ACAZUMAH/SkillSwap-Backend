@@ -19,7 +19,7 @@ type DataLoaderMap = ReturnType<typeof createDataloaders>
 export interface GraphqlContext extends BaseContext, DataLoaderMap {
   user?: any;
   token?: string;
-  skillRecommender: InstanceType<typeof RecommendationManager>;
+  skillRecommender?: InstanceType<typeof RecommendationManager>;
 }
 
 export interface GraphqlServer {
