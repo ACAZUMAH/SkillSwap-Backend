@@ -3,6 +3,7 @@ import {
   UserFilters,
   UpdateUser,
   UserDocument,
+  RecommendationFilter,
 } from "src/common/interfaces";
 import { userModel } from "src/models";
 import { validateCreateUserData } from "./user-validation";
@@ -14,7 +15,6 @@ import {
   getSanitizeOffset,
   getSanitizePage,
 } from "src/common/helpers";
-import { RecommendationManager } from "../ai/manger";
 
 /**
  * Creates a new user in the database.
@@ -60,11 +60,14 @@ export const checkUserExist = async (phone: string, email: string) => {
  * @returns The user document if found.
  * @throws Will throw an error if the ID is invalid or the user is not found.
  */
-export const getUserById = async (id: Types.ObjectId | string) => {
+export const getUserById = async (
+  id: Types.ObjectId | string,
+  indexes?: any
+) => {
   if (!Types.ObjectId.isValid(id))
     throw createError.BadRequest("Invalid user id");
 
-  const user = await userModel.findById(id);
+  const user = await userModel.findById(id, indexes).lean();
 
   if (!user) throw createError.NotFound("User with this id not found");
 
@@ -150,6 +153,12 @@ export const updateUserProfile = async (data: UpdateUser) => {
   return updated;
 };
 
+/**
+ * Searches for users or skills based on the provided filters.
+ *
+ * @param data - The filters to apply, including userId, search term, limit, and page.
+ * @returns A paginated connection of user documents matching the search criteria.
+ */
 export const searchUsersOrSkills = async (data: UserFilters) => {
   const query: FilterQuery<UserDocument> = {
     ...(data.userId && { _Id: data.userId }),
@@ -181,4 +190,173 @@ export const searchUsersOrSkills = async (data: UserFilters) => {
   const result = await userModel.find(query, null, oprions);
 
   return getPageConnection(result, page, limit);
+};
+
+/**
+ * Retrieves recommendations for a user based on their skills to learn.
+ * @param filters - The filters for recommendations, including userId, limit, and page.
+ * @returns A paginated connection of recommended users based on the user's skills to learn.
+ * @throws Will throw an error if the userId is invalid or the user has no skills to learn.
+ */
+export const getRecommendations = async (filters: RecommendationFilter) => {
+  const learner = await getUserById(filters.userId, {
+    skillsToLearn: 1,
+    skillsProficientAt: 1,
+    education: 1,
+  });
+
+  if (!learner.skillsToLearn?.length) return [];
+
+  const limit = getSanitizeLimit(filters.limit);
+  const page = getSanitizePage(filters.page);
+  const skip = getSanitizeOffset(limit, page);
+
+  const skillLookUp = learner.skillsToLearn.reduce(
+    (acc: { [key: string]: typeof skill.level }, skill) => {
+      acc[skill.name] = skill.level;
+      return acc;
+    },
+    {}
+  );
+
+  const desiredSkills = Object.keys(skillLookUp);
+
+  const recommendations = await userModel.aggregate([
+    {
+      $match: {
+        _id: { $ne: learner._id },
+        "skillsProficientAt.name": { $in: desiredSkills },
+      },
+    },
+
+    {
+      $addFields: {
+        originalSkills: "$skillsProficientAt",
+      },
+    },
+
+    { $unwind: "$skillsProficientAt" },
+
+    {
+      $match: {
+        "skillsProficientAt.name": { $in: desiredSkills },
+        $expr: {
+          $gte: [
+            "$skillsProficientAt.level",
+            skillLookUp["$skillsProficientAt.name"],
+          ],
+        },
+      },
+    },
+
+    {
+      $addFields: {
+        mutualExchange: {
+          $gt: [
+            {
+              $size: {
+                $setIntersection: [
+                  "$skillsToLearn.name",
+                  learner.skillsProficientAt?.map((s) => s.name) || [],
+                ],
+              },
+            },
+            0,
+          ],
+        },
+        levelDifference: {
+          $subtract: [
+            "$skillsProficientAt.level",
+            skillLookUp["$skillsProficientAt.name"],
+          ],
+        },
+        matchedSkill: "$skillsProficientAt",
+      },
+    },
+
+    {
+      $group: {
+        _id: "$_id",
+        originalUser: { $first: "$$ROOT" },
+        allSkills: { $first: "$originalSkills" }, // Preserved from before unwind
+        matchedSkills: { $push: "$matchedSkill" }, // Only matched skills
+        mutualExchange: { $max: "$mutualExchange" },
+        maxMatchScore: {
+          $max: {
+            $add: [
+              0.4,
+              { $multiply: [0.2, { $divide: ["$levelDifference", 3] }] },
+            ],
+          },
+        },
+      },
+    },
+
+    {
+      $addFields: {
+        sortedSkills: {
+          $concatArrays: [
+            "$matchedSkills",
+            {
+              $filter: {
+                input: "$allSkills",
+                as: "skill",
+                cond: {
+                  $not: {
+                    $in: ["$$skill.name", "$matchedSkills.name"],
+                  },
+                },
+              },
+            },
+          ],
+        },
+
+        matchScore: {
+          $add: [
+            "$maxMatchScore",
+            {
+              $cond: [
+                {
+                  $eq: [
+                    "$originalUser.education.institution",
+                    learner.education?.institution,
+                  ],
+                },
+                0.1,
+                0,
+              ],
+            },
+            {
+              $multiply: [0.2, { $divide: ["$originalUser.averageRating", 5] }],
+            },
+            { $multiply: [0.1, { $toInt: "$mutualExchange" }] },
+          ],
+        },
+      },
+    },
+
+    {
+      $project: {
+        _id: 0,
+        user: {
+          _id: "$originalUser._id",
+          firstName: "$originalUser.firstName",
+          lastName: "$originalUser.lastName",
+          profile_img: "$originalUser.profile_img",
+          averageRating: "$originalUser.averageRating",
+          skillsProficientAt: "$sortedSkills",
+          skillsToLearn: "$originalUser.skillsToLearn",
+        },
+        matchScore: 1,
+        matchedSkills: "$matchedSkills",
+        mutualExchange: 1,
+      },
+    },
+
+    { $sort: { mutualExchange: -1, matchScore: -1 } },
+    { $skip: skip },
+    { $limit: limit + 1 },
+  ]);
+
+  return getPageConnection(recommendations, page, limit);
 };

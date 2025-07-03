@@ -6,11 +6,10 @@
 .env
 combined.log
 errors.log
-dummy.txt
 
 #ignore
 test.ts
 populate.ts
 .vercel
-/ai
+/dummy
 /dist 

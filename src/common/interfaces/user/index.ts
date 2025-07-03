@@ -64,3 +64,10 @@ export interface UserFilters {
   userId?: string | Types.ObjectId | null
   search?: string | null
 }
+
+
+export interface RecommendationFilter {
+  userId: string | Types.ObjectId;
+  limit?: number | null;
+  page?: number | null;
+}

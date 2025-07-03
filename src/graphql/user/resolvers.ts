@@ -1,6 +1,7 @@
 import {
   GraphqlContext,
   MutationUpdateUserArgs,
+  QueryRecommendationArgs,
   QuerySearchArgs,
   QueryUserArgs,
   UserDocument,
@@ -15,7 +16,7 @@ const user = (_: any, args: QueryUserArgs) => {
   return UserServices.getUserById(args.id);
 };
 
-const updateUser = (_: any, args: MutationUpdateUserArgs, { user, skillRecommender }: GraphqlContext) => {
+const updateUser = (_: any, args: MutationUpdateUserArgs, { user }: GraphqlContext) => {
   return UserServices.updateUserProfile({ id: user._id, ...args.data });
 };
 
@@ -23,8 +24,9 @@ const search = (_: any, args: QuerySearchArgs) => {
   return UserServices.searchUsersOrSkills({ ...args.filters });
 };
 
-const recommendation = async (_: any, __: any, { user, skillRecommender }: GraphqlContext) => {
-  return await skillRecommender?.getRecommender().getRecommendations(user._id.toString());
+const recommendation = async (_: any, args: QueryRecommendationArgs, { user }: GraphqlContext) => {
+  console.log(await UserServices.getRecommendations({ userId: user._id, ...args.filters }));
+  return UserServices.getRecommendations({ userId: user._id, ...args.filters });
 };
 
 const id = (parent: UserDocument) => parent._id.toString();

@@ -35,4 +35,8 @@ const userSchema = new mongoose.Schema<UserDocument>({
     timestamps: true 
 })
 
+userSchema.index({ "skillsProficientAt.name": 1 });
+userSchema.index({ "skillsToLearn.name": 1 });
+userSchema.index({ "education.institution": 1 });
+
 export const userModel = mongoose.model<UserDocument>('users', userSchema)

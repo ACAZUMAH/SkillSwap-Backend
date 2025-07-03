@@ -1,24 +1,27 @@
 import cors from 'cors'
 import { json } from "express";
-import { GraphqlServer } from "src/common/interfaces";
+import { GraphqlContext, GraphqlServer } from "src/common/interfaces";
 import { createGraphQlSubscriptionServer } from "./createGraphqlSubscriptionServer";
-import { ApolloServer } from "@apollo/server";
+import { ApolloServer, ContextFunction } from "@apollo/server";
 import { formatError } from "./formatGraphqlErrors";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
-import { expressMiddleware } from "@apollo/server/express4"
+import { ExpressContextFunctionArgument, expressMiddleware } from "@apollo/server/express4"
 import { isProduction } from "src/common/constants";
+import { createDataloaders } from 'src/dataloaders';
 
-// const context: ContextFunction<[ExpressContextFunctionArgument], GraphqlContext> = async ({ req }) => {
-//     const user = req.user
-//     const token = req.token
+const context: ContextFunction<[ExpressContextFunctionArgument], GraphqlContext> = async ({ req }) => {
+    const user = req.user
+    const token = req.token
+    const dataloaders = createDataloaders();
         
-//     return {
-//         user,
-//         token
-//     }
-// }
+    return {
+        user,
+        token,
+        ...dataloaders
+    }
+}
 
-export const createGraphQlServer = async ({ app, httpServer, schema, context }: GraphqlServer) => {
+export const createGraphQlServer = async ({ app, httpServer, schema }: GraphqlServer) => {
 
     const subscriptionServerCleanUp = createGraphQlSubscriptionServer({ httpServer, schema })
 

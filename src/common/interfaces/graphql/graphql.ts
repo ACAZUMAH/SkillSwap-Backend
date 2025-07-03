@@ -198,7 +198,7 @@ export type Query = {
   getSwapRequests?: Maybe<SwapConnection>;
   hello?: Maybe<Scalars['String']['output']>;
   me?: Maybe<User>;
-  recommendation?: Maybe<Array<Maybe<Recomendation>>>;
+  recommendation?: Maybe<RecomendationConnection>;
   search?: Maybe<UserConnection>;
   user?: Maybe<User>;
 };
@@ -224,6 +224,11 @@ export type QueryGetSwapRequestsArgs = {
 };
 
 
+export type QueryRecommendationArgs = {
+  filters?: InputMaybe<RecommendationFilters>;
+};
+
+
 export type QuerySearchArgs = {
   filters?: InputMaybe<Filters>;
 };
@@ -237,8 +242,15 @@ export type Recomendation = {
   __typename?: 'Recomendation';
   levelDifference?: Maybe<Scalars['Int']['output']>;
   matchScore?: Maybe<Scalars['Float']['output']>;
-  matchedSkill?: Maybe<Scalars['String']['output']>;
+  matchedSkill?: Maybe<Array<Maybe<Skill>>>;
+  mutualExchange?: Maybe<Scalars['Boolean']['output']>;
   user?: Maybe<User>;
+};
+
+export type RecomendationConnection = {
+  __typename?: 'RecomendationConnection';
+  edges?: Maybe<Array<Maybe<Recomendation>>>;
+  pageInfo?: Maybe<PageInfo>;
 };
 
 export type Response = {
@@ -423,6 +435,12 @@ export type LoginUserInput = {
   phoneNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type RecommendationFilters = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateSwapInput = {
   id: Scalars['ID']['input'];
   sessions?: InputMaybe<Array<InputMaybe<SessionInput>>>;
@@ -571,6 +589,7 @@ export type ResolversTypes = {
   RGB: ResolverTypeWrapper<Scalars['RGB']['output']>;
   RGBA: ResolverTypeWrapper<Scalars['RGBA']['output']>;
   Recomendation: ResolverTypeWrapper<Recomendation>;
+  RecomendationConnection: ResolverTypeWrapper<RecomendationConnection>;
   Response: ResolverTypeWrapper<Response>;
   RoutingNumber: ResolverTypeWrapper<Scalars['RoutingNumber']['output']>;
   SESSN: ResolverTypeWrapper<Scalars['SESSN']['output']>;
@@ -608,6 +627,7 @@ export type ResolversTypes = {
   Void: ResolverTypeWrapper<Scalars['Void']['output']>;
   createUserInput: CreateUserInput;
   loginUserInput: LoginUserInput;
+  recommendationFilters: RecommendationFilters;
   updateSwapInput: UpdateSwapInput;
 };
 
@@ -682,6 +702,7 @@ export type ResolversParentTypes = {
   RGB: Scalars['RGB']['output'];
   RGBA: Scalars['RGBA']['output'];
   Recomendation: Recomendation;
+  RecomendationConnection: RecomendationConnection;
   Response: Response;
   RoutingNumber: Scalars['RoutingNumber']['output'];
   SESSN: Scalars['SESSN']['output'];
@@ -717,6 +738,7 @@ export type ResolversParentTypes = {
   Void: Scalars['Void']['output'];
   createUserInput: CreateUserInput;
   loginUserInput: LoginUserInput;
+  recommendationFilters: RecommendationFilters;
   updateSwapInput: UpdateSwapInput;
 };
 
@@ -975,7 +997,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   getSwapRequests?: Resolver<Maybe<ResolversTypes['SwapConnection']>, ParentType, ContextType, Partial<QueryGetSwapRequestsArgs>>;
   hello?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-  recommendation?: Resolver<Maybe<Array<Maybe<ResolversTypes['Recomendation']>>>, ParentType, ContextType>;
+  recommendation?: Resolver<Maybe<ResolversTypes['RecomendationConnection']>, ParentType, ContextType, Partial<QueryRecommendationArgs>>;
   search?: Resolver<Maybe<ResolversTypes['UserConnection']>, ParentType, ContextType, Partial<QuerySearchArgs>>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
 };
@@ -991,8 +1013,15 @@ export interface RgbaScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 export type RecomendationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Recomendation'] = ResolversParentTypes['Recomendation']> = {
   levelDifference?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   matchScore?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  matchedSkill?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  matchedSkill?: Resolver<Maybe<Array<Maybe<ResolversTypes['Skill']>>>, ParentType, ContextType>;
+  mutualExchange?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type RecomendationConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['RecomendationConnection'] = ResolversParentTypes['RecomendationConnection']> = {
+  edges?: Resolver<Maybe<Array<Maybe<ResolversTypes['Recomendation']>>>, ParentType, ContextType>;
+  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1208,6 +1237,7 @@ export type Resolvers<ContextType = any> = {
   RGB?: GraphQLScalarType;
   RGBA?: GraphQLScalarType;
   Recomendation?: RecomendationResolvers<ContextType>;
+  RecomendationConnection?: RecomendationConnectionResolvers<ContextType>;
   Response?: ResponseResolvers<ContextType>;
   RoutingNumber?: GraphQLScalarType;
   SESSN?: GraphQLScalarType;
