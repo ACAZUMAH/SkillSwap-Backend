@@ -8,7 +8,6 @@ import createError from "http-errors";
 import connectDB from "./common/helpers/connectDB";
 import { errorHandler } from "./middlewares/error-handler";
 import { applyMiddlewares } from "./middlewares";
-import { createContext } from "../dummy/context";
 import { createSocketIoServer } from "./servers/createSocketIoServer";
 
 const PORT = process.env.PORT || 8800;
