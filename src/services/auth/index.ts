@@ -1,4 +1,4 @@
-import { CreateUser, LoginUser } from "src/common/interfaces";
+import { CreateUser, LoginUser, UserDocument } from "src/common/interfaces";
 import { checkUserExist, createUser, getUserByPhoneOrEmail } from "../user";
 import { comparePassword, hashPassword } from "src/common/helpers";
 import { createAuth } from "./auth";
@@ -46,11 +46,14 @@ export const register = async (data: CreateUser) => {
  */
 export const loginUser = async (data: LoginUser) => {
   const { phoneNumber, email, password } = data;
-  const user = await getUserByPhoneOrEmail(phoneNumber!, email!);
-  const isMatch = await comparePassword(password, user.password);
+  console.log("data:", data)
+  const user = await getUserByPhoneOrEmail(phoneNumber, email);
+  console.log("user:", user)
+  const isMatch = await comparePassword(password, user?.password!);
+  console.log("isMatch:", isMatch)
   if (!isMatch) throw createError.BadRequest("Invalid credentials");
 
-  const otp = await createAuth(user._id, 5);
+  const otp = await createAuth(user?._id!, 5);
 
   const message = `Your SkillSwap OTP is ${otp}`;
 

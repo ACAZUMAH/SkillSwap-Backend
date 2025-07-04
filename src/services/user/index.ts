@@ -83,14 +83,23 @@ export const getUserById = async (
  * @throws Will throw an error if the user does not exist.
  */
 export const getUserByPhoneOrEmail = async (
-  phoneNumber: string,
-  email: string
+  phoneNumber?: string | null,
+  email?: string | null
 ) => {
-  const user = await userModel.findOne({ $or: [{ phoneNumber }, { email }] });
 
-  if (!user) throw createError.NotFound("User does not exist");
+  if (!phoneNumber && !email) {
+    throw createError.BadRequest("Phone number or email is required");
+  }
 
-  return user;
+  if( phoneNumber && !email) {
+    return await userModel.findOne({ phoneNumber });
+  }
+
+  if (email && !phoneNumber) {
+    return await userModel.findOne({ email });
+  }
+
+  throw createError.NotFound("User does not exist");
 };
 
 /**
