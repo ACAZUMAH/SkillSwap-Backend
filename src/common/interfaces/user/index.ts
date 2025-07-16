@@ -25,6 +25,13 @@ export interface UserDocument {
   skillsToLearn: SkillDocument[];
 }
 
+export interface passwordDocument {
+  _id: Types.ObjectId;
+  userId: Types.ObjectId;
+  password: string;
+  createdAt: Date;
+}
+
 export interface CreateUser {
   firstName?: String | null;
   lastNama?: string | null;
@@ -70,4 +77,15 @@ export interface RecommendationFilter {
   userId: string | Types.ObjectId;
   limit?: number | null;
   page?: number | null;
+}
+
+export interface ChangePasswordInput {
+  userId: string | Types.ObjectId;
+  oldPassword: string;
+  newPassword: string;
+};
+
+export interface UpdatePassword {
+  userId: string | Types.ObjectId;
+  password: string;
 }

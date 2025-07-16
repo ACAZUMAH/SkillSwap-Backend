@@ -1,10 +1,11 @@
-import { CreateUser, LoginUser, UserDocument } from "src/common/interfaces";
-import { checkUserExist, createUser, getUserByPhoneOrEmail } from "../user";
+import { ChangePasswordInput, CreateUser, LoginUser, UserDocument } from "src/common/interfaces";
+import { checkUserExist, createUser, getUserById, getUserByPhoneOrEmail } from "../user";
 import { comparePassword, hashPassword } from "src/common/helpers";
 import { createAuth } from "./auth";
 import { isDevelopment } from "src/common/constants";
 import createError from "http-errors";
 import { sendNaloSms } from "../notifications/nalo";
+import { passwordModel } from "src/models/password/passwordModel";
 
 /**
  * Registers a new user by creating their account, hashing their password, and generating an OTP.
@@ -46,11 +47,12 @@ export const register = async (data: CreateUser) => {
  */
 export const loginUser = async (data: LoginUser) => {
   const { phoneNumber, email, password } = data;
-  console.log("data:", data)
+  
   const user = await getUserByPhoneOrEmail(phoneNumber, email);
-  console.log("user:", user)
+  if (!user)  throw createError.BadRequest("Invalid credentials");
+
   const isMatch = await comparePassword(password, user?.password!);
-  console.log("isMatch:", isMatch)
+
   if (!isMatch) throw createError.BadRequest("Invalid credentials");
 
   const otp = await createAuth(user?._id!, 5);
@@ -69,3 +71,36 @@ export const loginUser = async (data: LoginUser) => {
     message: "User created successfully, please check your phone for the OTP.",
   };
 };
+
+
+export const updatePassword = async (data: ChangePasswordInput) => {
+  const { userId, oldPassword, newPassword } = data;
+
+  const user = await getUserById(userId);
+
+  const isMatch = comparePassword(oldPassword, user?.password);
+
+  if (!isMatch) throw createError.BadRequest("Old password is incorrect");
+
+  const hash = await hashPassword(newPassword);
+
+  await passwordModel.findOneAndUpdate(
+    { userId },
+    { userId, password: hash },
+    { upsert: true }
+  );
+
+  const otp = await createAuth(user._id, 5);
+
+  const message = `Your change password OTP is ${otp}`;
+
+  if (!(await sendNaloSms({ to: user.phoneNumber!, message }))) {
+    throw createError.InternalServerError(
+      "Failed to send OTP code at the moment, please try again later."
+    );
+  }
+
+  return {
+    message: "Please check your phone for the OTP to change your password.",
+  }
+}

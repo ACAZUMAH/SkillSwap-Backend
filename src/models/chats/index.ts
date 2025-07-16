@@ -8,19 +8,20 @@ const users = new Schema<ChatUsersDocument>({
 })
 
 const messageSchema = new Schema<MessageDocument>({
+    sender: { type: Schema.Types.ObjectId, required: true, ref: "users" },
     messageType: { type: String, enum: Object.values(MessageType), default: MessageType.TEXT, required: true },
     message: { type: String, required: function(this: any) { return this.messageType === MessageType.TEXT; } },
     mediaUrl: { type: String, required: function(this: any) { return this.messageType !== MessageType.TEXT; } },
     isRead: { type: Boolean, default: false },
     isDeleted: { type: Boolean, default: false },
-    timestamp: { type: Date, default: Date.now },
     }, {
     timestamps: true,
 })
 
 const chatSchema = new Schema<ChatDocument>({
-    users: { type: [users], required: true },
+    users: { type: users, required: true },
     messages: { type: [messageSchema], default: [] },
+    recentMessage: { type: messageSchema, default: null },
 }, {
     timestamps: true,
 })

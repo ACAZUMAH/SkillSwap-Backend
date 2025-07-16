@@ -1,20 +1,22 @@
 import { Socket } from "socket.io";
 import * as services from "../services/chats";
+import logger from "src/loggers/logger";
+import { ChatInput } from "src/common/interfaces";
 
 const disconnection = (socket: Socket, userSocketMap: Map<string, string>) => {
-  console.log(`User ${socket.id} disconnected`);
+  logger.info(`User ${socket.id} disconnected`);
   const userId = Array.from(userSocketMap.entries()).find(
     ([_, id]) => id === socket.id
   )?.[0];
   if (userId) {
     userSocketMap.delete(userId);
-    console.log(`User ${userId} disconnected`);
+    logger.info(`User ${userId} disconnected`);
   }
 };
 
-const sendMessage = async (socket: Socket, userSocketMap: Map<string, string>, message: any) => {
-  const senderId = userSocketMap.get(message.sender);
-  const receiverId = userSocketMap.get(message.receiver);
+const sendMessage = async (socket: Socket, userSocketMap: Map<string, string>, message: ChatInput) => {
+  const senderId = userSocketMap.get(message.users?.sender.toString());
+  const receiverId = userSocketMap.get(message.users?.receiver?.toString());
 
   const msg = await services.upsertMessage(message);
 
@@ -31,9 +33,10 @@ const sendMessage = async (socket: Socket, userSocketMap: Map<string, string>, m
 
 export const connection = (socket: Socket, userSocketMap: Map<string, string>) => {
   const userId = socket.handshake.query.userId as string;
+  console.log(`User connected with ID: ${userId}`);
   if (userId) {
     userSocketMap.set(userId, socket.id);
-    console.log(`User ${userId} connected with socket ID: ${socket.id}`);
+    logger.info(`User ${userId} connected with socket ID: ${socket.id}`);
   }
 
   socket.on("sendMessage", (message) => sendMessage(socket, userSocketMap, message));

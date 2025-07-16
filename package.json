@@ -7,8 +7,7 @@
     "dev": "nodemon",
     "start": "node dist/main.js",
     "build": "tsc && tsc-alias",
-    "generate": "graphql-codegen --config codegen.ts",
-    "train-model": "ts-node -r tsconfig-paths/register src/services/ai/train-and-save.ts"
+    "generate": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
     "@apollo/server": "^4.12.0",

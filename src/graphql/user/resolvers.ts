@@ -25,7 +25,6 @@ const search = (_: any, args: QuerySearchArgs) => {
 };
 
 const recommendation = async (_: any, args: QueryRecommendationArgs, { user }: GraphqlContext) => {
-  console.log(await UserServices.getRecommendations({ userId: user._id, ...args.filters }));
   return UserServices.getRecommendations({ userId: user._id, ...args.filters });
 };
 

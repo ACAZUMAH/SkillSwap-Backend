@@ -4,6 +4,7 @@ import {
   UpdateUser,
   UserDocument,
   RecommendationFilter,
+  UpdatePassword,
 } from "src/common/interfaces";
 import { userModel } from "src/models";
 import { validateCreateUserData } from "./user-validation";
@@ -60,10 +61,7 @@ export const checkUserExist = async (phone: string, email: string) => {
  * @returns The user document if found.
  * @throws Will throw an error if the ID is invalid or the user is not found.
  */
-export const getUserById = async (
-  id: Types.ObjectId | string,
-  indexes?: any
-) => {
+export const getUserById = async (id: Types.ObjectId | string, indexes?: any) => {
   if (!Types.ObjectId.isValid(id))
     throw createError.BadRequest("Invalid user id");
 
@@ -109,10 +107,7 @@ export const getUserByPhoneOrEmail = async (
  * @param bool - The new authentication status.
  * @returns The updated user document.
  */
-export const updateIsAuthenticated = async (
-  id: Types.ObjectId,
-  bool: boolean
-) => {
+export const updateIsAuthenticated = async (id: Types.ObjectId, bool: boolean) => {
   return await userModel.findByIdAndUpdate(
     { _id: id },
     { isAuthenticated: bool }
@@ -161,6 +156,14 @@ export const updateUserProfile = async (data: UpdateUser) => {
 
   return updated;
 };
+
+export const updateUserPassword = async (data: UpdatePassword) => {
+  return await userModel.findByIdAndUpdate(
+    { _id: data.userId },
+    { $set: { password: data.password } },
+    { new: true }
+  );
+}
 
 /**
  * Searches for users or skills based on the provided filters.

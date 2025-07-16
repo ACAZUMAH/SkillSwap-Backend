@@ -7,13 +7,16 @@ import { swapsTypeDef } from "./swaps";
 import { swapResolver } from "./swaps";
 import { skillResolvers } from "./skills";
 import { typeDefs as scalarTypeDefs, resolvers as scalarResolvers } from "graphql-scalars"
+import { chatResolver, chatTypeDeffs } from "./Chats";
+import { messageResolvers } from "./message";
 
 const typeDefs = [
     generalTypeDefs,
     authTypeDefs,
     userTypeDefs,
     scalarTypeDefs,
-    swapsTypeDef
+    swapsTypeDef,
+    chatTypeDeffs
 ]
 
 const resolvers = [
@@ -22,7 +25,9 @@ const resolvers = [
     userResolver,
     skillResolvers,
     scalarResolvers,
-    swapResolver
+    swapResolver,
+    chatResolver,
+    messageResolvers
 ]
 
 export const schema = mergeSchemas({ typeDefs, resolvers }) 

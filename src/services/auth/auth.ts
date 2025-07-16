@@ -1,8 +1,9 @@
 import { generateOtp, jwtSign } from "src/common/helpers";
 import { authModel } from "src/models/auth";
 import createError from 'http-errors'
-import { getUserById, updateIsAuthenticated } from "../user";
+import { getUserById, updateIsAuthenticated, updateUserPassword } from "../user";
 import { Types } from "mongoose";
+import { passwordModel } from "src/models/password/passwordModel";
 
 /**
  * Creates or updates an authentication record for a user with a unique OTP.
@@ -47,4 +48,20 @@ export const verifyOtpAndSignJwt = async (otp: string) => {
     const token = jwtSign({ id: user._id })
 
     return { user, token }
+}
+
+export const verifyAndSaveNewPassword = async (otp: string) => {
+  const auth = await authModel.findOneAndDelete({ otp });
+
+  if (!auth) throw createError.BadRequest("Invalid otp");
+
+  if (new Date(auth.expiresIn) < new Date()) throw createError.BadRequest("Otp expired");
+
+  const password = await passwordModel.findOne({ userId: auth.userId });
+
+  if (!password) throw createError.NotFound("Unable to update password, Please try again later.");
+
+  const user = await updateUserPassword({ userId: password?.userId, password: password?.password });
+
+  if(user?._id) return { message: "Password updated successfully" };
 }

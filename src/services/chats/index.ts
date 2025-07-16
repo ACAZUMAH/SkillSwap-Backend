@@ -1,6 +1,7 @@
 import { chatModel } from "src/models/chats";
 import createError from "http-errors";
 import { Types } from "mongoose";
+import { ChatInput } from "src/common/interfaces";
 
 export const createChat = async (data: any) => {
   if (
@@ -14,15 +15,15 @@ export const createChat = async (data: any) => {
   });
 };
 
-export const upsertMessage = async (data: any) => {
+export const upsertMessage = async (data: ChatInput) => {
   const { chatId, message } = data;
-  if (!Types.ObjectId.isValid(chatId))
+  if (!Types.ObjectId.isValid(chatId!))
     throw createError(400, "Invalid chat ID");
 
   const msg = await chatModel.findOneAndUpdate(
     { _id: chatId },
-    { $push: { messages: message } },
-    { new: true }
+    { $push: { messages: message }, recentMessage: message },
+    { new: true, upsert: true }
   );
 
   if (!msg) throw createError(404, "Chat not found");
@@ -46,3 +47,21 @@ export const getChatById = async (chatId: string | Types.ObjectId) => {
   
   return chat;
 };
+
+export const getAllChatsByUserId = async (userId: string | Types.ObjectId) => {
+  if (!Types.ObjectId.isValid(userId)) {
+    throw createError(400, "Invalid user ID");
+  }
+
+  const chats = await chatModel
+    .find({ $or: [{"users.sender": userId, "users.receiver": userId}] })
+    .populate("users.sender", "id firstName lastName email profile_img")
+    .populate("users.receiver", "id firstName lastName email profile_img")
+    .lean();
+
+  if (!chats) {
+    throw createError(404, "No chats found for this user");
+  }
+  console.log(chats)
+  return chats;
+}

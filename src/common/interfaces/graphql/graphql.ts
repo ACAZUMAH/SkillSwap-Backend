@@ -101,6 +101,25 @@ export type CancelSwapRequestInput = {
   userId: Scalars['ID']['input'];
 };
 
+export type Chat = {
+  __typename?: 'Chat';
+  createdAt: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  messages: Array<Message>;
+  recentMessage?: Maybe<Message>;
+  updatedAt: Scalars['String']['output'];
+  users: Array<ChatUser>;
+};
+
+export type ChatUser = {
+  __typename?: 'ChatUser';
+  firstName?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  lastName?: Maybe<Scalars['String']['output']>;
+  profile_img?: Maybe<Scalars['String']['output']>;
+  userId?: Maybe<Scalars['String']['output']>;
+};
+
 export type Education = {
   __typename?: 'Education';
   degree?: Maybe<Scalars['String']['output']>;
@@ -128,17 +147,38 @@ export type Filters = {
   userId?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type Message = {
+  __typename?: 'Message';
+  id: Scalars['ID']['output'];
+  isDeleted: Scalars['Boolean']['output'];
+  isRead: Scalars['Boolean']['output'];
+  mediaUrl?: Maybe<Scalars['String']['output']>;
+  message?: Maybe<Scalars['String']['output']>;
+  messageType: MessageType;
+  sender?: Maybe<ChatUser>;
+  timestamp: Scalars['String']['output'];
+};
+
+export enum MessageType {
+  DOCUMENT = 'DOCUMENT',
+  IMAGE = 'IMAGE',
+  TEXT = 'TEXT',
+  VIDEO = 'VIDEO'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
   _empty?: Maybe<Scalars['String']['output']>;
   acceptOrDeclineSwapRequest: Swap;
   cancelSwapRequest: Swap;
+  changePassword: Response;
   completeAuthAndSignToken: Authenticated;
   createAccount: Response;
   createSwapRequest: Swap;
   login?: Maybe<Response>;
   updateSwap: Swap;
   updateUser: User;
+  verifyOtpAndSaveNewPassword: Response;
 };
 
 
@@ -149,6 +189,11 @@ export type MutationAcceptOrDeclineSwapRequestArgs = {
 
 export type MutationCancelSwapRequestArgs = {
   input: CancelSwapRequestInput;
+};
+
+
+export type MutationChangePasswordArgs = {
+  data: UpdatePasswordInput;
 };
 
 
@@ -181,6 +226,11 @@ export type MutationUpdateUserArgs = {
   data?: InputMaybe<UpdateUserInput>;
 };
 
+
+export type MutationVerifyOtpAndSaveNewPasswordArgs = {
+  otp: Scalars['String']['input'];
+};
+
 export type PageInfo = {
   __typename?: 'PageInfo';
   hasNextPage: Scalars['Boolean']['output'];
@@ -192,6 +242,8 @@ export type PageInfo = {
 export type Query = {
   __typename?: 'Query';
   _empty?: Maybe<Scalars['String']['output']>;
+  allChats: Array<Maybe<Chat>>;
+  getChatById?: Maybe<Chat>;
   getRequestedSwaps?: Maybe<SwapConnection>;
   getSwapByUsers?: Maybe<Swap>;
   getSwapRequest?: Maybe<Swap>;
@@ -201,6 +253,16 @@ export type Query = {
   recommendation?: Maybe<RecomendationConnection>;
   search?: Maybe<UserConnection>;
   user?: Maybe<User>;
+};
+
+
+export type QueryAllChatsArgs = {
+  userId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type QueryGetChatByIdArgs = {
+  chatId: Scalars['ID']['input'];
 };
 
 
@@ -375,6 +437,11 @@ export type TimeTableInput = {
   time: Scalars['String']['input'];
 };
 
+export type UpdatePasswordInput = {
+  newPassword: Scalars['String']['input'];
+  oldPassword: Scalars['String']['input'];
+};
+
 export type UpdateUserInput = {
   availability?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   bio?: InputMaybe<Scalars['String']['input']>;
@@ -527,6 +594,8 @@ export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Byte: ResolverTypeWrapper<Scalars['Byte']['output']>;
   CancelSwapRequestInput: CancelSwapRequestInput;
+  Chat: ResolverTypeWrapper<Chat>;
+  ChatUser: ResolverTypeWrapper<ChatUser>;
   CountryCode: ResolverTypeWrapper<Scalars['CountryCode']['output']>;
   CountryName: ResolverTypeWrapper<Scalars['CountryName']['output']>;
   Cuid: ResolverTypeWrapper<Scalars['Cuid']['output']>;
@@ -570,6 +639,8 @@ export type ResolversTypes = {
   Long: ResolverTypeWrapper<Scalars['Long']['output']>;
   Longitude: ResolverTypeWrapper<Scalars['Longitude']['output']>;
   MAC: ResolverTypeWrapper<Scalars['MAC']['output']>;
+  Message: ResolverTypeWrapper<Message>;
+  MessageType: MessageType;
   Mutation: ResolverTypeWrapper<{}>;
   NegativeFloat: ResolverTypeWrapper<Scalars['NegativeFloat']['output']>;
   NegativeInt: ResolverTypeWrapper<Scalars['NegativeInt']['output']>;
@@ -620,6 +691,7 @@ export type ResolversTypes = {
   UUID: ResolverTypeWrapper<Scalars['UUID']['output']>;
   UnsignedFloat: ResolverTypeWrapper<Scalars['UnsignedFloat']['output']>;
   UnsignedInt: ResolverTypeWrapper<Scalars['UnsignedInt']['output']>;
+  UpdatePasswordInput: UpdatePasswordInput;
   UpdateUserInput: UpdateUserInput;
   User: ResolverTypeWrapper<User>;
   UserConnection: ResolverTypeWrapper<UserConnection>;
@@ -640,6 +712,8 @@ export type ResolversParentTypes = {
   Boolean: Scalars['Boolean']['output'];
   Byte: Scalars['Byte']['output'];
   CancelSwapRequestInput: CancelSwapRequestInput;
+  Chat: Chat;
+  ChatUser: ChatUser;
   CountryCode: Scalars['CountryCode']['output'];
   CountryName: Scalars['CountryName']['output'];
   Cuid: Scalars['Cuid']['output'];
@@ -683,6 +757,7 @@ export type ResolversParentTypes = {
   Long: Scalars['Long']['output'];
   Longitude: Scalars['Longitude']['output'];
   MAC: Scalars['MAC']['output'];
+  Message: Message;
   Mutation: {};
   NegativeFloat: Scalars['NegativeFloat']['output'];
   NegativeInt: Scalars['NegativeInt']['output'];
@@ -731,6 +806,7 @@ export type ResolversParentTypes = {
   UUID: Scalars['UUID']['output'];
   UnsignedFloat: Scalars['UnsignedFloat']['output'];
   UnsignedInt: Scalars['UnsignedInt']['output'];
+  UpdatePasswordInput: UpdatePasswordInput;
   UpdateUserInput: UpdateUserInput;
   User: User;
   UserConnection: UserConnection;
@@ -759,6 +835,25 @@ export interface BigIntScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
 export interface ByteScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Byte'], any> {
   name: 'Byte';
 }
+
+export type ChatResolvers<ContextType = any, ParentType extends ResolversParentTypes['Chat'] = ResolversParentTypes['Chat']> = {
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  messages?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType>;
+  recentMessage?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  users?: Resolver<Array<ResolversTypes['ChatUser']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ChatUserResolvers<ContextType = any, ParentType extends ResolversParentTypes['ChatUser'] = ResolversParentTypes['ChatUser']> = {
+  firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  profile_img?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  userId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export interface CountryCodeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['CountryCode'], any> {
   name: 'CountryCode';
@@ -917,16 +1012,30 @@ export interface MacScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes[
   name: 'MAC';
 }
 
+export type MessageResolvers<ContextType = any, ParentType extends ResolversParentTypes['Message'] = ResolversParentTypes['Message']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  isDeleted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  isRead?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  mediaUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  messageType?: Resolver<ResolversTypes['MessageType'], ParentType, ContextType>;
+  sender?: Resolver<Maybe<ResolversTypes['ChatUser']>, ParentType, ContextType>;
+  timestamp?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   _empty?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   acceptOrDeclineSwapRequest?: Resolver<ResolversTypes['Swap'], ParentType, ContextType, RequireFields<MutationAcceptOrDeclineSwapRequestArgs, 'input'>>;
   cancelSwapRequest?: Resolver<ResolversTypes['Swap'], ParentType, ContextType, RequireFields<MutationCancelSwapRequestArgs, 'input'>>;
+  changePassword?: Resolver<ResolversTypes['Response'], ParentType, ContextType, RequireFields<MutationChangePasswordArgs, 'data'>>;
   completeAuthAndSignToken?: Resolver<ResolversTypes['Authenticated'], ParentType, ContextType, RequireFields<MutationCompleteAuthAndSignTokenArgs, 'otp'>>;
   createAccount?: Resolver<ResolversTypes['Response'], ParentType, ContextType, RequireFields<MutationCreateAccountArgs, 'data'>>;
   createSwapRequest?: Resolver<ResolversTypes['Swap'], ParentType, ContextType, RequireFields<MutationCreateSwapRequestArgs, 'input'>>;
   login?: Resolver<Maybe<ResolversTypes['Response']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'data'>>;
   updateSwap?: Resolver<ResolversTypes['Swap'], ParentType, ContextType, RequireFields<MutationUpdateSwapArgs, 'input'>>;
   updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, Partial<MutationUpdateUserArgs>>;
+  verifyOtpAndSaveNewPassword?: Resolver<ResolversTypes['Response'], ParentType, ContextType, RequireFields<MutationVerifyOtpAndSaveNewPasswordArgs, 'otp'>>;
 };
 
 export interface NegativeFloatScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['NegativeFloat'], any> {
@@ -991,6 +1100,8 @@ export interface PostalCodeScalarConfig extends GraphQLScalarTypeConfig<Resolver
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   _empty?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  allChats?: Resolver<Array<Maybe<ResolversTypes['Chat']>>, ParentType, ContextType, Partial<QueryAllChatsArgs>>;
+  getChatById?: Resolver<Maybe<ResolversTypes['Chat']>, ParentType, ContextType, RequireFields<QueryGetChatByIdArgs, 'chatId'>>;
   getRequestedSwaps?: Resolver<Maybe<ResolversTypes['SwapConnection']>, ParentType, ContextType, Partial<QueryGetRequestedSwapsArgs>>;
   getSwapByUsers?: Resolver<Maybe<ResolversTypes['Swap']>, ParentType, ContextType, Partial<QueryGetSwapByUsersArgs>>;
   getSwapRequest?: Resolver<Maybe<ResolversTypes['Swap']>, ParentType, ContextType, RequireFields<QueryGetSwapRequestArgs, 'swapId'>>;
@@ -1180,6 +1291,8 @@ export type Resolvers<ContextType = any> = {
   Authenticated?: AuthenticatedResolvers<ContextType>;
   BigInt?: GraphQLScalarType;
   Byte?: GraphQLScalarType;
+  Chat?: ChatResolvers<ContextType>;
+  ChatUser?: ChatUserResolvers<ContextType>;
   CountryCode?: GraphQLScalarType;
   CountryName?: GraphQLScalarType;
   Cuid?: GraphQLScalarType;
@@ -1218,6 +1331,7 @@ export type Resolvers<ContextType = any> = {
   Long?: GraphQLScalarType;
   Longitude?: GraphQLScalarType;
   MAC?: GraphQLScalarType;
+  Message?: MessageResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   NegativeFloat?: GraphQLScalarType;
   NegativeInt?: GraphQLScalarType;

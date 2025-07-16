@@ -1,5 +1,6 @@
 import { Server } from 'http';
 import * as ws from 'socket.io';
+import logger from 'src/loggers/logger';
 import { connection } from 'src/socket';
 
 export const createSocketIoServer = (httpServer: Server) => {
@@ -15,6 +16,8 @@ export const createSocketIoServer = (httpServer: Server) => {
     const userSocketMap: Map<string, string> = new Map<string, string>()
 
     io.on('connection', (socket) => connection(socket, userSocketMap))
+
+    logger.info('🚀 Socket server is running');
 
     return io;
 }
