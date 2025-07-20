@@ -6,12 +6,15 @@ export interface Education {
     institution: string
     fieldOfStudy?: string
     degree: string
-    endDate: Date
+    startDate?: Date
+    endDate?: Date
 }
 
 export interface EducationInput {
-  level: string
-  institution: string;
-  degree: string;
-  endDate: Date;
+  level?: string | null;
+  institution?: string | null;
+  degree?: string | null;
+  fieldOfStudy?: string | null;
+  startDate?: Date | null;
+  endDate?: Date | null;
 }

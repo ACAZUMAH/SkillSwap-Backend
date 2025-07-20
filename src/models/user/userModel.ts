@@ -7,6 +7,8 @@ const educationSchema = new mongoose.Schema<Education>({
     level: { type: String, required: true },
     institution: { type: String, required: true },
     degree: { type: String, required: true },
+    fieldOfStudy: { type: String },
+    startDate: { type: Date },
     endDate: { type: Date }
 })
 

@@ -130,11 +130,12 @@ export type Education = {
 };
 
 export type EducationInput = {
-  degree: Scalars['String']['input'];
-  endDate: Scalars['Date']['input'];
+  degree?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
   fieldOfStudy?: InputMaybe<Scalars['String']['input']>;
-  institution: Scalars['String']['input'];
-  level: Scalars['String']['input'];
+  institution?: InputMaybe<Scalars['String']['input']>;
+  level?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 export type Filters = {

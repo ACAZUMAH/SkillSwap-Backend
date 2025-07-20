@@ -157,6 +157,13 @@ export const updateUserProfile = async (data: UpdateUser) => {
   return updated;
 };
 
+/**
+ * Updates a user's password in the database.
+ *
+ * @param data - The input data for updating the user's password, including userId and new password.
+ * @returns The updated user document.
+ * @throws Will throw an error if the user ID is invalid or the user is not found.
+ */
 export const updateUserPassword = async (data: UpdatePassword) => {
   return await userModel.findByIdAndUpdate(
     { _id: data.userId },

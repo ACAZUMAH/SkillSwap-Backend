@@ -74,11 +74,12 @@ export const userTypeDefs = `#graphql
     }
     
     input EducationInput {
-        level: String!
-        institution: String!
+        level: String
+        institution: String
+        degree: String
         fieldOfStudy: String
-        degree: String!
-        endDate: Date!
+        startDate: DateTime
+        endDate: DateTime
     }
 
     input UpdateUserInput {

@@ -16,6 +16,8 @@ import {
   getSanitizePage,
 } from "src/common/helpers";
 import { createChat } from "../chats";
+import { Status } from "src/common/enums";
+import { getUserById } from "../user";
 
 /**
  * Creates a swap request between two users.
