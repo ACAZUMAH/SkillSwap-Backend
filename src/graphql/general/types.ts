@@ -13,6 +13,7 @@ export const generalTypeDefs = `#graphql
     }
 
     input SkillInput {
+        id: ID
         name: String!
         level: Int!
     }

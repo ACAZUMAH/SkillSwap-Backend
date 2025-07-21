@@ -127,6 +127,7 @@ export type Education = {
   fieldOfStudy?: Maybe<Scalars['String']['output']>;
   institution?: Maybe<Scalars['String']['output']>;
   level?: Maybe<Scalars['String']['output']>;
+  startDate?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type EducationInput = {
@@ -902,6 +903,7 @@ export type EducationResolvers<ContextType = any, ParentType extends ResolversPa
   fieldOfStudy?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   institution?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   level?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  startDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

@@ -4,6 +4,7 @@ export const userTypeDefs = `#graphql
         institution: String
         fieldOfStudy: String
         degree: String
+        startDate: DateTime
         endDate: DateTime
     }
 
