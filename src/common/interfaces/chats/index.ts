@@ -27,12 +27,12 @@ export interface ChatDocument {
     updatedAt?: Date;
 }
 
-export interface ChatUsers {
+export interface ChatUser {
     sender?: string | Types.ObjectId;
     receiver?: string | Types.ObjectId;
 }
 
-export interface Message {
+export interface Messages {
     sender: Types.ObjectId | string;
     messageType: MessageType;
     message?: string | null; 
@@ -41,14 +41,14 @@ export interface Message {
 }
 export interface ChatInput {
     chatId?: Types.ObjectId | string;
-    users: ChatUsers;
-    message: Message;
+    users: ChatUser;
+    message: Messages;
 }
 
 export interface newMessageInput {
     from: string;
     to: string;
     chatId: Types.ObjectId | string;
-    message: Message;
-    users: ChatUsers;
+    message: Messages;
+    users: ChatUser;
 }
