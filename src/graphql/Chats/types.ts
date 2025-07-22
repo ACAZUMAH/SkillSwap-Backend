@@ -6,17 +6,15 @@ export const chatTypeDeffs = `#graphql
         DOCUMENT 
     }
 
-    type ChatUser {
+    type ChatUsers {
         id: ID
-        userId: String
-        firstName: String
-        lastName: String
-        profile_img: String
+        sender: User
+        receiver: User
     }
 
     type Message {
         id: ID!
-        sender: ChatUser
+        sender: User
         messageType: MessageType!
         message: String
         mediaUrl: String
@@ -27,8 +25,8 @@ export const chatTypeDeffs = `#graphql
 
     type Chat {
         id: ID!
-        users: [ChatUser!]!
-        messages: [Message!]!
+        users: ChatUsers!
+        messages: [Message]!
         recentMessage: Message
         createdAt: String!
         updatedAt: String!

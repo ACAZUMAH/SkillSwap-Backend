@@ -105,19 +105,17 @@ export type Chat = {
   __typename?: 'Chat';
   createdAt: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  messages: Array<Message>;
+  messages: Array<Maybe<Message>>;
   recentMessage?: Maybe<Message>;
   updatedAt: Scalars['String']['output'];
-  users: Array<ChatUser>;
+  users: ChatUsers;
 };
 
-export type ChatUser = {
-  __typename?: 'ChatUser';
-  firstName?: Maybe<Scalars['String']['output']>;
+export type ChatUsers = {
+  __typename?: 'ChatUsers';
   id?: Maybe<Scalars['ID']['output']>;
-  lastName?: Maybe<Scalars['String']['output']>;
-  profile_img?: Maybe<Scalars['String']['output']>;
-  userId?: Maybe<Scalars['String']['output']>;
+  receiver?: Maybe<User>;
+  sender?: Maybe<User>;
 };
 
 export type Education = {
@@ -157,7 +155,7 @@ export type Message = {
   mediaUrl?: Maybe<Scalars['String']['output']>;
   message?: Maybe<Scalars['String']['output']>;
   messageType: MessageType;
-  sender?: Maybe<ChatUser>;
+  sender?: Maybe<User>;
   timestamp: Scalars['String']['output'];
 };
 
@@ -355,6 +353,7 @@ export type Skill = {
 };
 
 export type SkillInput = {
+  id?: InputMaybe<Scalars['ID']['input']>;
   level: Scalars['Int']['input'];
   name: Scalars['String']['input'];
 };
@@ -597,7 +596,7 @@ export type ResolversTypes = {
   Byte: ResolverTypeWrapper<Scalars['Byte']['output']>;
   CancelSwapRequestInput: CancelSwapRequestInput;
   Chat: ResolverTypeWrapper<Chat>;
-  ChatUser: ResolverTypeWrapper<ChatUser>;
+  ChatUsers: ResolverTypeWrapper<ChatUsers>;
   CountryCode: ResolverTypeWrapper<Scalars['CountryCode']['output']>;
   CountryName: ResolverTypeWrapper<Scalars['CountryName']['output']>;
   Cuid: ResolverTypeWrapper<Scalars['Cuid']['output']>;
@@ -715,7 +714,7 @@ export type ResolversParentTypes = {
   Byte: Scalars['Byte']['output'];
   CancelSwapRequestInput: CancelSwapRequestInput;
   Chat: Chat;
-  ChatUser: ChatUser;
+  ChatUsers: ChatUsers;
   CountryCode: Scalars['CountryCode']['output'];
   CountryName: Scalars['CountryName']['output'];
   Cuid: Scalars['Cuid']['output'];
@@ -841,19 +840,17 @@ export interface ByteScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 export type ChatResolvers<ContextType = any, ParentType extends ResolversParentTypes['Chat'] = ResolversParentTypes['Chat']> = {
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  messages?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType>;
+  messages?: Resolver<Array<Maybe<ResolversTypes['Message']>>, ParentType, ContextType>;
   recentMessage?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  users?: Resolver<Array<ResolversTypes['ChatUser']>, ParentType, ContextType>;
+  users?: Resolver<ResolversTypes['ChatUsers'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ChatUserResolvers<ContextType = any, ParentType extends ResolversParentTypes['ChatUser'] = ResolversParentTypes['ChatUser']> = {
-  firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+export type ChatUsersResolvers<ContextType = any, ParentType extends ResolversParentTypes['ChatUsers'] = ResolversParentTypes['ChatUsers']> = {
   id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  profile_img?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  userId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  receiver?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  sender?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1022,7 +1019,7 @@ export type MessageResolvers<ContextType = any, ParentType extends ResolversPare
   mediaUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   messageType?: Resolver<ResolversTypes['MessageType'], ParentType, ContextType>;
-  sender?: Resolver<Maybe<ResolversTypes['ChatUser']>, ParentType, ContextType>;
+  sender?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   timestamp?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1295,7 +1292,7 @@ export type Resolvers<ContextType = any> = {
   BigInt?: GraphQLScalarType;
   Byte?: GraphQLScalarType;
   Chat?: ChatResolvers<ContextType>;
-  ChatUser?: ChatUserResolvers<ContextType>;
+  ChatUsers?: ChatUsersResolvers<ContextType>;
   CountryCode?: GraphQLScalarType;
   CountryName?: GraphQLScalarType;
   Cuid?: GraphQLScalarType;

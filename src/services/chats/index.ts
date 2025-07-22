@@ -11,7 +11,7 @@ export const createChat = async (data: any) => {
     throw createError(400, "Invalid sender or receiver ID");
   }
   return await chatModel.create({
-    users: [{ sender: data.sender, receiver: data.receiver }],
+    users: { sender: data.sender, receiver: data.receiver },
   });
 };
 
@@ -39,7 +39,6 @@ export const getChatById = async (chatId: string | Types.ObjectId) => {
     .findById(chatId)
     .populate("users.sender", "id firstName lastName email profile_img")
     .populate("users.receiver", "id firstName lastName email profile_img")
-    .lean();
 
   if (!chat) {
     throw createError(404, "Chat not found");
@@ -54,14 +53,13 @@ export const getAllChatsByUserId = async (userId: string | Types.ObjectId) => {
   }
 
   const chats = await chatModel
-    .find({ $or: [{"users.sender": userId, "users.receiver": userId}] })
+    .find({ $or: [{"users.sender": userId}, {"users.receiver": userId}] })
     .populate("users.sender", "id firstName lastName email profile_img")
     .populate("users.receiver", "id firstName lastName email profile_img")
-    .lean();
+    .sort({ updatedAt: -1 });
 
-  if (!chats) {
-    throw createError(404, "No chats found for this user");
+  if (!chats || chats.length === 0) {
+    return [];
   }
-  console.log(chats)
   return chats;
 }
