@@ -6,6 +6,13 @@ export const chatTypeDeffs = `#graphql
         DOCUMENT 
     }
 
+    enum MessagesStatus {
+        SENT
+        DELIVERED
+        READ
+        DELETED
+    }
+
     type ChatUsers {
         id: ID
         sender: User
@@ -18,9 +25,9 @@ export const chatTypeDeffs = `#graphql
         messageType: MessageType!
         message: String
         mediaUrl: String
-        isRead: Boolean!
-        isDeleted: Boolean!
-        timestamp: String!
+        status: MessagesStatus!
+        createdAt: DateTime
+        updatedAt: DateTime
     }
 
     type Chat {
@@ -35,6 +42,30 @@ export const chatTypeDeffs = `#graphql
     extend type Query {
         getChatById(chatId: ID!): Chat
         allChats(userId: ID): [Chat]!
+    }
+
+    input ChatUsersInput {
+        sender: ID!
+        receiver: ID!
+    }
+
+    input MessageInput {
+        sender: ID!
+        messageType: MessageType!
+        message: String
+        mediaUrl: String
+    }
+
+    input newMessageInput {
+        from: String!
+        to: String!
+        chatId: ID!
+        message: MessageInput!
+        users: ChatUsersInput!
+    }
+
+    extend type Mutation {
+        upsertMessage(data: newMessageInput!): Chat
     }
 
 `;

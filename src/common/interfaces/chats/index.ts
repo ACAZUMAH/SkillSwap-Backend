@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { MessageType } from "src/common/enums";
+import { MessagesStatus, MessageType } from "src/common/enums";
 
 export interface ChatUsersDocument{
     sender: Types.ObjectId;
@@ -12,8 +12,7 @@ export interface MessageDocument {
     messageType: MessageType;
     message?: string; 
     mediaUrl?: string;
-    isRead: boolean;
-    isDeleted: boolean;
+    status: MessagesStatus
     timestamp: Date;
     createdAt?: Date;
     updatedAt?: Date;
@@ -28,15 +27,28 @@ export interface ChatDocument {
     updatedAt?: Date;
 }
 
-export interface messageInput {
-    sender: Types.ObjectId;
-    messageType: MessageType;
-    message?: string; 
-    mediaUrl?: string;
+export interface ChatUsers {
+    sender?: string | Types.ObjectId;
+    receiver?: string | Types.ObjectId;
 }
 
+export interface Message {
+    sender: Types.ObjectId | string;
+    messageType: MessageType;
+    message?: string | null; 
+    mediaUrl?: string | null;
+    status?: MessagesStatus
+}
 export interface ChatInput {
-    chatId?: Types.ObjectId;
-    users: ChatUsersDocument;
-    message: MessageDocument;
+    chatId?: Types.ObjectId | string;
+    users: ChatUsers;
+    message: Message;
+}
+
+export interface newMessageInput {
+    from: string;
+    to: string;
+    chatId: Types.ObjectId | string;
+    message: Message;
+    users: ChatUsers;
 }

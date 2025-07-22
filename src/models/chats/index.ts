@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import { MessageType } from "src/common/enums";
+import { MessagesStatus, MessageType } from "src/common/enums";
 import { ChatDocument, ChatUsersDocument, MessageDocument } from "src/common/interfaces";
 
 const users = new Schema<ChatUsersDocument>({
@@ -12,8 +12,7 @@ const messageSchema = new Schema<MessageDocument>({
     messageType: { type: String, enum: Object.values(MessageType), default: MessageType.TEXT, required: true },
     message: { type: String, required: function(this: any) { return this.messageType === MessageType.TEXT; } },
     mediaUrl: { type: String, required: function(this: any) { return this.messageType !== MessageType.TEXT; } },
-    isRead: { type: Boolean, default: false },
-    isDeleted: { type: Boolean, default: false },
+    status: { type: String, enum: Object.values(MessagesStatus), default: MessagesStatus.SENT },
     }, {
     timestamps: true,
 })

@@ -11,6 +11,8 @@ import { applyMiddlewares } from "./middlewares";
 import { createSocketIoServer } from "./servers/createSocketIoServer";
 
 const PORT = process.env.PORT || 8800;
+global.onlineUsers = new Map<string, string>();
+global.userSocketMap = new Map<string, string>();
 
 const startServer = async () => {
   const app = createExpressApp();

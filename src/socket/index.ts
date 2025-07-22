@@ -15,8 +15,8 @@ const disconnection = (socket: Socket, userSocketMap: Map<string, string>) => {
 };
 
 const sendMessage = async (socket: Socket, userSocketMap: Map<string, string>, message: ChatInput) => {
-  const senderId = userSocketMap.get(message.users?.sender.toString());
-  const receiverId = userSocketMap.get(message.users?.receiver?.toString());
+  const senderId = userSocketMap.get(message.users?.sender!.toString());
+  const receiverId = userSocketMap.get(message.users?.receiver!.toString());
 
   const msg = await services.upsertMessage(message);
 

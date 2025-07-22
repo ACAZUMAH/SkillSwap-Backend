@@ -118,6 +118,11 @@ export type ChatUsers = {
   sender?: Maybe<User>;
 };
 
+export type ChatUsersInput = {
+  receiver: Scalars['ID']['input'];
+  sender: Scalars['ID']['input'];
+};
+
 export type Education = {
   __typename?: 'Education';
   degree?: Maybe<Scalars['String']['output']>;
@@ -159,6 +164,13 @@ export type Message = {
   timestamp: Scalars['String']['output'];
 };
 
+export type MessageInput = {
+  mediaUrl?: InputMaybe<Scalars['String']['input']>;
+  message?: InputMaybe<Scalars['String']['input']>;
+  messageType: MessageType;
+  sender: Scalars['ID']['input'];
+};
+
 export enum MessageType {
   DOCUMENT = 'DOCUMENT',
   IMAGE = 'IMAGE',
@@ -178,6 +190,7 @@ export type Mutation = {
   login?: Maybe<Response>;
   updateSwap: Swap;
   updateUser: User;
+  upsertMessage?: Maybe<Chat>;
   verifyOtpAndSaveNewPassword: Response;
 };
 
@@ -224,6 +237,11 @@ export type MutationUpdateSwapArgs = {
 
 export type MutationUpdateUserArgs = {
   data?: InputMaybe<UpdateUserInput>;
+};
+
+
+export type MutationUpsertMessageArgs = {
+  data: NewMessageInput;
 };
 
 
@@ -503,6 +521,14 @@ export type LoginUserInput = {
   phoneNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type NewMessageInput = {
+  chatId: Scalars['ID']['input'];
+  from: Scalars['String']['input'];
+  message: MessageInput;
+  to: Scalars['String']['input'];
+  users: ChatUsersInput;
+};
+
 export type RecommendationFilters = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -597,6 +623,7 @@ export type ResolversTypes = {
   CancelSwapRequestInput: CancelSwapRequestInput;
   Chat: ResolverTypeWrapper<Chat>;
   ChatUsers: ResolverTypeWrapper<ChatUsers>;
+  ChatUsersInput: ChatUsersInput;
   CountryCode: ResolverTypeWrapper<Scalars['CountryCode']['output']>;
   CountryName: ResolverTypeWrapper<Scalars['CountryName']['output']>;
   Cuid: ResolverTypeWrapper<Scalars['Cuid']['output']>;
@@ -641,6 +668,7 @@ export type ResolversTypes = {
   Longitude: ResolverTypeWrapper<Scalars['Longitude']['output']>;
   MAC: ResolverTypeWrapper<Scalars['MAC']['output']>;
   Message: ResolverTypeWrapper<Message>;
+  MessageInput: MessageInput;
   MessageType: MessageType;
   Mutation: ResolverTypeWrapper<{}>;
   NegativeFloat: ResolverTypeWrapper<Scalars['NegativeFloat']['output']>;
@@ -700,6 +728,7 @@ export type ResolversTypes = {
   Void: ResolverTypeWrapper<Scalars['Void']['output']>;
   createUserInput: CreateUserInput;
   loginUserInput: LoginUserInput;
+  newMessageInput: NewMessageInput;
   recommendationFilters: RecommendationFilters;
   updateSwapInput: UpdateSwapInput;
 };
@@ -715,6 +744,7 @@ export type ResolversParentTypes = {
   CancelSwapRequestInput: CancelSwapRequestInput;
   Chat: Chat;
   ChatUsers: ChatUsers;
+  ChatUsersInput: ChatUsersInput;
   CountryCode: Scalars['CountryCode']['output'];
   CountryName: Scalars['CountryName']['output'];
   Cuid: Scalars['Cuid']['output'];
@@ -759,6 +789,7 @@ export type ResolversParentTypes = {
   Longitude: Scalars['Longitude']['output'];
   MAC: Scalars['MAC']['output'];
   Message: Message;
+  MessageInput: MessageInput;
   Mutation: {};
   NegativeFloat: Scalars['NegativeFloat']['output'];
   NegativeInt: Scalars['NegativeInt']['output'];
@@ -815,6 +846,7 @@ export type ResolversParentTypes = {
   Void: Scalars['Void']['output'];
   createUserInput: CreateUserInput;
   loginUserInput: LoginUserInput;
+  newMessageInput: NewMessageInput;
   recommendationFilters: RecommendationFilters;
   updateSwapInput: UpdateSwapInput;
 };
@@ -1035,6 +1067,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   login?: Resolver<Maybe<ResolversTypes['Response']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'data'>>;
   updateSwap?: Resolver<ResolversTypes['Swap'], ParentType, ContextType, RequireFields<MutationUpdateSwapArgs, 'input'>>;
   updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, Partial<MutationUpdateUserArgs>>;
+  upsertMessage?: Resolver<Maybe<ResolversTypes['Chat']>, ParentType, ContextType, RequireFields<MutationUpsertMessageArgs, 'data'>>;
   verifyOtpAndSaveNewPassword?: Resolver<ResolversTypes['Response'], ParentType, ContextType, RequireFields<MutationVerifyOtpAndSaveNewPasswordArgs, 'otp'>>;
 };
 

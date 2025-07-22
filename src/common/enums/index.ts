@@ -19,3 +19,10 @@ export enum MessageType {
     VIDEO = "VIDEO",
     DOCUMENT = "DOCUMENT"
 }
+
+export enum MessagesStatus {
+    SENT = "SENT",
+    DELIVERED = "DELIVERED",
+    READ = "READ",
+    DELETED = "DELETED"
+}
