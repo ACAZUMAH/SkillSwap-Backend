@@ -124,6 +124,10 @@ export const swapsTypeDef = `#graphql
         createSwapRequest(input: SwapRequestInput!): Swap!
         acceptOrDeclineSwapRequest(input: AcceptOrDeclineSwapInput!): Swap!
         cancelSwapRequest(input: CancelSwapRequestInput!): Swap!
-        updateSwap(input: updateSwapInput!): Swap!
+        updateSwap(input: updateSwapInput!): Swap
+    }
+
+    extend type Subscription {
+        swapUpdated(userId: ID!): Swap
     }
 `;

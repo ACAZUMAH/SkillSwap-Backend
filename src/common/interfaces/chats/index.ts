@@ -52,3 +52,9 @@ export interface newMessageInput {
     message: Messages;
     users: ChatUser;
 }
+
+export interface getMessages {
+    chatId: Types.ObjectId | string;
+    from?: Types.ObjectId | string;
+    to?: Types.ObjectId | string;
+}

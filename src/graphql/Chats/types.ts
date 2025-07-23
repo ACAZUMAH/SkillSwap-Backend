@@ -39,10 +39,19 @@ export const chatTypeDeffs = `#graphql
         updatedAt: String!
     }
 
+    input getMessageInput {
+        chatId: ID!
+        from: ID!
+        to: ID!
+    }
+
     extend type Query {
         getChatById(chatId: ID!): Chat
         allChats(userId: ID): [Chat]!
+        getMessages(data: getMessageInput!): Chat!
+        getChatByUserId(userId: ID): [Chat]!
     }
+
 
     input ChatUsersInput {
         sender: ID!
@@ -68,4 +77,8 @@ export const chatTypeDeffs = `#graphql
         upsertMessage(data: newMessageInput!): Chat
     }
 
+    extend type Subscription {
+        getChatByUserId(userId: ID): [Chat]!
+        newChatCreated(userId: ID!): Chat!
+    }
 `;

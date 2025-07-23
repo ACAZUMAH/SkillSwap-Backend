@@ -9,6 +9,8 @@ import {
   SwapDocument,
 } from "src/common/interfaces";
 import * as services from "src/services/swaps";
+import { pubsub, SUBSCRIPTION_EVENTS } from "src/common/pubsub";
+import { withFilter } from "graphql-subscriptions";
 
 const createSwapRequest = (_: any, args: MutationCreateSwapRequestArgs, { user }: GraphqlContext) => {
   return services.upsertSwapRequest({ ...args?.input, senderId: user._id });
@@ -49,6 +51,14 @@ const receiver = (parent: SwapDocument, _: any, { userLoader }: GraphqlContext) 
 
 const id = (parent: SwapDocument) => parent._id.toString();
 
+const swapUpdated = {
+  subscribe: withFilter(
+    () => pubsub.asyncIterableIterator(SUBSCRIPTION_EVENTS.SWAP_UPDATED), 
+    (payload, variables) => {
+    return payload.userId === variables.userId;
+  })
+}
+
 export const swapResolver = {
   Query: {
     getSwapRequests,
@@ -67,5 +77,9 @@ export const swapResolver = {
     createSwapRequest,
     cancelSwapRequest,
     acceptOrDeclineSwapRequest,
+  },
+
+  Subscription: {
+    swapUpdated,
   },
 };

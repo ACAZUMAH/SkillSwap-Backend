@@ -18,6 +18,7 @@ import {
 import { createChat } from "../chats";
 import { Status } from "src/common/enums";
 import { getUserById } from "../user";
+import { pubsub, SUBSCRIPTION_EVENTS } from "src/common/pubsub";
 
 /**
  * Creates a swap request between two users.
@@ -90,8 +91,34 @@ export const acceptOrDeclineSwapRequest = async (data: AcceptOrDeclineSwap) => {
     { new: true }
   );
 
-  if (swap && swap.status === "ACCEPTED")
-    await createChat({ sender: swap.senderId, receiver: swap.receiverId });
+  if (swap && swap.status === "ACCEPTED") {
+    const newChat = await createChat({
+      sender: swap.senderId,
+      receiver: swap.receiverId,
+    });
+
+    // Publish the new chat creation event for sender
+    pubsub.publish(SUBSCRIPTION_EVENTS.CHAT_CREATED, {
+      newChatCreated: newChat,
+      userId: swap.senderId,
+    });
+
+    // Publish the new chat creation event for receiver
+    pubsub.publish(SUBSCRIPTION_EVENTS.CHAT_CREATED, {
+      newChatCreated: newChat,
+      userId: swap.receiverId,
+    });
+  }
+
+  pubsub.publish(SUBSCRIPTION_EVENTS.SWAP_UPDATED, {
+    swapUpdated: swap,
+    userId: swap?.senderId,
+  });
+
+  pubsub.publish(SUBSCRIPTION_EVENTS.SWAP_UPDATED, {
+    swapUpdated: swap,
+    userId: swap?.receiverId,
+  });
 
   return swap;
 };

@@ -154,14 +154,14 @@ export type Filters = {
 
 export type Message = {
   __typename?: 'Message';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['ID']['output'];
-  isDeleted: Scalars['Boolean']['output'];
-  isRead: Scalars['Boolean']['output'];
   mediaUrl?: Maybe<Scalars['String']['output']>;
   message?: Maybe<Scalars['String']['output']>;
   messageType: MessageType;
   sender?: Maybe<User>;
-  timestamp: Scalars['String']['output'];
+  status: MessagesStatus;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type MessageInput = {
@@ -178,6 +178,13 @@ export enum MessageType {
   VIDEO = 'VIDEO'
 }
 
+export enum MessagesStatus {
+  DELETED = 'DELETED',
+  DELIVERED = 'DELIVERED',
+  READ = 'READ',
+  SENT = 'SENT'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
   _empty?: Maybe<Scalars['String']['output']>;
@@ -188,7 +195,7 @@ export type Mutation = {
   createAccount: Response;
   createSwapRequest: Swap;
   login?: Maybe<Response>;
-  updateSwap: Swap;
+  updateSwap?: Maybe<Swap>;
   updateUser: User;
   upsertMessage?: Maybe<Chat>;
   verifyOtpAndSaveNewPassword: Response;
@@ -262,6 +269,8 @@ export type Query = {
   _empty?: Maybe<Scalars['String']['output']>;
   allChats: Array<Maybe<Chat>>;
   getChatById?: Maybe<Chat>;
+  getChatByUserId: Array<Maybe<Chat>>;
+  getMessages: Chat;
   getRequestedSwaps?: Maybe<SwapConnection>;
   getSwapByUsers?: Maybe<Swap>;
   getSwapRequest?: Maybe<Swap>;
@@ -281,6 +290,16 @@ export type QueryAllChatsArgs = {
 
 export type QueryGetChatByIdArgs = {
   chatId: Scalars['ID']['input'];
+};
+
+
+export type QueryGetChatByUserIdArgs = {
+  userId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type QueryGetMessagesArgs = {
+  data: GetMessageInput;
 };
 
 
@@ -386,6 +405,24 @@ export enum Status {
 export type Subscription = {
   __typename?: 'Subscription';
   _empty?: Maybe<Scalars['String']['output']>;
+  getChatByUserId: Array<Maybe<Chat>>;
+  newChatCreated: Chat;
+  swapUpdated: Swap;
+};
+
+
+export type SubscriptionGetChatByUserIdArgs = {
+  userId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type SubscriptionNewChatCreatedArgs = {
+  userId: Scalars['ID']['input'];
+};
+
+
+export type SubscriptionSwapUpdatedArgs = {
+  userId: Scalars['ID']['input'];
 };
 
 export type Swap = {
@@ -513,6 +550,12 @@ export type CreateUserInput = {
   lastName?: InputMaybe<Scalars['String']['input']>;
   password: Scalars['String']['input'];
   phoneNumber: Scalars['String']['input'];
+};
+
+export type GetMessageInput = {
+  chatId: Scalars['ID']['input'];
+  from: Scalars['ID']['input'];
+  to: Scalars['ID']['input'];
 };
 
 export type LoginUserInput = {
@@ -670,6 +713,7 @@ export type ResolversTypes = {
   Message: ResolverTypeWrapper<Message>;
   MessageInput: MessageInput;
   MessageType: MessageType;
+  MessagesStatus: MessagesStatus;
   Mutation: ResolverTypeWrapper<{}>;
   NegativeFloat: ResolverTypeWrapper<Scalars['NegativeFloat']['output']>;
   NegativeInt: ResolverTypeWrapper<Scalars['NegativeInt']['output']>;
@@ -727,6 +771,7 @@ export type ResolversTypes = {
   UtcOffset: ResolverTypeWrapper<Scalars['UtcOffset']['output']>;
   Void: ResolverTypeWrapper<Scalars['Void']['output']>;
   createUserInput: CreateUserInput;
+  getMessageInput: GetMessageInput;
   loginUserInput: LoginUserInput;
   newMessageInput: NewMessageInput;
   recommendationFilters: RecommendationFilters;
@@ -845,6 +890,7 @@ export type ResolversParentTypes = {
   UtcOffset: Scalars['UtcOffset']['output'];
   Void: Scalars['Void']['output'];
   createUserInput: CreateUserInput;
+  getMessageInput: GetMessageInput;
   loginUserInput: LoginUserInput;
   newMessageInput: NewMessageInput;
   recommendationFilters: RecommendationFilters;
@@ -1045,14 +1091,14 @@ export interface MacScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes[
 }
 
 export type MessageResolvers<ContextType = any, ParentType extends ResolversParentTypes['Message'] = ResolversParentTypes['Message']> = {
+  createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  isDeleted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  isRead?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   mediaUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   messageType?: Resolver<ResolversTypes['MessageType'], ParentType, ContextType>;
   sender?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-  timestamp?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['MessagesStatus'], ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1065,7 +1111,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createAccount?: Resolver<ResolversTypes['Response'], ParentType, ContextType, RequireFields<MutationCreateAccountArgs, 'data'>>;
   createSwapRequest?: Resolver<ResolversTypes['Swap'], ParentType, ContextType, RequireFields<MutationCreateSwapRequestArgs, 'input'>>;
   login?: Resolver<Maybe<ResolversTypes['Response']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'data'>>;
-  updateSwap?: Resolver<ResolversTypes['Swap'], ParentType, ContextType, RequireFields<MutationUpdateSwapArgs, 'input'>>;
+  updateSwap?: Resolver<Maybe<ResolversTypes['Swap']>, ParentType, ContextType, RequireFields<MutationUpdateSwapArgs, 'input'>>;
   updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, Partial<MutationUpdateUserArgs>>;
   upsertMessage?: Resolver<Maybe<ResolversTypes['Chat']>, ParentType, ContextType, RequireFields<MutationUpsertMessageArgs, 'data'>>;
   verifyOtpAndSaveNewPassword?: Resolver<ResolversTypes['Response'], ParentType, ContextType, RequireFields<MutationVerifyOtpAndSaveNewPasswordArgs, 'otp'>>;
@@ -1135,6 +1181,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   _empty?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   allChats?: Resolver<Array<Maybe<ResolversTypes['Chat']>>, ParentType, ContextType, Partial<QueryAllChatsArgs>>;
   getChatById?: Resolver<Maybe<ResolversTypes['Chat']>, ParentType, ContextType, RequireFields<QueryGetChatByIdArgs, 'chatId'>>;
+  getChatByUserId?: Resolver<Array<Maybe<ResolversTypes['Chat']>>, ParentType, ContextType, Partial<QueryGetChatByUserIdArgs>>;
+  getMessages?: Resolver<ResolversTypes['Chat'], ParentType, ContextType, RequireFields<QueryGetMessagesArgs, 'data'>>;
   getRequestedSwaps?: Resolver<Maybe<ResolversTypes['SwapConnection']>, ParentType, ContextType, Partial<QueryGetRequestedSwapsArgs>>;
   getSwapByUsers?: Resolver<Maybe<ResolversTypes['Swap']>, ParentType, ContextType, Partial<QueryGetSwapByUsersArgs>>;
   getSwapRequest?: Resolver<Maybe<ResolversTypes['Swap']>, ParentType, ContextType, RequireFields<QueryGetSwapRequestArgs, 'swapId'>>;
@@ -1209,6 +1257,9 @@ export type SkillResolvers<ContextType = any, ParentType extends ResolversParent
 
 export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
   _empty?: SubscriptionResolver<Maybe<ResolversTypes['String']>, "_empty", ParentType, ContextType>;
+  getChatByUserId?: SubscriptionResolver<Array<Maybe<ResolversTypes['Chat']>>, "getChatByUserId", ParentType, ContextType, Partial<SubscriptionGetChatByUserIdArgs>>;
+  newChatCreated?: SubscriptionResolver<ResolversTypes['Chat'], "newChatCreated", ParentType, ContextType, RequireFields<SubscriptionNewChatCreatedArgs, 'userId'>>;
+  swapUpdated?: SubscriptionResolver<ResolversTypes['Swap'], "swapUpdated", ParentType, ContextType, RequireFields<SubscriptionSwapUpdatedArgs, 'userId'>>;
 };
 
 export type SwapResolvers<ContextType = any, ParentType extends ResolversParentTypes['Swap'] = ResolversParentTypes['Swap']> = {

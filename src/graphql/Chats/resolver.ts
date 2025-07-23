@@ -3,17 +3,19 @@ import {
   GraphqlContext,
   MutationUpsertMessageArgs,
   QueryAllChatsArgs,
+  QueryGetMessagesArgs,
+  SubscriptionGetChatByUserIdArgs,
 } from "src/common/interfaces";
 import { getAllChatsByUserId } from "src/services/chats";
-import { addNewMessage } from "src/services/messaging";
+import { addNewMessage, getMessagesByChatId } from "src/services/messaging";
 
 const id = (parent: ChatDocument) => parent._id.toString();
 
-const allChats = (_: any, __args: QueryAllChatsArgs, { user }: GraphqlContext) => {
+const allChats =  (_: any, __args: QueryAllChatsArgs, { user }: GraphqlContext) => {
   return getAllChatsByUserId(user._id);
 };
 
-const upsertMessage = async (_: any, args: MutationUpsertMessageArgs, { user }: GraphqlContext) => {
+const upsertMessage = (_: any, args: MutationUpsertMessageArgs, { user }: GraphqlContext) => {
   return addNewMessage({
     ...args.data,
     from: user._id,
@@ -21,9 +23,19 @@ const upsertMessage = async (_: any, args: MutationUpsertMessageArgs, { user }: 
   });
 };
 
+const getMessages = (_:any, args: QueryGetMessagesArgs) => {
+  return getMessagesByChatId({ ...args.data })
+}
+
+const getChatByUserId = async (_: any, args: SubscriptionGetChatByUserIdArgs, { user }: GraphqlContext) => {
+  return getAllChatsByUserId(args.userId || user._id);
+};
+
 export const chatResolver = {
   Query: {
     allChats,
+    getChatByUserId,
+    getMessages,
   },
   Chat: {
     id,
@@ -31,4 +43,7 @@ export const chatResolver = {
   Mutation: {
     upsertMessage,
   },
+  Subscription: {
+    getChatByUserId
+  }
 };

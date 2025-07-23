@@ -1,7 +1,8 @@
-import { newMessageInput } from "src/common/interfaces";
-import { upsertMessage } from "../chats";
+import { getMessages, newMessageInput } from "src/common/interfaces";
+import { getChatById, updateUreadMessages, upsertMessage } from "../chats";
 import { MessagesStatus } from "src/common/enums";
 import createError from "http-errors";
+import { Types } from "mongoose";
 
 export const addNewMessage = async (data: newMessageInput) => {
   const { from, to, chatId, message, users } = data;
@@ -26,3 +27,23 @@ export const addNewMessage = async (data: newMessageInput) => {
 
   return newMessage;
 };
+
+
+export const getMessagesByChatId = async (data: getMessages) => {
+  const { chatId, from, to } = data
+
+  const chat = await getChatById(chatId)
+
+  const unreadMessages: Types.ObjectId[] = []
+
+  chat.messages.forEach((message, index) => {
+    if(message.status !== MessagesStatus.READ && message.sender._id === to){
+      chat.messages[index].status = MessagesStatus.READ
+      unreadMessages.push(message._id)
+    }
+  })
+
+  await updateUreadMessages(chatId, unreadMessages)
+
+  return chat
+}
