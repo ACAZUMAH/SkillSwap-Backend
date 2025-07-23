@@ -56,7 +56,8 @@ const swapUpdated = {
     () => pubsub.asyncIterableIterator(SUBSCRIPTION_EVENTS.SWAP_UPDATED), 
     (payload, variables) => {
     return payload.userId === variables.userId;
-  })
+  }),
+  resolve: (payload: any) => payload.swapUpdated,
 }
 
 export const swapResolver = {

@@ -1,3 +1,4 @@
+import { withFilter } from "graphql-subscriptions";
 import {
   ChatDocument,
   GraphqlContext,
@@ -6,6 +7,7 @@ import {
   QueryGetMessagesArgs,
   SubscriptionGetChatByUserIdArgs,
 } from "src/common/interfaces";
+import { pubsub, SUBSCRIPTION_EVENTS } from "src/common/pubsub";
 import { getAllChatsByUserId } from "src/services/chats";
 import { addNewMessage, getMessagesByChatId } from "src/services/messaging";
 
@@ -31,6 +33,16 @@ const getChatByUserId = async (_: any, args: SubscriptionGetChatByUserIdArgs, { 
   return getAllChatsByUserId(args.userId || user._id);
 };
 
+const newChatCreated = {
+  subscribe: withFilter(
+    () => pubsub.asyncIterableIterator(SUBSCRIPTION_EVENTS.CHAT_CREATED),
+    (payload, variables) => {
+      return payload.userId === variables.userId;
+    }
+  ),
+  resolve: (payload: any) => payload.newChatCreated,
+};
+
 export const chatResolver = {
   Query: {
     allChats,
@@ -44,6 +56,7 @@ export const chatResolver = {
     upsertMessage,
   },
   Subscription: {
-    getChatByUserId
+    getChatByUserId,
+    newChatCreated,
   }
 };

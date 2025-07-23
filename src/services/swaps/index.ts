@@ -16,8 +16,6 @@ import {
   getSanitizePage,
 } from "src/common/helpers";
 import { createChat } from "../chats";
-import { Status } from "src/common/enums";
-import { getUserById } from "../user";
 import { pubsub, SUBSCRIPTION_EVENTS } from "src/common/pubsub";
 
 /**

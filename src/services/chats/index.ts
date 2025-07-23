@@ -8,7 +8,7 @@ import { MessagesStatus } from "src/common/enums";
  * create a new chat between two users
  * 
  * @param {Object} data - Contains sender and receiver IDs
- * @returns {Promise<Object>} - The created chat document
+ * @returns - The created chat document
  */
 export const createChat = async (data: any) => {
   if (
@@ -26,7 +26,7 @@ export const createChat = async (data: any) => {
  * get messages by chat ID
  *
  * @param {getMessages} data - Contains chatId, from, and to fields
- * @returns {Promise<Object>} - The chat document with messages
+ * @returns- The chat document with messages
  */
 export const upsertMessage = async (data: ChatInput) => {
   const { chatId, message } = data;
@@ -48,9 +48,9 @@ export const upsertMessage = async (data: ChatInput) => {
  * get a chat by its ID
  * 
  * @param {string | Types.ObjectId} chatId - The ID of the chat to retrieve
- * @returns {Promise<Object>} - The chat document
+ * @returns - The chat document
  */
-export const getChatById = async (chatId: string | Types.ObjectId): Promise<ChatDocument> => {
+export const getChatById = async (chatId: string | Types.ObjectId) => {
   if (!Types.ObjectId.isValid(chatId)) {
     throw createError(400, "Invalid chat ID");
   }
@@ -70,9 +70,9 @@ export const getChatById = async (chatId: string | Types.ObjectId): Promise<Chat
  * get all chats by user ID
  * 
  * @param {string | Types.ObjectId} userId - The ID of the user to retrieve chats for
- * @returns {Promise<Array>} - An array of chat documents
+ * @returns - An array of chat documents
  */
-export const getAllChatsByUserId = async (userId: string | Types.ObjectId): Promise<Array<any>> => {
+export const getAllChatsByUserId = async (userId: string | Types.ObjectId) => {
   if (!Types.ObjectId.isValid(userId)) {
     throw createError(400, "Invalid user ID");
   }
@@ -94,7 +94,7 @@ export const getAllChatsByUserId = async (userId: string | Types.ObjectId): Prom
  * 
  * @param {string | Types.ObjectId} chatId - The ID of the chat to update
  * @param {Array<string | Types.ObjectId>} messageIds - The IDs of the messages to mark as read
- * @returns {Promise<Object>} - The updated chat document
+ * @returns - The updated chat document
  */
 export const updateUreadMessages = async (
   chatId: string | Types.ObjectId,
