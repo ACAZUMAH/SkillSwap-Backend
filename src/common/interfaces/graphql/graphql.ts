@@ -406,8 +406,8 @@ export type Subscription = {
   __typename?: 'Subscription';
   _empty?: Maybe<Scalars['String']['output']>;
   getChatByUserId: Array<Maybe<Chat>>;
-  newChatCreated: Chat;
-  swapUpdated: Swap;
+  newChatCreated?: Maybe<Chat>;
+  swapUpdated?: Maybe<Swap>;
 };
 
 
@@ -1258,8 +1258,8 @@ export type SkillResolvers<ContextType = any, ParentType extends ResolversParent
 export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
   _empty?: SubscriptionResolver<Maybe<ResolversTypes['String']>, "_empty", ParentType, ContextType>;
   getChatByUserId?: SubscriptionResolver<Array<Maybe<ResolversTypes['Chat']>>, "getChatByUserId", ParentType, ContextType, Partial<SubscriptionGetChatByUserIdArgs>>;
-  newChatCreated?: SubscriptionResolver<ResolversTypes['Chat'], "newChatCreated", ParentType, ContextType, RequireFields<SubscriptionNewChatCreatedArgs, 'userId'>>;
-  swapUpdated?: SubscriptionResolver<ResolversTypes['Swap'], "swapUpdated", ParentType, ContextType, RequireFields<SubscriptionSwapUpdatedArgs, 'userId'>>;
+  newChatCreated?: SubscriptionResolver<Maybe<ResolversTypes['Chat']>, "newChatCreated", ParentType, ContextType, RequireFields<SubscriptionNewChatCreatedArgs, 'userId'>>;
+  swapUpdated?: SubscriptionResolver<Maybe<ResolversTypes['Swap']>, "swapUpdated", ParentType, ContextType, RequireFields<SubscriptionSwapUpdatedArgs, 'userId'>>;
 };
 
 export type SwapResolvers<ContextType = any, ParentType extends ResolversParentTypes['Swap'] = ResolversParentTypes['Swap']> = {
