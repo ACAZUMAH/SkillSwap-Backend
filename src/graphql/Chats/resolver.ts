@@ -40,7 +40,7 @@ const newChatCreated = {
       return payload && payload.userId === variables.userId;
     }
   ),
-  resolve: (payload: any) => payload.newChatCreated || null,
+  resolve: (payload: any) => payload?.newChatCreated || null,
 };
 
 export const chatResolver = {

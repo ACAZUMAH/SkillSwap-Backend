@@ -57,7 +57,7 @@ const swapUpdated = {
     (payload, variables) => {
     return payload && payload.userId === variables.userId;
   }),
-  resolve: (payload: any) => payload.swapUpdated || null,
+  resolve: (payload: any) => payload?.swapUpdated || null,
 }
 
 export const swapResolver = {
