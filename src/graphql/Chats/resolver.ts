@@ -37,10 +37,10 @@ const newChatCreated = {
   subscribe: withFilter(
     () => pubsub.asyncIterableIterator(SUBSCRIPTION_EVENTS.CHAT_CREATED),
     (payload, variables) => {
-      return payload.userId === variables.userId;
+      return payload && payload.userId === variables.userId;
     }
   ),
-  resolve: (payload: any) => payload.newChatCreated,
+  resolve: (payload: any) => payload.newChatCreated || null,
 };
 
 export const chatResolver = {

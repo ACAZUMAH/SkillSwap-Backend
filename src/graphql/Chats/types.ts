@@ -79,6 +79,6 @@ export const chatTypeDeffs = `#graphql
 
     extend type Subscription {
         getChatByUserId(userId: ID): [Chat]!
-        newChatCreated(userId: ID!): Chat!
+        newChatCreated(userId: ID!): Chat
     }
 `;
