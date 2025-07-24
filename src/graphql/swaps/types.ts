@@ -128,6 +128,7 @@ export const swapsTypeDef = `#graphql
     }
 
     extend type Subscription {
+        newSwapRequest(userId: ID!): Swap
         swapUpdated(userId: ID!): Swap
     }
 `;

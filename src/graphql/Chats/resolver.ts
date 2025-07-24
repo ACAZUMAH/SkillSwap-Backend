@@ -35,12 +35,22 @@ const getChatByUserId = async (_: any, args: SubscriptionGetChatByUserIdArgs, { 
 
 const newChatCreated = {
   subscribe: withFilter(
-    () => pubsub.asyncIterableIterator(SUBSCRIPTION_EVENTS.CHAT_CREATED),
+    () => { 
+      console.log("newChatCreated: subscribed")
+      return pubsub.asyncIterableIterator(SUBSCRIPTION_EVENTS.CHAT_CREATED)
+    },
     (payload, variables) => {
+      console.log("payload userId", payload?.userId);
+      console.log("variables userId", variables.userId);
+      if(!payload || !payload.userId) return false;
       return payload && payload.userId === variables.userId;
     }
   ),
-  resolve: (payload: any) => payload?.newChatCreated || null,
+  resolve: (payload: any) => { 
+    console.log("newChatCreated payload", payload?.newChatCreated);
+    if (!payload || !payload.swapUpdated) return null;
+    return payload?.newChatCreated;
+  },
 };
 
 export const chatResolver = {

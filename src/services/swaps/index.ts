@@ -40,7 +40,7 @@ export const upsertSwapRequest = async (data: SwapRequest) => {
     receiverId: data.receiverId,
   };
 
-  return await swapModel.findOneAndUpdate(
+  const newSwap = await swapModel.findOneAndUpdate(
     { senderId: data.senderId, receiverId: data.receiverId },
     { ...info },
     {
@@ -48,6 +48,15 @@ export const upsertSwapRequest = async (data: SwapRequest) => {
       new: true,
     }
   );
+  
+  await pubsub.publish(SUBSCRIPTION_EVENTS.NEW_SWAP_REQUEST, {
+    newSwapRequest: newSwap,
+    userId: newSwap?.receiverId.toString(),
+    senderId: newSwap?.senderId.toString(),
+    receiverId: newSwap?.receiverId.toString(),
+  });
+
+  return newSwap;
 };
 
 /**
@@ -93,31 +102,43 @@ export const acceptOrDeclineSwapRequest = async (data: AcceptOrDeclineSwap) => {
     if (swap && swap.status === "ACCEPTED") {
       const newChat = await createChat({
         sender: swap.senderId,
-        receiver: swap.receiverId,
+        receiver: swap.receiverId.toString(),
       });
 
       // Publish the new chat creation event for sender
       pubsub.publish(SUBSCRIPTION_EVENTS.CHAT_CREATED, {
         newChatCreated: newChat,
-        userId: swap.senderId,
+        userId: swap.senderId.toString(),
+        senderid: swap.senderId.toString(),
+        receiverId: swap.receiverId.toString(),
       });
+      console.log("published", pubsub.publish);
 
       // Publish the new chat creation event for receiver
       pubsub.publish(SUBSCRIPTION_EVENTS.CHAT_CREATED, {
         newChatCreated: newChat,
-        userId: swap.receiverId,
+        userId: swap.receiverId.toString(),
+        senderId: swap.senderId.toString(),
+        receiverId: swap.receiverId.toString(),
       });
+      console.log("published", pubsub.publish);
     }
 
     pubsub.publish(SUBSCRIPTION_EVENTS.SWAP_UPDATED, {
       swapUpdated: swap,
-      userId: swap?.senderId,
+      userId: swap?.senderId.toString(),
+      senderId: swap?.senderId.toString(),
+      receiverId: swap?.receiverId.toString(),
     });
+    console.log("published", pubsub.publish);
 
     pubsub.publish(SUBSCRIPTION_EVENTS.SWAP_UPDATED, {
       swapUpdated: swap,
-      userId: swap?.receiverId,
+      userId: swap?.receiverId.toString(),
+      senderId: swap?.senderId.toString(),
+      receiverId: swap?.receiverId.toString(),
     });
+    console.log("published", pubsub.publish);
   }
 
   return swap;
