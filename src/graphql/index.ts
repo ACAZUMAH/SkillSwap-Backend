@@ -1,4 +1,4 @@
-import { mergeSchemas } from "@graphql-tools/schema";
+import { makeExecutableSchema, mergeSchemas } from "@graphql-tools/schema";
 import { generalResolver, generalTypeDefs } from "./general";
 import { authResolvers, authTypeDefs } from "./auth";
 import { userTypeDefs } from "./user";
@@ -30,4 +30,4 @@ const resolvers = [
     messageResolvers
 ]
 
-export const schema = mergeSchemas({ typeDefs, resolvers }) 
+export const schema = makeExecutableSchema({ typeDefs, resolvers }) 

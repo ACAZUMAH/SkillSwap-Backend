@@ -8,6 +8,7 @@ import {
   SubscriptionGetChatByUserIdArgs,
 } from "src/common/interfaces";
 import { pubsub, SUBSCRIPTION_EVENTS } from "src/common/pubsub";
+import logger from "src/loggers/logger";
 import { getAllChatsByUserId } from "src/services/chats";
 import { addNewMessage, getMessagesByChatId } from "src/services/messaging";
 
@@ -36,20 +37,15 @@ const getChatByUserId = async (_: any, args: SubscriptionGetChatByUserIdArgs, { 
 const newChatCreated = {
   subscribe: withFilter(
     () => { 
-      console.log("newChatCreated: subscribed")
+      logger.info("new chat update subscription started");
       return pubsub.asyncIterableIterator(SUBSCRIPTION_EVENTS.CHAT_CREATED)
     },
     (payload, variables) => {
-      console.log("payload userId", payload?.userId);
-      console.log("variables userId", variables.userId);
-      if(!payload || !payload.userId) return false;
       return payload && payload.userId === variables.userId;
     }
   ),
   resolve: (payload: any) => { 
-    console.log("newChatCreated payload", payload?.newChatCreated);
-    if (!payload || !payload.swapUpdated) return null;
-    return payload?.newChatCreated;
+    return payload.newChatCreated;
   },
 };
 

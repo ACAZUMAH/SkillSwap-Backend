@@ -33,12 +33,12 @@ const startServer = async () => {
     return next(createError(400, "Unable to retrive the request resource!"));
   });
 
-  await new Promise<void>((resolve) =>
-    httpServer.listen({ port: PORT }, resolve)
-  );
+  await new Promise<void>((resolve) => httpServer.listen({ port: PORT }, resolve));
 
   logger.info(`🚀 Server ready at http://localhost:${PORT}`);
   logger.info(`🚀 GraphQL Server ready at http://localhost:${PORT}/graphql`);
+  logger.info(`🚀 Subscription Server ready at ws://localhost:${PORT}/graphql`);
+  logger.info(`🚀 Socket.io Server ready at http://localhost:${PORT}/socket.io`);
 };
 
 export default startServer;

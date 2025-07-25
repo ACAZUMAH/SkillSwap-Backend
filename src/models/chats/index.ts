@@ -20,7 +20,7 @@ const messageSchema = new Schema<MessageDocument>({
 const chatSchema = new Schema<ChatDocument>({
     users: { type: users, required: true },
     messages: { type: [messageSchema], default: [] },
-    recentMessage: { type: messageSchema, default: null },
+    recentMessage: { type: messageSchema },
 }, {
     timestamps: true,
 })

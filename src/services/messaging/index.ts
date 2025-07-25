@@ -1,10 +1,10 @@
-import { getMessages, newMessageInput } from "src/common/interfaces";
+import { GetMessages, NewMessageInput } from "src/common/interfaces";
 import { getChatById, updateUreadMessages, upsertMessage } from "../chats";
 import { MessagesStatus } from "src/common/enums";
 import createError from "http-errors";
 import { Types } from "mongoose";
 
-export const addNewMessage = async (data: newMessageInput) => {
+export const addNewMessage = async (data: NewMessageInput) => {
   const { from, to, chatId, message, users } = data;
 
   const onlineReciever = onlineUsers.get(to);
@@ -29,7 +29,7 @@ export const addNewMessage = async (data: newMessageInput) => {
 };
 
 
-export const getMessagesByChatId = async (data: getMessages) => {
+export const getMessagesByChatId = async (data: GetMessages) => {
   const { chatId, from, to } = data
 
   const chat = await getChatById(chatId)

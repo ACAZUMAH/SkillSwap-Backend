@@ -3,6 +3,7 @@ import { ExpressContextFunctionArgument } from "@apollo/server/dist/esm/express4
 import { Express } from "express";
 import { GraphQLSchema } from "graphql";
 import { Server } from "http";
+import { Socket } from "socket.io";
 import { createDataloaders } from "src/dataloaders";
 declare global {
   namespace Express {
@@ -11,7 +12,7 @@ declare global {
       token?: string;
     }
   }
-
+  var socket: Socket;
   var onlineUsers: Map<string, string>;
   var userSocketMap: Map<string, string>;
 }

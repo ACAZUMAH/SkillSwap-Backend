@@ -1,4 +1,8 @@
 export const generalTypeDefs = `#graphql
+    type test {
+        data: String
+    }
+
     type PageInfo {
         hasNextPage: Boolean!
         page: Int!
@@ -29,5 +33,13 @@ export const generalTypeDefs = `#graphql
 
     type Mutation {
         _empty: String
+    }
+
+    extend type Mutation {
+        testMutation: String
+    }
+
+    extend type Subscription {
+        testSubscription: test
     }
 `;

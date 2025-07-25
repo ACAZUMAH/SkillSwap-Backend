@@ -45,16 +45,36 @@ export interface ChatInput {
     message: Messages;
 }
 
-export interface newMessageInput {
+// export interface Sender {
+//     id: Types.ObjectId | string;
+//     firstName?: string;
+//     lastName?: string;
+//     email?: string;
+//     profile_img?: string;
+// }
+
+// export interface NewMessage {
+//     id: Types.ObjectId | string;
+//     sender: Sender;
+//     messageType: MessageType;
+//     message?: string | null;
+//     mediaUrl?: string | null;
+//     status: MessagesStatus;
+//     createdAt?: Date;
+//     updatedAt?: Date;
+// }
+
+export interface NewMessageInput {
     from: string;
     to: string;
     chatId: Types.ObjectId | string;
     message: Messages;
-    users: ChatUser;
+    users?: ChatUser;
 }
 
-export interface getMessages {
+export interface GetMessages {
     chatId: Types.ObjectId | string;
     from?: Types.ObjectId | string;
     to?: Types.ObjectId | string;
 }
+

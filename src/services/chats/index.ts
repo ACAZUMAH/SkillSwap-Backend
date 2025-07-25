@@ -1,7 +1,7 @@
 import { chatModel } from "src/models/chats";
 import createError from "http-errors";
 import { Types } from "mongoose";
-import { ChatDocument, ChatInput, getMessages } from "src/common/interfaces";
+import { ChatInput } from "src/common/interfaces";
 import { MessagesStatus } from "src/common/enums";
 
 /**

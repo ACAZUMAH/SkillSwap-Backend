@@ -23,7 +23,7 @@ const context: ContextFunction<[ExpressContextFunctionArgument], GraphqlContext>
 
 export const createGraphQlServer = async ({ app, httpServer, schema }: GraphqlServer) => {
 
-    const subscriptionServerCleanUp = createGraphQlSubscriptionServer({ httpServer, schema })
+    const subscriptionServerCleanUp = createGraphQlSubscriptionServer({ httpServer, schema  })
 
     const server = new ApolloServer({
         schema,
@@ -32,7 +32,9 @@ export const createGraphQlServer = async ({ app, httpServer, schema }: GraphqlSe
         plugins: [{
             async serverWillStart(){
                 return {
-                    async drainServer(){ await subscriptionServerCleanUp.dispose() }
+                    async drainServer(){ 
+                        await subscriptionServerCleanUp.dispose() 
+                    }
                 }
             }},
             ApolloServerPluginDrainHttpServer({ httpServer })
