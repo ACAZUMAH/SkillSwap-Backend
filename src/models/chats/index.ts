@@ -3,12 +3,12 @@ import { MessagesStatus, MessageType } from "src/common/enums";
 import { ChatDocument, ChatUsersDocument, MessageDocument } from "src/common/interfaces";
 
 const users = new Schema<ChatUsersDocument>({
-    sender: { type: Schema.Types.ObjectId, required: true, ref: "users" },
-    receiver: { type: Schema.Types.ObjectId, ref: "users" },
+    senderId: { type: Schema.Types.ObjectId, required: true, ref: "users" },
+    receiverId: { type: Schema.Types.ObjectId, ref: "users" },
 })
 
 const messageSchema = new Schema<MessageDocument>({
-    sender: { type: Schema.Types.ObjectId, required: true, ref: "users" },
+    senderId: { type: Schema.Types.ObjectId, required: true, ref: "users" },
     messageType: { type: String, enum: Object.values(MessageType), default: MessageType.TEXT, required: true },
     message: { type: String, required: function(this: any) { return this.messageType === MessageType.TEXT; } },
     mediaUrl: { type: String, required: function(this: any) { return this.messageType !== MessageType.TEXT; } },

@@ -15,19 +15,22 @@ export const chatTypeDeffs = `#graphql
 
     type ChatUsers {
         id: ID
+        senderId: ID!
+        receiverId: ID!
         sender: User
         receiver: User
     }
 
     type Message {
         id: ID!
-        sender: User
+        senderId: ID!
         messageType: MessageType!
         message: String
         mediaUrl: String
         status: MessagesStatus!
         createdAt: DateTime
         updatedAt: DateTime
+        sender: User
     }
 
     type Chat {
@@ -54,12 +57,12 @@ export const chatTypeDeffs = `#graphql
 
 
     input ChatUsersInput {
-        sender: ID!
-        receiver: ID!
+        senderId: ID!
+        receiverId: ID!
     }
 
     input MessageInput {
-        sender: ID!
+        senderId: ID!
         messageType: MessageType!
         message: String
         mediaUrl: String

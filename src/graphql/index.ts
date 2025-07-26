@@ -8,7 +8,6 @@ import { swapResolver } from "./swaps";
 import { skillResolvers } from "./skills";
 import { typeDefs as scalarTypeDefs, resolvers as scalarResolvers } from "graphql-scalars"
 import { chatResolver, chatTypeDeffs } from "./Chats";
-import { messageResolvers } from "./message";
 
 const typeDefs = [
     generalTypeDefs,
@@ -27,7 +26,6 @@ const resolvers = [
     scalarResolvers,
     swapResolver,
     chatResolver,
-    messageResolvers
 ]
 
 export const schema = makeExecutableSchema({ typeDefs, resolvers }) 

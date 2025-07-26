@@ -37,7 +37,7 @@ export const getMessagesByChatId = async (data: GetMessages) => {
   const unreadMessages: Types.ObjectId[] = []
 
   chat.messages.forEach((message, index) => {
-    if(message.status !== MessagesStatus.READ && message.sender._id === to){
+    if(message.status !== MessagesStatus.READ && message.senderId === to){
       chat.messages[index].status = MessagesStatus.READ
       unreadMessages.push(message._id)
     }

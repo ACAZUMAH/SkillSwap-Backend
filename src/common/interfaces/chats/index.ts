@@ -2,13 +2,13 @@ import { Types } from "mongoose";
 import { MessagesStatus, MessageType } from "src/common/enums";
 
 export interface ChatUsersDocument{
-    sender: Types.ObjectId;
-    receiver: Types.ObjectId;
+    senderId: Types.ObjectId;
+    receiverId: Types.ObjectId;
 }
 
 export interface MessageDocument {
     _id: Types.ObjectId;
-    sender: Types.ObjectId;
+    senderId: Types.ObjectId;
     messageType: MessageType;
     message?: string; 
     mediaUrl?: string;
@@ -28,12 +28,12 @@ export interface ChatDocument {
 }
 
 export interface ChatUser {
-    sender?: string | Types.ObjectId;
-    receiver?: string | Types.ObjectId;
+    senderId?: string | Types.ObjectId;
+    receiverId?: string | Types.ObjectId;
 }
 
 export interface Messages {
-    sender: Types.ObjectId | string;
+    senderId: Types.ObjectId | string;
     messageType: MessageType;
     message?: string | null; 
     mediaUrl?: string | null;

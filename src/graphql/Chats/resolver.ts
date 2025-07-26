@@ -11,6 +11,8 @@ import { pubsub, SUBSCRIPTION_EVENTS } from "src/common/pubsub";
 import logger from "src/loggers/logger";
 import { getAllChatsByUserId } from "src/services/chats";
 import { addNewMessage, getMessagesByChatId } from "src/services/messaging";
+import { chatUsersResolver } from "./chatUsers.resolver";
+import { ChatMessageResolvers } from "./chatMessages.resolver";
 
 const id = (parent: ChatDocument) => parent._id.toString();
 
@@ -22,7 +24,7 @@ const upsertMessage = (_: any, args: MutationUpsertMessageArgs, { user }: Graphq
   return addNewMessage({
     ...args.data,
     from: user._id,
-    to: args.data.users.receiver.toString(),
+    to: args.data.users.receiverId,
   });
 };
 
@@ -50,6 +52,8 @@ const newChatCreated = {
 };
 
 export const chatResolver = {
+  ...chatUsersResolver,
+  ...ChatMessageResolvers,
   Query: {
     allChats,
     getChatByUserId,

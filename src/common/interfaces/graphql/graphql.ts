@@ -115,12 +115,14 @@ export type ChatUsers = {
   __typename?: 'ChatUsers';
   id?: Maybe<Scalars['ID']['output']>;
   receiver?: Maybe<User>;
+  receiverId: Scalars['ID']['output'];
   sender?: Maybe<User>;
+  senderId: Scalars['ID']['output'];
 };
 
 export type ChatUsersInput = {
-  receiver: Scalars['ID']['input'];
-  sender: Scalars['ID']['input'];
+  receiverId: Scalars['ID']['input'];
+  senderId: Scalars['ID']['input'];
 };
 
 export type Education = {
@@ -160,6 +162,7 @@ export type Message = {
   message?: Maybe<Scalars['String']['output']>;
   messageType: MessageType;
   sender?: Maybe<User>;
+  senderId: Scalars['ID']['output'];
   status: MessagesStatus;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
@@ -168,7 +171,7 @@ export type MessageInput = {
   mediaUrl?: InputMaybe<Scalars['String']['input']>;
   message?: InputMaybe<Scalars['String']['input']>;
   messageType: MessageType;
-  sender: Scalars['ID']['input'];
+  senderId: Scalars['ID']['input'];
 };
 
 export enum MessageType {
@@ -195,6 +198,7 @@ export type Mutation = {
   createAccount: Response;
   createSwapRequest: Swap;
   login?: Maybe<Response>;
+  testMutation?: Maybe<Scalars['String']['output']>;
   updateSwap?: Maybe<Swap>;
   updateUser: User;
   upsertMessage?: Maybe<Chat>;
@@ -409,6 +413,7 @@ export type Subscription = {
   newChatCreated?: Maybe<Chat>;
   newSwapRequest?: Maybe<Swap>;
   swapUpdated?: Maybe<Swap>;
+  testSubscription?: Maybe<Test>;
 };
 
 
@@ -582,6 +587,11 @@ export type RecommendationFilters = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   page?: InputMaybe<Scalars['Int']['input']>;
   userId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type Test = {
+  __typename?: 'test';
+  data?: Maybe<Scalars['String']['output']>;
 };
 
 export type UpdateSwapInput = {
@@ -781,6 +791,7 @@ export type ResolversTypes = {
   loginUserInput: LoginUserInput;
   newMessageInput: NewMessageInput;
   recommendationFilters: RecommendationFilters;
+  test: ResolverTypeWrapper<Test>;
   updateSwapInput: UpdateSwapInput;
 };
 
@@ -900,6 +911,7 @@ export type ResolversParentTypes = {
   loginUserInput: LoginUserInput;
   newMessageInput: NewMessageInput;
   recommendationFilters: RecommendationFilters;
+  test: Test;
   updateSwapInput: UpdateSwapInput;
 };
 
@@ -934,7 +946,9 @@ export type ChatResolvers<ContextType = any, ParentType extends ResolversParentT
 export type ChatUsersResolvers<ContextType = any, ParentType extends ResolversParentTypes['ChatUsers'] = ResolversParentTypes['ChatUsers']> = {
   id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   receiver?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  receiverId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   sender?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  senderId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1103,6 +1117,7 @@ export type MessageResolvers<ContextType = any, ParentType extends ResolversPare
   message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   messageType?: Resolver<ResolversTypes['MessageType'], ParentType, ContextType>;
   sender?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  senderId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['MessagesStatus'], ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -1117,6 +1132,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createAccount?: Resolver<ResolversTypes['Response'], ParentType, ContextType, RequireFields<MutationCreateAccountArgs, 'data'>>;
   createSwapRequest?: Resolver<ResolversTypes['Swap'], ParentType, ContextType, RequireFields<MutationCreateSwapRequestArgs, 'input'>>;
   login?: Resolver<Maybe<ResolversTypes['Response']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'data'>>;
+  testMutation?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updateSwap?: Resolver<Maybe<ResolversTypes['Swap']>, ParentType, ContextType, RequireFields<MutationUpdateSwapArgs, 'input'>>;
   updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, Partial<MutationUpdateUserArgs>>;
   upsertMessage?: Resolver<Maybe<ResolversTypes['Chat']>, ParentType, ContextType, RequireFields<MutationUpsertMessageArgs, 'data'>>;
@@ -1267,6 +1283,7 @@ export type SubscriptionResolvers<ContextType = any, ParentType extends Resolver
   newChatCreated?: SubscriptionResolver<Maybe<ResolversTypes['Chat']>, "newChatCreated", ParentType, ContextType, RequireFields<SubscriptionNewChatCreatedArgs, 'userId'>>;
   newSwapRequest?: SubscriptionResolver<Maybe<ResolversTypes['Swap']>, "newSwapRequest", ParentType, ContextType, RequireFields<SubscriptionNewSwapRequestArgs, 'userId'>>;
   swapUpdated?: SubscriptionResolver<Maybe<ResolversTypes['Swap']>, "swapUpdated", ParentType, ContextType, RequireFields<SubscriptionSwapUpdatedArgs, 'userId'>>;
+  testSubscription?: SubscriptionResolver<Maybe<ResolversTypes['test']>, "testSubscription", ParentType, ContextType>;
 };
 
 export type SwapResolvers<ContextType = any, ParentType extends ResolversParentTypes['Swap'] = ResolversParentTypes['Swap']> = {
@@ -1377,6 +1394,11 @@ export interface VoidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
   name: 'Void';
 }
 
+export type TestResolvers<ContextType = any, ParentType extends ResolversParentTypes['test'] = ResolversParentTypes['test']> = {
+  data?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = any> = {
   AccountNumber?: GraphQLScalarType;
   Authenticated?: AuthenticatedResolvers<ContextType>;
@@ -1467,5 +1489,6 @@ export type Resolvers<ContextType = any> = {
   UserConnection?: UserConnectionResolvers<ContextType>;
   UtcOffset?: GraphQLScalarType;
   Void?: GraphQLScalarType;
+  test?: TestResolvers<ContextType>;
 };
 

@@ -37,7 +37,7 @@ const sendMessage = async (socket: Socket, message: NewMessageInput) => {
     }
 
     if (sender) {
-      socket.to(sender).emit("sentMessage", {
+      socket.emit("sentMessage", {
         chatId: newMessage._id.toString(),
         message:  newMessage.recentMessage,
       });

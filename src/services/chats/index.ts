@@ -18,7 +18,7 @@ export const createChat = async (data: any) => {
     throw createError(400, "Invalid sender or receiver ID");
   }
   return await chatModel.create({
-    users: { sender: data.sender, receiver: data.receiver },
+    users: { senderId: data.sender, receiverId: data.receiver },
   });
 };
 
@@ -54,10 +54,7 @@ export const getChatById = async (chatId: string | Types.ObjectId) => {
   if (!Types.ObjectId.isValid(chatId)) {
     throw createError(400, "Invalid chat ID");
   }
-  const chat = await chatModel
-    .findById(chatId)
-    .populate("users.sender", "id firstName lastName email profile_img")
-    .populate("users.receiver", "id firstName lastName email profile_img");
+  const chat = await chatModel.findById(chatId)
 
   if (!chat) {
     throw createError(404, "Chat not found");
@@ -78,14 +75,13 @@ export const getAllChatsByUserId = async (userId: string | Types.ObjectId) => {
   }
 
   const chats = await chatModel
-    .find({ $or: [{ "users.sender": userId }, { "users.receiver": userId }] })
-    .populate("users.receiver", "id firstName lastName email profile_img")
-    .populate("users.sender", "id firstName lastName email profile_img")
+    .find({ $or: [{ "users.senderId": userId }, { "users.receiverId": userId }] })
     .sort({ updatedAt: -1 });
 
   if (!chats || chats.length === 0) {
     return [];
   }
+
   return chats;
 };
 
@@ -96,10 +92,7 @@ export const getAllChatsByUserId = async (userId: string | Types.ObjectId) => {
  * @param {Array<string | Types.ObjectId>} messageIds - The IDs of the messages to mark as read
  * @returns - The updated chat document
  */
-export const updateUreadMessages = async (
-  chatId: string | Types.ObjectId,
-  messageIds: Types.ObjectId[]
-): Promise<object> => {
+export const updateUreadMessages = async (chatId: string | Types.ObjectId, messageIds: Types.ObjectId[]): Promise<object> => {
   if (!Types.ObjectId.isValid(chatId)) {
     throw createError(400, "Invalid chat ID");
   }
