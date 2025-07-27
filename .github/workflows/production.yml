@@ -1,0 +1,110 @@
+on: 
+  push:
+    branches: [ main ]
+jobs:
+  install:
+    name: Install
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20.x"
+          cache: 'yarn'
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Upload node_modules
+        uses: actions/upload-artifact@v4
+        with:
+          name: node_modules
+          path: node_modules
+
+  build:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download node_modules
+        uses: actions/download-artifact@v4
+        with:
+          name: node_modules
+          path: node_modules
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+
+      - name: Install tsc-alias
+        run: yarn global add tsc-alias
+
+      - name: Build Project
+        run: yarn build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with: 
+          name: dist
+          path: dist
+
+      - name: Download node_modules
+        uses: actions/download-artifact@v4
+        with:
+          name: node_modules
+          path: node_modules
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with: 
+          node-version: '20.x'
+          
+      # Downloads the Render CLI binary and adds it to the PATH.
+      # Updated to use latest CLI version for better compatibility
+      - name: Install Render CLI
+        run: |
+          curl -L https://github.com/render-oss/cli/releases/download/v1.1.0/cli_1.1.0_linux_amd64.zip -o render.zip
+          unzip render.zip
+          sudo mv cli_v1.1.0 /usr/local/bin/render
+          
+      - name: Verify Render CLI installation
+        run: render --version
+        
+      - name: Trigger deploy with Render CLI
+        env:
+          # The CLI can authenticate via a Render API key without logging in.
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+          CI: true
+        run: |
+          echo "Starting deployment to Render..."
+          if [ -z "$RENDER_SERVICE_ID" ]; then
+            echo "Error: RENDER_SERVICE_ID secret is not set"
+            exit 1
+          fi
+          if [ -z "$RENDER_API_KEY" ]; then
+            echo "Error: RENDER_API_KEY secret is not set"
+            exit 1
+          fi
+          echo "Service ID: $RENDER_SERVICE_ID"
+          render deploys create $RENDER_SERVICE_ID --output json --confirm
+          echo "Deployment triggered successfully!"
