@@ -108,7 +108,12 @@ export const updateUreadMessages = async (chatId: string | Types.ObjectId, messa
   return updatedChat;
 };
 
-
+/**
+ * Search messages in a chat by a search term
+ * @param chatId 
+ * @param searchTerm 
+ * @returns 
+ */
 export const searchMesages = async (chatId: string | Types.ObjectId, searchTerm: string) => {
   if (!Types.ObjectId.isValid(chatId)) {
     throw createError(400, "Invalid chat ID");

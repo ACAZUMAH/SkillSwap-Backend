@@ -20,8 +20,8 @@ const updateUser = (_: any, args: MutationUpdateUserArgs, { user }: GraphqlConte
   return UserServices.updateUserProfile({ id: user._id, ...args.data });
 };
 
-const search = (_: any, args: QuerySearchArgs) => {
-  return UserServices.searchUsersOrSkills({ ...args.filters });
+const search = (_: any, args: QuerySearchArgs, { user }: GraphqlContext) => {
+  return UserServices.searchUsersOrSkills({ ...args.filters, userId: user._id });
 };
 
 const recommendation = async (_: any, args: QueryRecommendationArgs, { user }: GraphqlContext) => {

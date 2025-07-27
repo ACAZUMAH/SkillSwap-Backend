@@ -185,7 +185,7 @@ export const updateUserPassword = async (data: UpdatePassword) => {
  */
 export const searchUsersOrSkills = async (data: UserFilters) => {
   const query: FilterQuery<UserDocument> = {
-    ...(data.userId && { _Id: data.userId }),
+    ...(data.userId && { _id: { $ne: data.userId } }), // Exclude current user
     ...(data.search && {
       $or: [
         { firstName: { $regex: data.search, $options: "i" } },
@@ -387,10 +387,10 @@ export const getRecommendations = async (filters: RecommendationFilter) => {
           firstName: "$originalUser.firstName",
           lastName: "$originalUser.lastName",
           profile_img: "$originalUser.profile_img",
-          bio: "$originalUser.bi",
+          bio: "$originalUser.bio",
           linkedIn: "$originalUser.linkedIn",
-          gitHub: "$origionalUser.gitHub",
-          portfolio: "$origionalUser.portfolio",
+          gitHub: "$originalUser.gitHub",
+          portfolio: "$originalUser.portfolio",
           averageRating: "$originalUser.averageRating",
           skillsProficientAt: "$sortedSkills",
           skillsToLearn: "$originalUser.skillsToLearn",
