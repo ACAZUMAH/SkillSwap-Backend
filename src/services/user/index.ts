@@ -61,7 +61,10 @@ export const checkUserExist = async (phone: string, email: string) => {
  * @returns The user document if found.
  * @throws Will throw an error if the ID is invalid or the user is not found.
  */
-export const getUserById = async (id: Types.ObjectId | string, indexes?: any) => {
+export const getUserById = async (
+  id: Types.ObjectId | string,
+  indexes?: any
+) => {
   if (!Types.ObjectId.isValid(id))
     throw createError.BadRequest("Invalid user id");
 
@@ -84,12 +87,11 @@ export const getUserByPhoneOrEmail = async (
   phoneNumber?: string | null,
   email?: string | null
 ) => {
-
   if (!phoneNumber && !email) {
     throw createError.BadRequest("Phone number or email is required");
   }
 
-  if( phoneNumber && !email) {
+  if (phoneNumber && !email) {
     return await userModel.findOne({ phoneNumber });
   }
 
@@ -107,7 +109,10 @@ export const getUserByPhoneOrEmail = async (
  * @param bool - The new authentication status.
  * @returns The updated user document.
  */
-export const updateIsAuthenticated = async (id: Types.ObjectId, bool: boolean) => {
+export const updateIsAuthenticated = async (
+  id: Types.ObjectId,
+  bool: boolean
+) => {
   return await userModel.findByIdAndUpdate(
     { _id: id },
     { isAuthenticated: bool }
@@ -170,7 +175,7 @@ export const updateUserPassword = async (data: UpdatePassword) => {
     { $set: { password: data.password } },
     { new: true }
   );
-}
+};
 
 /**
  * Searches for users or skills based on the provided filters.
@@ -304,10 +309,23 @@ export const getRecommendations = async (filters: RecommendationFilter) => {
           $max: {
             $add: [
               0.4,
-              { $multiply: [0.2, { $divide: ["$levelDifference", 3] }] },
+              {
+                $multiply: [
+                  0.2,
+                  { $divide: [{ $ifNull: ["$levelDifference", 0] }, 3] },
+                ],
+              },
             ],
           },
         },
+      },
+    },
+
+    {
+      $addFields: {
+        debugMaxMatchScore: "$maxMatchScore",
+        debugMutualExchange: "$mutualExchange",
+        debugAverageRating: "$originalUser.averageRating",
       },
     },
 
@@ -332,7 +350,7 @@ export const getRecommendations = async (filters: RecommendationFilter) => {
 
         matchScore: {
           $add: [
-            "$maxMatchScore",
+            { $ifNull: ["$maxMatchScore", 0] },
             {
               $cond: [
                 {
@@ -346,9 +364,16 @@ export const getRecommendations = async (filters: RecommendationFilter) => {
               ],
             },
             {
-              $multiply: [0.2, { $divide: ["$originalUser.averageRating", 5] }],
+              $multiply: [
+                0.2,
+                {
+                  $divide: [{ $ifNull: ["$originalUser.averageRating", 0] }, 5],
+                },
+              ],
             },
-            { $multiply: [0.1, { $toInt: "$mutualExchange" }] },
+            {
+              $multiply: [0.1, { $cond: ["$mutualExchange", 1, 0] }],
+            },
           ],
         },
       },
@@ -362,6 +387,10 @@ export const getRecommendations = async (filters: RecommendationFilter) => {
           firstName: "$originalUser.firstName",
           lastName: "$originalUser.lastName",
           profile_img: "$originalUser.profile_img",
+          bio: "$originalUser.bi",
+          linkedIn: "$originalUser.linkedIn",
+          gitHub: "$origionalUser.gitHub",
+          portfolio: "$origionalUser.portfolio",
           averageRating: "$originalUser.averageRating",
           skillsProficientAt: "$sortedSkills",
           skillsToLearn: "$originalUser.skillsToLearn",
@@ -376,6 +405,5 @@ export const getRecommendations = async (filters: RecommendationFilter) => {
     { $skip: skip },
     { $limit: limit + 1 },
   ]);
-
   return getPageConnection(recommendations, page, limit);
 };

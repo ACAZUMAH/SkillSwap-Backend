@@ -345,7 +345,7 @@ export type Recomendation = {
   __typename?: 'Recomendation';
   levelDifference?: Maybe<Scalars['Int']['output']>;
   matchScore?: Maybe<Scalars['Float']['output']>;
-  matchedSkill?: Maybe<Array<Maybe<Skill>>>;
+  matchedSkills?: Maybe<Array<Maybe<Skill>>>;
   mutualExchange?: Maybe<Scalars['Boolean']['output']>;
   user?: Maybe<User>;
 };
@@ -1227,7 +1227,7 @@ export interface RgbaScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 export type RecomendationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Recomendation'] = ResolversParentTypes['Recomendation']> = {
   levelDifference?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   matchScore?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  matchedSkill?: Resolver<Maybe<Array<Maybe<ResolversTypes['Skill']>>>, ParentType, ContextType>;
+  matchedSkills?: Resolver<Maybe<Array<Maybe<ResolversTypes['Skill']>>>, ParentType, ContextType>;
   mutualExchange?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

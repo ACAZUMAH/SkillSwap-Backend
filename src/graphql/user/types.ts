@@ -36,7 +36,7 @@ export const userTypeDefs = `#graphql
     type Recomendation { 
         user: User
         matchScore: Float
-        matchedSkill: [Skill]
+        matchedSkills: [Skill]
         levelDifference: Int
         mutualExchange: Boolean
     }

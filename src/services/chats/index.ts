@@ -107,3 +107,22 @@ export const updateUreadMessages = async (chatId: string | Types.ObjectId, messa
   }
   return updatedChat;
 };
+
+
+export const searchMesages = async (chatId: string | Types.ObjectId, searchTerm: string) => {
+  if (!Types.ObjectId.isValid(chatId)) {
+    throw createError(400, "Invalid chat ID");
+  }
+
+  const chat = await chatModel.findById(chatId);
+
+  if (!chat) {
+    throw createError(404, "Chat not found");
+  }
+
+  const messages = chat.messages.filter(message => 
+    message.message && message.message.includes(searchTerm)
+  );
+
+  return { ...chat.toObject(), messages };
+}
