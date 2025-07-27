@@ -1,11 +1,11 @@
-import { GetMessages, NewMessageInput } from "src/common/interfaces";
+import { GetMessages, NewMessage } from "src/common/interfaces";
 import { getChatById, updateUreadMessages, upsertMessage } from "../chats";
 import { MessagesStatus } from "src/common/enums";
 import createError from "http-errors";
 import { Types } from "mongoose";
 
-export const addNewMessage = async (data: NewMessageInput) => {
-  const { from, to, chatId, message, users } = data;
+export const addNewMessage = async (data: NewMessage) => {
+  const { to, chatId, message, } = data;
 
   const onlineReciever = onlineUsers.get(to);
 
@@ -19,7 +19,7 @@ export const addNewMessage = async (data: NewMessageInput) => {
         status: MessagesStatus.SENT,
       };
 
-  const newMessage = await upsertMessage({ chatId, message: msg, users });
+  const newMessage = await upsertMessage({ chatId, message: msg, });
 
   if (!newMessage) {
     throw createError(404, "Chat not found");
@@ -30,7 +30,7 @@ export const addNewMessage = async (data: NewMessageInput) => {
 
 
 export const getMessagesByChatId = async (data: GetMessages) => {
-  const { chatId, from, to } = data
+  const { chatId, to } = data
 
   const chat = await getChatById(chatId)
 

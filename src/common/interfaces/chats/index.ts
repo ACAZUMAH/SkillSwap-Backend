@@ -41,7 +41,6 @@ export interface Messages {
 }
 export interface ChatInput {
     chatId?: Types.ObjectId | string;
-    users: ChatUser;
     message: Messages;
 }
 
@@ -64,7 +63,7 @@ export interface ChatInput {
 //     updatedAt?: Date;
 // }
 
-export interface NewMessageInput {
+export interface NewMessage {
     from: string;
     to: string;
     chatId: Types.ObjectId | string;
