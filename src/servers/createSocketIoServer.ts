@@ -19,8 +19,6 @@ export const createSocketIoServer = (httpServer: Server): ws.Server => {
             credentials: true,
         },
     })
-
     io.on('connection', (socket) => connection(socket))
-
     return io;
 }
