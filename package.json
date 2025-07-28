@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon",
     "start": "node dist/main.js",
-    "build": "tsc && tsc-alias",
+    "build": "yarn install && tsc && tsc-alias",
     "generate": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {

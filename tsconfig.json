@@ -14,7 +14,6 @@
       "src/*": ["src/*"]
     },
     "types": ["node"],
-    "typeRoots": ["node_modules/@types"],
     "resolveJsonModule": true,
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
