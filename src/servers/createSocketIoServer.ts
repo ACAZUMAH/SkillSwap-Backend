@@ -1,5 +1,6 @@
 import { Server } from 'http';
 import * as ws from 'socket.io';
+import { whitelist } from 'src/common/constants';
 import { connection } from 'src/socket';
 
 
@@ -12,7 +13,7 @@ export const createSocketIoServer = (httpServer: Server): ws.Server => {
     const io = new ws.Server(httpServer, {
         transports: ["polling"],
         cors: {
-            origin: '*',
+            origin: whitelist,
             methods: ['GET', 'POST'],
             allowedHeaders: ['Content-Type'],
             credentials: true,
