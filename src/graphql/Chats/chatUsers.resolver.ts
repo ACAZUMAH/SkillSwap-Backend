@@ -1,4 +1,4 @@
-import { ChatDocument, ChatUsersDocument, GraphqlContext } from "src/common/interfaces";
+import { ChatUsersDocument, GraphqlContext } from "src/common/interfaces";
 
 const senderId = (parent: ChatUsersDocument) => parent.senderId.toString();
 

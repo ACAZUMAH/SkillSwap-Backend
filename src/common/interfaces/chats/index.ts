@@ -44,25 +44,6 @@ export interface ChatInput {
     message: Messages;
 }
 
-// export interface Sender {
-//     id: Types.ObjectId | string;
-//     firstName?: string;
-//     lastName?: string;
-//     email?: string;
-//     profile_img?: string;
-// }
-
-// export interface NewMessage {
-//     id: Types.ObjectId | string;
-//     sender: Sender;
-//     messageType: MessageType;
-//     message?: string | null;
-//     mediaUrl?: string | null;
-//     status: MessagesStatus;
-//     createdAt?: Date;
-//     updatedAt?: Date;
-// }
-
 export interface NewMessage {
     from: string;
     to: string;
@@ -77,3 +58,8 @@ export interface GetMessages {
     to?: Types.ObjectId | string;
 }
 
+export interface UnreadMessages {
+    _id: Types.ObjectId;
+    chatId: Types.ObjectId;
+    unreadCount: number;
+}

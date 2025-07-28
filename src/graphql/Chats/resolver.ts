@@ -6,6 +6,7 @@ import {
   QueryAllChatsArgs,
   QueryGetMessagesArgs,
   SubscriptionGetChatByUserIdArgs,
+  UnreadMessages,
 } from "src/common/interfaces";
 import { pubsub, SUBSCRIPTION_EVENTS } from "src/common/pubsub";
 import logger from "src/loggers/logger";
@@ -16,11 +17,19 @@ import { ChatMessageResolvers } from "./chatMessages.resolver";
 
 const id = (parent: ChatDocument) => parent._id.toString();
 
-const allChats =  (_: any, __args: QueryAllChatsArgs, { user }: GraphqlContext) => {
+const allChats = (
+  _: any,
+  __args: QueryAllChatsArgs,
+  { user }: GraphqlContext
+) => {
   return getAllChatsByUserId(user._id);
 };
 
-const upsertMessage = (_: any, args: MutationUpsertMessageArgs, { user }: GraphqlContext) => {
+const upsertMessage = (
+  _: any,
+  args: MutationUpsertMessageArgs,
+  { user }: GraphqlContext
+) => {
   return addNewMessage({
     ...args.data,
     from: user._id,
@@ -28,28 +37,49 @@ const upsertMessage = (_: any, args: MutationUpsertMessageArgs, { user }: Graphq
   });
 };
 
-const getMessages = (_:any, args: QueryGetMessagesArgs) => {
-  return getMessagesByChatId({ ...args.data })
-}
+const getMessages = (_: any, args: QueryGetMessagesArgs) => {
+  return getMessagesByChatId({ ...args.data });
+};
 
-const getChatByUserId = async (_: any, args: SubscriptionGetChatByUserIdArgs, { user }: GraphqlContext) => {
+const getChatByUserId = async (
+  _: any,
+  args: SubscriptionGetChatByUserIdArgs,
+  { user }: GraphqlContext
+) => {
   return getAllChatsByUserId(args.userId || user._id);
 };
 
 const newChatCreated = {
   subscribe: withFilter(
-    () => { 
+    () => {
       logger.info("new chat update subscription started");
-      return pubsub.asyncIterableIterator(SUBSCRIPTION_EVENTS.CHAT_CREATED)
+      return pubsub.asyncIterableIterator(SUBSCRIPTION_EVENTS.CHAT_CREATED);
     },
     (payload, variables) => {
       return payload && payload.userId === variables.userId;
     }
   ),
-  resolve: (payload: any) => { 
+  resolve: (payload: any) => {
     return payload.newChatCreated;
   },
 };
+
+const UnreadMessagesCount = {
+  subscribe: withFilter(
+    () => {
+      logger.info("UreadMessagesCount subscription started");
+      return pubsub.asyncIterableIterator(SUBSCRIPTION_EVENTS.NEW_MESSAGE);
+    },
+    (payload, variables) => {
+      return payload.userId === variables.userId;
+    }
+  ),
+  resolve: (payload: any) => {
+    return payload.UreadMessagesCount;
+  },
+};
+
+const chatId = (parent: UnreadMessages) => parent.chatId.toString();
 
 export const chatResolver = {
   ...chatUsersResolver,
@@ -59,14 +89,21 @@ export const chatResolver = {
     getChatByUserId,
     getMessages,
   },
+
   Chat: {
     id,
   },
+
+  UnreadCount: {
+    chatId,
+  },
+
   Mutation: {
     upsertMessage,
   },
+
   Subscription: {
-    getChatByUserId,
     newChatCreated,
-  }
+    UnreadMessagesCount,
+  },
 };

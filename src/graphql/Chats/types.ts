@@ -42,6 +42,11 @@ export const chatTypeDeffs = `#graphql
         updatedAt: String!
     }
 
+    type UnreadCount {
+        chatId: ID!
+        unreadCount: Int!
+    }
+
     input getMessageInput {
         chatId: ID!
         from: ID!
@@ -81,7 +86,7 @@ export const chatTypeDeffs = `#graphql
     }
 
     extend type Subscription {
-        getChatByUserId(userId: ID): [Chat]!
         newChatCreated(userId: ID!): Chat
+        UnreadMessagesCount(userId: ID!): [UnreadCount]
     }
 `;

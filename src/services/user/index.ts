@@ -323,14 +323,6 @@ export const getRecommendations = async (filters: RecommendationFilter) => {
 
     {
       $addFields: {
-        debugMaxMatchScore: "$maxMatchScore",
-        debugMutualExchange: "$mutualExchange",
-        debugAverageRating: "$originalUser.averageRating",
-      },
-    },
-
-    {
-      $addFields: {
         sortedSkills: {
           $concatArrays: [
             "$matchedSkills",
