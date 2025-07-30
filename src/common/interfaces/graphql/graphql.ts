@@ -279,6 +279,7 @@ export type Query = {
   getSwapByUsers?: Maybe<Swap>;
   getSwapRequest?: Maybe<Swap>;
   getSwapRequests?: Maybe<SwapConnection>;
+  getUnreadMessagesCount?: Maybe<Array<Maybe<UnreadCount>>>;
   hello?: Maybe<Scalars['String']['output']>;
   me?: Maybe<User>;
   recommendation?: Maybe<RecomendationConnection>;
@@ -409,16 +410,11 @@ export enum Status {
 export type Subscription = {
   __typename?: 'Subscription';
   _empty?: Maybe<Scalars['String']['output']>;
-  getChatByUserId: Array<Maybe<Chat>>;
   newChatCreated?: Maybe<Chat>;
   newSwapRequest?: Maybe<Swap>;
   swapUpdated?: Maybe<Swap>;
   testSubscription?: Maybe<Test>;
-};
-
-
-export type SubscriptionGetChatByUserIdArgs = {
-  userId?: InputMaybe<Scalars['ID']['input']>;
+  unreadMessagesCount?: Maybe<Array<Maybe<UnreadCount>>>;
 };
 
 
@@ -433,6 +429,11 @@ export type SubscriptionNewSwapRequestArgs = {
 
 
 export type SubscriptionSwapUpdatedArgs = {
+  userId: Scalars['ID']['input'];
+};
+
+
+export type SubscriptionUnreadMessagesCountArgs = {
   userId: Scalars['ID']['input'];
 };
 
@@ -504,6 +505,12 @@ export type TimeTableInput = {
   time: Scalars['String']['input'];
 };
 
+export type UnreadCount = {
+  __typename?: 'UnreadCount';
+  chatId: Scalars['ID']['output'];
+  unreadCount: Scalars['Int']['output'];
+};
+
 export type UpdatePasswordInput = {
   newPassword: Scalars['String']['input'];
   oldPassword: Scalars['String']['input'];
@@ -565,8 +572,6 @@ export type CreateUserInput = {
 
 export type GetMessageInput = {
   chatId: Scalars['ID']['input'];
-  from: Scalars['ID']['input'];
-  to: Scalars['ID']['input'];
 };
 
 export type LoginUserInput = {
@@ -778,6 +783,7 @@ export type ResolversTypes = {
   URL: ResolverTypeWrapper<Scalars['URL']['output']>;
   USCurrency: ResolverTypeWrapper<Scalars['USCurrency']['output']>;
   UUID: ResolverTypeWrapper<Scalars['UUID']['output']>;
+  UnreadCount: ResolverTypeWrapper<UnreadCount>;
   UnsignedFloat: ResolverTypeWrapper<Scalars['UnsignedFloat']['output']>;
   UnsignedInt: ResolverTypeWrapper<Scalars['UnsignedInt']['output']>;
   UpdatePasswordInput: UpdatePasswordInput;
@@ -898,6 +904,7 @@ export type ResolversParentTypes = {
   URL: Scalars['URL']['output'];
   USCurrency: Scalars['USCurrency']['output'];
   UUID: Scalars['UUID']['output'];
+  UnreadCount: UnreadCount;
   UnsignedFloat: Scalars['UnsignedFloat']['output'];
   UnsignedInt: Scalars['UnsignedInt']['output'];
   UpdatePasswordInput: UpdatePasswordInput;
@@ -1209,6 +1216,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   getSwapByUsers?: Resolver<Maybe<ResolversTypes['Swap']>, ParentType, ContextType, Partial<QueryGetSwapByUsersArgs>>;
   getSwapRequest?: Resolver<Maybe<ResolversTypes['Swap']>, ParentType, ContextType, RequireFields<QueryGetSwapRequestArgs, 'swapId'>>;
   getSwapRequests?: Resolver<Maybe<ResolversTypes['SwapConnection']>, ParentType, ContextType, Partial<QueryGetSwapRequestsArgs>>;
+  getUnreadMessagesCount?: Resolver<Maybe<Array<Maybe<ResolversTypes['UnreadCount']>>>, ParentType, ContextType>;
   hello?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   recommendation?: Resolver<Maybe<ResolversTypes['RecomendationConnection']>, ParentType, ContextType, Partial<QueryRecommendationArgs>>;
@@ -1279,11 +1287,11 @@ export type SkillResolvers<ContextType = any, ParentType extends ResolversParent
 
 export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
   _empty?: SubscriptionResolver<Maybe<ResolversTypes['String']>, "_empty", ParentType, ContextType>;
-  getChatByUserId?: SubscriptionResolver<Array<Maybe<ResolversTypes['Chat']>>, "getChatByUserId", ParentType, ContextType, Partial<SubscriptionGetChatByUserIdArgs>>;
   newChatCreated?: SubscriptionResolver<Maybe<ResolversTypes['Chat']>, "newChatCreated", ParentType, ContextType, RequireFields<SubscriptionNewChatCreatedArgs, 'userId'>>;
   newSwapRequest?: SubscriptionResolver<Maybe<ResolversTypes['Swap']>, "newSwapRequest", ParentType, ContextType, RequireFields<SubscriptionNewSwapRequestArgs, 'userId'>>;
   swapUpdated?: SubscriptionResolver<Maybe<ResolversTypes['Swap']>, "swapUpdated", ParentType, ContextType, RequireFields<SubscriptionSwapUpdatedArgs, 'userId'>>;
   testSubscription?: SubscriptionResolver<Maybe<ResolversTypes['test']>, "testSubscription", ParentType, ContextType>;
+  unreadMessagesCount?: SubscriptionResolver<Maybe<Array<Maybe<ResolversTypes['UnreadCount']>>>, "unreadMessagesCount", ParentType, ContextType, RequireFields<SubscriptionUnreadMessagesCountArgs, 'userId'>>;
 };
 
 export type SwapResolvers<ContextType = any, ParentType extends ResolversParentTypes['Swap'] = ResolversParentTypes['Swap']> = {
@@ -1347,6 +1355,12 @@ export interface UsCurrencyScalarConfig extends GraphQLScalarTypeConfig<Resolver
 export interface UuidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UUID'], any> {
   name: 'UUID';
 }
+
+export type UnreadCountResolvers<ContextType = any, ParentType extends ResolversParentTypes['UnreadCount'] = ResolversParentTypes['UnreadCount']> = {
+  chatId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  unreadCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export interface UnsignedFloatScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UnsignedFloat'], any> {
   name: 'UnsignedFloat';
@@ -1483,6 +1497,7 @@ export type Resolvers<ContextType = any> = {
   URL?: GraphQLScalarType;
   USCurrency?: GraphQLScalarType;
   UUID?: GraphQLScalarType;
+  UnreadCount?: UnreadCountResolvers<ContextType>;
   UnsignedFloat?: GraphQLScalarType;
   UnsignedInt?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;

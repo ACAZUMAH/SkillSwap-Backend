@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import * as services from "../services/messaging";
+import * as services from "../services/chats"
 import logger from "src/loggers/logger";
 import { NewMessageInput } from "src/common/interfaces";
 
@@ -19,7 +19,7 @@ const sendMessage = async (socket: Socket, message: NewMessageInput) => {
   const receiver = global.onlineUsers.get(message.to);
   const receiverOnline = global.onlineUsers.get(message.to);
 
-  const newMessage = await services.addNewMessage({ ...message });
+  const newMessage = await services.upsertMessage({ ...message });
 
   if (newMessage) {
     if (receiverOnline) {

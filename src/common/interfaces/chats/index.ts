@@ -40,22 +40,13 @@ export interface Messages {
     status?: MessagesStatus
 }
 export interface ChatInput {
-    chatId?: Types.ObjectId | string;
-    message: Messages;
-}
-
-export interface NewMessage {
-    from: string;
-    to: string;
     chatId: Types.ObjectId | string;
+    to: string
     message: Messages;
-    users?: ChatUser;
 }
-
 export interface GetMessages {
     chatId: Types.ObjectId | string;
-    from?: Types.ObjectId | string;
-    to?: Types.ObjectId | string;
+    userId: Types.ObjectId | string;
 }
 
 export interface UnreadMessages {

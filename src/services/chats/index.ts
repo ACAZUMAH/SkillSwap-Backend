@@ -1,7 +1,7 @@
 import { chatModel } from "src/models/chats";
 import createError from "http-errors";
 import { Types } from "mongoose";
-import { ChatInput } from "src/common/interfaces";
+import { ChatInput, GetMessages } from "src/common/interfaces";
 import { MessagesStatus } from "src/common/enums";
 import { pubsub, SUBSCRIPTION_EVENTS } from "src/common/pubsub";
 
@@ -30,18 +30,26 @@ export const createChat = async (data: any) => {
  * @returns- The chat document with messages
  */
 export const upsertMessage = async (data: ChatInput) => {
-  if (!Types.ObjectId.isValid(data.chatId!))
-    throw createError(400, "Invalid chat ID");
+  if (!Types.ObjectId.isValid(data.chatId)) throw createError(400, "Invalid chat ID");
+
+  const onlineReciever = onlineUsers.get(data.to);
+
+  const message = onlineReciever
+    ? { ...data.message, status: MessagesStatus.DELIVERED }
+    : { ...data.message, status: MessagesStatus.SENT };
 
   const msg = await chatModel.findOneAndUpdate(
     { _id: data.chatId },
-    { $push: { messages: data.message }, recentMessage: data.message },
+    { $push: { messages: message }, recentMessage: message },
     { new: true, upsert: true }
   );
 
   pubsub.publish(SUBSCRIPTION_EVENTS.NEW_MESSAGE, {
-    UreadMessagesCount: await getUnreadMessagesCount(msg.users.receiverId),
-  })
+    UreadMessagesCount: await getUnreadMessagesCount(
+      new Types.ObjectId(data.to)
+    ),
+    userId: data.to.toString(),
+  });
 
   if (!msg) throw createError(404, "Chat not found");
 
@@ -55,14 +63,11 @@ export const upsertMessage = async (data: ChatInput) => {
  * @returns - The chat document
  */
 export const getChatById = async (chatId: string | Types.ObjectId) => {
-  if (!Types.ObjectId.isValid(chatId)) {
-    throw createError(400, "Invalid chat ID");
-  }
+  if (!Types.ObjectId.isValid(chatId)) throw createError(400, "Invalid chat ID");
+
   const chat = await chatModel.findById(chatId);
 
-  if (!chat) {
-    throw createError(404, "Chat not found");
-  }
+  if (!chat) throw createError(404, "Chat not found");
 
   return chat;
 };
@@ -74,9 +79,7 @@ export const getChatById = async (chatId: string | Types.ObjectId) => {
  * @returns - An array of chat documents
  */
 export const getAllChatsByUserId = async (userId: string | Types.ObjectId) => {
-  if (!Types.ObjectId.isValid(userId)) {
-    throw createError(400, "Invalid user ID");
-  }
+  if (!Types.ObjectId.isValid(userId)) throw createError(400, "Invalid user ID");
 
   const chats = await chatModel
     .find({
@@ -84,63 +87,58 @@ export const getAllChatsByUserId = async (userId: string | Types.ObjectId) => {
     })
     .sort({ updatedAt: -1 });
 
-  if (!chats || chats.length === 0) {
-    return [];
-  }
-
   return chats;
 };
 
 /**
- *  update unread messages status
- *
- * @param {string | Types.ObjectId} chatId - The ID of the chat to update
- * @param {Array<string | Types.ObjectId>} messageIds - The IDs of the messages to mark as read
+ * Update message status to READ for a user in a chat
+ * @param data - Contains chatId and userId to update message status
  * @returns - The updated chat document
  */
-export const updateUreadMessages = async (chatId: string | Types.ObjectId,messageIds: Types.ObjectId[]): Promise<object> => {
-  if (!Types.ObjectId.isValid(chatId)) {
-    throw createError(400, "Invalid chat ID");
+export const getUpdatedMessages = async (data: GetMessages) => {
+  const { chatId, userId } = data;
+  if (!Types.ObjectId.isValid(chatId) || !Types.ObjectId.isValid(userId)) {
+    throw createError(400, "Invalid chat ID or user ID");
   }
-
-  const updatedChat = await chatModel.findByIdAndUpdate(
-    { _id: chatId, messages: { $in: messageIds } },
-    { $set: { "messages.$[].status": MessagesStatus.READ } },
-    { new: true }
-  );
-
-  pubsub.publish(SUBSCRIPTION_EVENTS.NEW_MESSAGE, {
-    UreadMessagesCount: await getUnreadMessagesCount(updatedChat?.users?.receiverId!),
-  });
-
-  if (!updatedChat) {
-    throw createError(404, "Chat not found");
-  }
-  return updatedChat;
-};
-
-/**
- * Search messages in a chat by a search term
- * @param chatId - The ID of the chat to search in
- * @param searchTerm - The term to search for in messages
- * @returns - The chat document with messages that match the search term
- */
-export const searchMesages = async (chatId: string | Types.ObjectId,searchTerm: string) => {
-  if (!Types.ObjectId.isValid(chatId)) {
-    throw createError(400, "Invalid chat ID");
-  }
-
   const chat = await chatModel.findById(chatId);
 
-  if (!chat) {
-    throw createError(404, "Chat not found");
+  if (!chat) throw createError(404, "Chat not found");
+
+  const unreadMessageIds: Types.ObjectId[] = [];
+
+  chat.messages.forEach((message) => {
+    if (
+      message.status !== MessagesStatus.READ &&
+      message.senderId?.toString() !== userId?.toString()
+    ) {
+      unreadMessageIds.push(message._id);
+    }
+  });
+
+  if (unreadMessageIds.length > 0) {
+    await chatModel.findOneAndUpdate(
+      { _id: chatId },
+      { $set: { "messages.$[elem].status": MessagesStatus.READ } },
+      {
+        arrayFilters: [
+          {
+            "elem._id": { $in: unreadMessageIds },
+            "elem.senderId": { $ne: new Types.ObjectId(userId) },
+          },
+        ],
+        new: true,
+      }
+    );
   }
 
-  const messages = chat.messages.filter(
-    (message) => message.message && message.message.includes(searchTerm)
-  );
+  pubsub.publish(SUBSCRIPTION_EVENTS.NEW_MESSAGE, {
+    UreadMessagesCount: await getUnreadMessagesCount(userId),
+    userId: userId.toString(),
+  });
+  console.log("New message published for user:", userId.toString());
 
-  return { ...chat.toObject(), messages };
+  const updatedChat = await chatModel.findById(chatId);
+  return updatedChat;
 };
 
 /**
@@ -149,9 +147,8 @@ export const searchMesages = async (chatId: string | Types.ObjectId,searchTerm: 
  * @returns - The count of unread messages
  */
 export const getUnreadMessagesCount = async (userId: string | Types.ObjectId) => {
-  if (!Types.ObjectId.isValid(userId)) {
+  if (!Types.ObjectId.isValid(userId))
     throw createError(400, "Invalid user ID");
-  }
 
   const chats = await chatModel.aggregate([
     {
@@ -159,28 +156,35 @@ export const getUnreadMessagesCount = async (userId: string | Types.ObjectId) =>
         $or: [{ "users.senderId": userId }, { "users.receiverId": userId }],
       },
     },
-    { $unwind: "$messages" },
     {
-      $match: {
-        "messages.status": MessagesStatus.SENT,
-        "messages.senderId": { $ne: new Types.ObjectId(userId) },
+      $addFields: {
+        unreadMessages: {
+          $filter: {
+            input: "$messages",
+            cond: {
+              $and: [
+                {
+                  $in: [
+                    "$$this.status",
+                    [MessagesStatus.SENT, MessagesStatus.DELIVERED],
+                  ],
+                },
+                { $ne: ["$$this.senderId", userId] },
+              ],
+            },
+          },
+        },
       },
     },
-    {
-      $group: {
-        _id: "$_id",
-        chatId: { $first: "$_id" },
-        unreadCount: { $sum: 1 },
-      },
-    },
-    {
-      $project: {
-        _id: 0,
-        chatId: 1,
-        unreadCount: 1,
-      },
+    { $project: { 
+        _id: 0, 
+        chatId: "$_id", 
+        unreadCount: { $size: "$unreadMessages" } 
+      } 
     },
   ]);
 
-  return chats
+  console.log(chats);
+
+  return chats;
 };

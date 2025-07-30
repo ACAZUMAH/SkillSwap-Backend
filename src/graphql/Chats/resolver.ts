@@ -4,50 +4,37 @@ import {
   GraphqlContext,
   MutationUpsertMessageArgs,
   QueryAllChatsArgs,
+  QueryGetChatByUserIdArgs,
   QueryGetMessagesArgs,
-  SubscriptionGetChatByUserIdArgs,
   UnreadMessages,
 } from "src/common/interfaces";
 import { pubsub, SUBSCRIPTION_EVENTS } from "src/common/pubsub";
 import logger from "src/loggers/logger";
-import { getAllChatsByUserId } from "src/services/chats";
-import { addNewMessage, getMessagesByChatId } from "src/services/messaging";
+import * as services from "src/services/chats";
 import { chatUsersResolver } from "./chatUsers.resolver";
 import { ChatMessageResolvers } from "./chatMessages.resolver";
 
 const id = (parent: ChatDocument) => parent._id.toString();
 
-const allChats = (
-  _: any,
-  __args: QueryAllChatsArgs,
-  { user }: GraphqlContext
-) => {
-  return getAllChatsByUserId(user._id);
+const allChats = (_: any, __args: QueryAllChatsArgs, { user }: GraphqlContext) => {
+  return services.getAllChatsByUserId(user._id);
 };
 
-const upsertMessage = (
-  _: any,
-  args: MutationUpsertMessageArgs,
-  { user }: GraphqlContext
-) => {
-  return addNewMessage({
-    ...args.data,
-    from: user._id,
-    to: args.data.users.receiverId,
-  });
+const upsertMessage = (_: any, args: MutationUpsertMessageArgs, { user }: GraphqlContext) => {
+  return services.upsertMessage({ ...args.data, to: args.data.users.receiverId });
 };
 
-const getMessages = (_: any, args: QueryGetMessagesArgs) => {
-  return getMessagesByChatId({ ...args.data });
+const getMessages = (_: any, args: QueryGetMessagesArgs, { user }: GraphqlContext) => {
+  return services.getUpdatedMessages({chatId: args.data.chatId, userId: user._id });
 };
 
-const getChatByUserId = async (
-  _: any,
-  args: SubscriptionGetChatByUserIdArgs,
-  { user }: GraphqlContext
-) => {
-  return getAllChatsByUserId(args.userId || user._id);
+const getChatByUserId = async (_: any, args:QueryGetChatByUserIdArgs, { user }: GraphqlContext) => {
+  return services.getAllChatsByUserId(args.userId || user._id);
 };
+
+const getUnreadMessagesCount = async (_: any, __: any, { user }: GraphqlContext) => {
+  return services.getUnreadMessagesCount(user._id);
+}
 
 const newChatCreated = {
   subscribe: withFilter(
@@ -64,13 +51,14 @@ const newChatCreated = {
   },
 };
 
-const UnreadMessagesCount = {
+const unreadMessagesCount = {
   subscribe: withFilter(
     () => {
       logger.info("UreadMessagesCount subscription started");
       return pubsub.asyncIterableIterator(SUBSCRIPTION_EVENTS.NEW_MESSAGE);
     },
     (payload, variables) => {
+      console.log("is a match:", payload.userId === variables.userId);
       return payload.userId === variables.userId;
     }
   ),
@@ -88,6 +76,7 @@ export const chatResolver = {
     allChats,
     getChatByUserId,
     getMessages,
+    getUnreadMessagesCount
   },
 
   Chat: {
@@ -104,6 +93,6 @@ export const chatResolver = {
 
   Subscription: {
     newChatCreated,
-    UnreadMessagesCount,
+    unreadMessagesCount,
   },
 };
