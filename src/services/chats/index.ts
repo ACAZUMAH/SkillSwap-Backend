@@ -135,7 +135,6 @@ export const getUpdatedMessages = async (data: GetMessages) => {
     UreadMessagesCount: await getUnreadMessagesCount(userId),
     userId: userId.toString(),
   });
-  console.log("New message published for user:", userId.toString());
 
   const updatedChat = await chatModel.findById(chatId);
   return updatedChat;
@@ -183,8 +182,6 @@ export const getUnreadMessagesCount = async (userId: string | Types.ObjectId) =>
       } 
     },
   ]);
-
-  console.log(chats);
 
   return chats;
 };
