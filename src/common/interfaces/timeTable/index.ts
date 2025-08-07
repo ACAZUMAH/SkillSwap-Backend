@@ -16,6 +16,24 @@ export interface SwapSession {
     time: string
     skill: string
     taughtBy: Types.ObjectId
-    recievedBy: Types.ObjectId
+    receivedBy: Types.ObjectId
     status: ScheduleStatus
+}
+
+export interface SwapTimeTableInput {
+    skill: String
+    taughtBy: Types.ObjectId | string
+    dayOfweek: String
+    time: String
+    durationInWeeks: Number
+    startDate: Date
+}
+
+export interface SwapSessionInput {
+    date: Date
+    time: string
+    skill: string
+    taughtBy: Types.ObjectId | string
+    receivedBy: Types.ObjectId | string
+    status?: ScheduleStatus | null
 }

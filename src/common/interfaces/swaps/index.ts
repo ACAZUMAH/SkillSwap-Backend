@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 import { Swapped } from "../skills";
 import { Status } from "src/common/enums";
-import { SwapSession, SwapTimeTable } from "../timeTable";
+import { SwapSession, SwapSessionInput, SwapTimeTable, SwapTimeTableInput } from "../timeTable";
 
 export interface SwapDocument {
     _id: Types.ObjectId
@@ -40,9 +40,9 @@ export interface swapByUsers {
 }
 
 export interface updateSwapData {
-    swapId: string | Types.ObjectId
-    skills?: Swapped[] | null
-    status?: Status
-    timeTable?: SwapTimeTable[] | null
-    session?: SwapSession[] | null
+    id: string | Types.ObjectId
+    skills?: Array<Swapped | null> | null
+    status?: Status | null
+    timeTable?: Array<SwapTimeTableInput | null> | null
+    sessions?: Array<SwapSessionInput | null> | null
 }

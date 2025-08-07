@@ -61,12 +61,8 @@ export const checkUserExist = async (phone: string, email: string) => {
  * @returns The user document if found.
  * @throws Will throw an error if the ID is invalid or the user is not found.
  */
-export const getUserById = async (
-  id: Types.ObjectId | string,
-  indexes?: any
-) => {
-  if (!Types.ObjectId.isValid(id))
-    throw createError.BadRequest("Invalid user id");
+export const getUserById = async (id: Types.ObjectId | string, indexes?: any) => {
+  if (!Types.ObjectId.isValid(id)) throw createError.BadRequest("Invalid user id");
 
   const user = await userModel.findById(id, indexes).lean();
 
@@ -83,23 +79,14 @@ export const getUserById = async (
  * @returns The user document if found.
  * @throws Will throw an error if the user does not exist.
  */
-export const getUserByPhoneOrEmail = async (
-  phoneNumber?: string | null,
-  email?: string | null
-) => {
-  if (!phoneNumber && !email) {
-    throw createError.BadRequest("Phone number or email is required");
-  }
+export const getUserByPhoneOrEmail = async (phoneNumber?: string | null, email?: string | null) => {
+  if (!phoneNumber) throw createError.BadRequest("Phone number is required");
 
-  if (phoneNumber && !email) {
-    return await userModel.findOne({ phoneNumber });
-  }
+  const user = await userModel.findOne({ phoneNumber });
 
-  if (email && !phoneNumber) {
-    return await userModel.findOne({ email });
-  }
+  if(!user)  throw createError(404, "User not found")
 
-  throw createError.NotFound("User does not exist");
+  return user;
 };
 
 /**
@@ -109,14 +96,8 @@ export const getUserByPhoneOrEmail = async (
  * @param bool - The new authentication status.
  * @returns The updated user document.
  */
-export const updateIsAuthenticated = async (
-  id: Types.ObjectId,
-  bool: boolean
-) => {
-  return await userModel.findByIdAndUpdate(
-    { _id: id },
-    { isAuthenticated: bool }
-  );
+export const updateIsAuthenticated = async (id: Types.ObjectId, bool: boolean) => {
+  return await userModel.findByIdAndUpdate({ _id: id }, { isAuthenticated: bool });
 };
 
 /**
@@ -153,11 +134,7 @@ export const updateUserProfile = async (data: UpdateUser) => {
     }),
   };
 
-  const updated = await userModel.findByIdAndUpdate(
-    { _id: user._id },
-    { $set: update },
-    { new: true }
-  );
+  const updated = await userModel.findByIdAndUpdate({ _id: user._id },{ $set: update },{ new: true });
 
   return updated;
 };

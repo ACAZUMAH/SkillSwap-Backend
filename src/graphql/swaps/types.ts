@@ -18,14 +18,14 @@ export const swapsTypeDef = `#graphql
         dayOfweek: String!
         time: String!
         durationInWeeks: Int!
-        startDate: Date!
+        startDate: DateTime!
     }
 
     type Session {
         taughtBy: ID!
-        recievedBy: ID!
+        receivedBy: ID!
         skill: String!
-        date: Date!
+        date: DateTime!
         time: String!
         status: ScheduleStatus!
     }
@@ -100,14 +100,14 @@ export const swapsTypeDef = `#graphql
         dayOfweek: String!
         time: String!
         durationInWeeks: Int!
-        startDate: Date!
+        startDate: DateTime!
     }
 
     input SessionInput {
         taughtBy: ID!
-        recievedBy: ID!
+        receivedBy: ID!
         skill: String!
-        date: Date!
+        date: DateTime!
         time: String!
         status: ScheduleStatus
     }
@@ -124,7 +124,7 @@ export const swapsTypeDef = `#graphql
         createSwapRequest(input: SwapRequestInput!): Swap!
         acceptOrDeclineSwapRequest(input: AcceptOrDeclineSwapInput!): Swap!
         cancelSwapRequest(input: CancelSwapRequestInput!): Swap!
-        updateSwap(input: updateSwapInput!): Swap
+        updateSwap(data: updateSwapInput!): Swap
     }
 
     extend type Subscription {

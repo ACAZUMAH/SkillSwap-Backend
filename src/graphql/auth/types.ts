@@ -1,7 +1,8 @@
 export const authTypeDefs = `#graphql
     type Authenticated {
         user: User!
-        token: String
+        token: String,
+        zegoToken: String
     }
 
     type Response {
@@ -27,11 +28,17 @@ export const authTypeDefs = `#graphql
         newPassword: String!
     }
 
+    input ForgetPasswordInput {
+        phoneNumber: String!
+        newPassword: String!
+    }
+
     extend type Mutation {
         createAccount(data: createUserInput!): Response!
         completeAuthAndSignToken(otp: String!): Authenticated!
         login(data: loginUserInput!): Response
         changePassword(data: UpdatePasswordInput!): Response!
         verifyOtpAndSaveNewPassword(otp: String!): Response!
+        forgetPassword(data: ForgetPasswordInput!): Response!
     }
 `;

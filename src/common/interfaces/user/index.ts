@@ -89,3 +89,8 @@ export interface UpdatePassword {
   userId: string | Types.ObjectId;
   password: string;
 }
+
+export interface NewPasswordInput {
+  phoneNumber: string,
+  newPassword: string,
+}

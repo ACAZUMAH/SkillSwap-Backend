@@ -4,6 +4,7 @@ import createError from 'http-errors'
 import { getUserById, updateIsAuthenticated, updateUserPassword } from "../user";
 import { Types } from "mongoose";
 import { passwordModel } from "src/models/password/passwordModel";
+import { generateToken04 } from "src/common/helpers/zegoServerAssistance";
 
 /**
  * Creates or updates an authentication record for a user with a unique OTP.
@@ -28,6 +29,27 @@ export const createAuth = async (userId: string | Types.ObjectId, len: number) =
   return otp
 };
 
+const generateZegoToken = async (userId: string | Types.ObjectId) => {
+  const appId = parseInt(`${process.env.ZEGO_APP_ID}`);
+  const serverSecret = `${process.env.ZEGO_SERVER_SECRET}`;
+  const effectiveTimeInSeconds = 50 * 24 * 60 * 60; // 50 days in seconds
+  const payload = '';
+  if (!appId || !serverSecret) {
+    throw createError.InternalServerError("Zego App ID or Server Secret is not configured");
+  }
+
+  const token = generateToken04(
+    appId,
+    userId.toString(),
+    serverSecret,
+    effectiveTimeInSeconds,
+    payload
+  )
+
+  return token;
+}
+
+
 /**
  * Verifies an OTP, deletes the corresponding authentication record, and generates a JWT token.
  * 
@@ -47,9 +69,16 @@ export const verifyOtpAndSignJwt = async (otp: string) => {
 
     const token = jwtSign({ id: user._id })
 
-    return { user, token }
+    const zegoToken = await generateZegoToken(user._id);
+
+    return { user, token, zegoToken }
 }
 
+/**
+ * 
+ * @param otp 
+ * @returns 
+ */
 export const verifyAndSaveNewPassword = async (otp: string) => {
   const auth = await authModel.findOneAndDelete({ otp });
 

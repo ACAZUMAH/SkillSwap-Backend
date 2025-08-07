@@ -12,5 +12,5 @@ export interface UserSkill {
 }
 
 export interface Swapped extends UserSkill {
-    By: Types.ObjectId
+    By: Types.ObjectId | string
 }

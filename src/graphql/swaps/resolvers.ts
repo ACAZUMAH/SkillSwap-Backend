@@ -2,6 +2,7 @@ import {
   GraphqlContext,
   MutationAcceptOrDeclineSwapRequestArgs,
   MutationCreateSwapRequestArgs,
+  MutationUpdateSwapArgs,
   QueryGetRequestedSwapsArgs,
   QueryGetSwapByUsersArgs,
   QueryGetSwapRequestArgs,
@@ -86,6 +87,10 @@ const newSwapRequest = {
   },
 };
 
+const updateSwap = (_: any, args: MutationUpdateSwapArgs) => {
+  return services.updateSwap({ ...args.data });
+}
+
 export const swapResolver = {
   Query: {
     getSwapRequests,
@@ -104,6 +109,7 @@ export const swapResolver = {
     createSwapRequest,
     cancelSwapRequest,
     acceptOrDeclineSwapRequest,
+    updateSwap
   },
 
   Subscription: {

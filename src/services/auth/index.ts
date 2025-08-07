@@ -1,5 +1,16 @@
-import { ChangePasswordInput, CreateUser, LoginUser, UserDocument } from "src/common/interfaces";
-import { checkUserExist, createUser, getUserById, getUserByPhoneOrEmail } from "../user";
+import {
+  ChangePasswordInput,
+  CreateUser,
+  LoginUser,
+  NewPasswordInput,
+  UserDocument,
+} from "src/common/interfaces";
+import {
+  checkUserExist,
+  createUser,
+  getUserById,
+  getUserByPhoneOrEmail,
+} from "../user";
 import { comparePassword, hashPassword } from "src/common/helpers";
 import { createAuth } from "./auth";
 import { isDevelopment } from "src/common/constants";
@@ -46,10 +57,11 @@ export const register = async (data: CreateUser) => {
  * @throws Will throw an error if the credentials are invalid.
  */
 export const loginUser = async (data: LoginUser) => {
-  const { phoneNumber, email, password } = data;
+  const { phoneNumber, password } = data;
+
+  const user = await getUserByPhoneOrEmail(phoneNumber);
   
-  const user = await getUserByPhoneOrEmail(phoneNumber, email);
-  if (!user)  throw createError.BadRequest("Invalid credentials");
+  if (!user) throw createError.BadRequest("Invalid credentials");
 
   const isMatch = await comparePassword(password, user?.password!);
 
@@ -72,7 +84,12 @@ export const loginUser = async (data: LoginUser) => {
   };
 };
 
-
+/**
+ * Updates a user's password by verifying the old password.
+ * @param data - The input data for changing a user's password.
+ * @throws error if the old password is incorrect or if the OTP cannot be sent.
+ * @returns An object containing a message.
+ */
 export const updatePassword = async (data: ChangePasswordInput) => {
   const { userId, oldPassword, newPassword } = data;
 
@@ -94,7 +111,7 @@ export const updatePassword = async (data: ChangePasswordInput) => {
 
   const message = `Your change password OTP is ${otp}`;
 
-  if (!(await sendNaloSms({ to: user.phoneNumber!, message }))) {
+  if (!(await sendNaloSms({ to: user?.phoneNumber!, message }))) {
     throw createError.InternalServerError(
       "Failed to send OTP code at the moment, please try again later."
     );
@@ -102,5 +119,42 @@ export const updatePassword = async (data: ChangePasswordInput) => {
 
   return {
     message: "Please check your phone for the OTP to change your password.",
+  };
+};
+
+/**
+ * Handles the forget password functionality.
+ * @param data - The input data for forgetting a user's password.
+ * @throws error if the user does not exist or if the OTP cannot be sent.
+ * @returns An object containing a message.
+ */
+export const changeNewPassword = async (data: NewPasswordInput) => {
+  const { phoneNumber, newPassword } = data;
+
+  console.log(phoneNumber)
+
+  const user = await getUserByPhoneOrEmail(phoneNumber);
+
+  console.log(user);
+
+  const hash = await hashPassword(newPassword);
+
+  await passwordModel.findOneAndUpdate(
+    { userId: user?._id },
+    { userId: user?._id, password: hash },
+    { upsert: true }
+  );
+
+  const otp = await createAuth(user?._id!, 5);
+
+  const message = `Your change password OTP is ${otp}`;
+
+  if (!(await sendNaloSms({ to: user?.phoneNumber!, message }))) {
+    throw createError.InternalServerError(
+      "Failed to send OTP code at the moment, please try again later."
+    );
   }
-}
+  return {
+    message: "Please check your phone for the OTP to change your password.",
+  };
+};

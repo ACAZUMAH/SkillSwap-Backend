@@ -14,7 +14,7 @@ const timeTableSchema = new Schema<SwapTimeTable>({
 
 const sessionsSchema = new Schema<SwapSession>({
   taughtBy: { type: Schema.Types.ObjectId, required: true, ref: "users" },
-  recievedBy: { type: Schema.Types.ObjectId, required: true, ref: "users" },
+  receivedBy: { type: Schema.Types.ObjectId, required: true, ref: "users" },
   skill: { type: String, required: true },
   date: { type: Date, required: true },
   time: { type: String, required: true },

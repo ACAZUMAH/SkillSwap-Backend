@@ -94,6 +94,7 @@ export type Authenticated = {
   __typename?: 'Authenticated';
   token?: Maybe<Scalars['String']['output']>;
   user: User;
+  zegoToken?: Maybe<Scalars['String']['output']>;
 };
 
 export type CancelSwapRequestInput = {
@@ -154,6 +155,11 @@ export type Filters = {
   userId?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type ForgetPasswordInput = {
+  newPassword: Scalars['String']['input'];
+  phoneNumber: Scalars['String']['input'];
+};
+
 export type Message = {
   __typename?: 'Message';
   createdAt?: Maybe<Scalars['DateTime']['output']>;
@@ -197,6 +203,7 @@ export type Mutation = {
   completeAuthAndSignToken: Authenticated;
   createAccount: Response;
   createSwapRequest: Swap;
+  forgetPassword: Response;
   login?: Maybe<Response>;
   testMutation?: Maybe<Scalars['String']['output']>;
   updateSwap?: Maybe<Swap>;
@@ -236,13 +243,18 @@ export type MutationCreateSwapRequestArgs = {
 };
 
 
+export type MutationForgetPasswordArgs = {
+  data: ForgetPasswordInput;
+};
+
+
 export type MutationLoginArgs = {
   data: LoginUserInput;
 };
 
 
 export type MutationUpdateSwapArgs = {
-  input: UpdateSwapInput;
+  data: UpdateSwapInput;
 };
 
 
@@ -370,8 +382,8 @@ export enum ScheduleStatus {
 
 export type Session = {
   __typename?: 'Session';
-  date: Scalars['Date']['output'];
-  recievedBy: Scalars['ID']['output'];
+  date: Scalars['DateTime']['output'];
+  receivedBy: Scalars['ID']['output'];
   skill: Scalars['String']['output'];
   status: ScheduleStatus;
   taughtBy: Scalars['ID']['output'];
@@ -379,8 +391,8 @@ export type Session = {
 };
 
 export type SessionInput = {
-  date: Scalars['Date']['input'];
-  recievedBy: Scalars['ID']['input'];
+  date: Scalars['DateTime']['input'];
+  receivedBy: Scalars['ID']['input'];
   skill: Scalars['String']['input'];
   status?: InputMaybe<ScheduleStatus>;
   taughtBy: Scalars['ID']['input'];
@@ -491,7 +503,7 @@ export type TimeTable = {
   dayOfweek: Scalars['String']['output'];
   durationInWeeks: Scalars['Int']['output'];
   skill: Scalars['String']['output'];
-  startDate: Scalars['Date']['output'];
+  startDate: Scalars['DateTime']['output'];
   taughtBy: Scalars['ID']['output'];
   time: Scalars['String']['output'];
 };
@@ -500,7 +512,7 @@ export type TimeTableInput = {
   dayOfweek: Scalars['String']['input'];
   durationInWeeks: Scalars['Int']['input'];
   skill: Scalars['String']['input'];
-  startDate: Scalars['Date']['input'];
+  startDate: Scalars['DateTime']['input'];
   taughtBy: Scalars['ID']['input'];
   time: Scalars['String']['input'];
 };
@@ -703,6 +715,7 @@ export type ResolversTypes = {
   EmailAddress: ResolverTypeWrapper<Scalars['EmailAddress']['output']>;
   Filters: Filters;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
+  ForgetPasswordInput: ForgetPasswordInput;
   GUID: ResolverTypeWrapper<Scalars['GUID']['output']>;
   GeoJSON: ResolverTypeWrapper<Scalars['GeoJSON']['output']>;
   HSL: ResolverTypeWrapper<Scalars['HSL']['output']>;
@@ -828,6 +841,7 @@ export type ResolversParentTypes = {
   EmailAddress: Scalars['EmailAddress']['output'];
   Filters: Filters;
   Float: Scalars['Float']['output'];
+  ForgetPasswordInput: ForgetPasswordInput;
   GUID: Scalars['GUID']['output'];
   GeoJSON: Scalars['GeoJSON']['output'];
   HSL: Scalars['HSL']['output'];
@@ -929,6 +943,7 @@ export interface AccountNumberScalarConfig extends GraphQLScalarTypeConfig<Resol
 export type AuthenticatedResolvers<ContextType = any, ParentType extends ResolversParentTypes['Authenticated'] = ResolversParentTypes['Authenticated']> = {
   token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  zegoToken?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1138,9 +1153,10 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   completeAuthAndSignToken?: Resolver<ResolversTypes['Authenticated'], ParentType, ContextType, RequireFields<MutationCompleteAuthAndSignTokenArgs, 'otp'>>;
   createAccount?: Resolver<ResolversTypes['Response'], ParentType, ContextType, RequireFields<MutationCreateAccountArgs, 'data'>>;
   createSwapRequest?: Resolver<ResolversTypes['Swap'], ParentType, ContextType, RequireFields<MutationCreateSwapRequestArgs, 'input'>>;
+  forgetPassword?: Resolver<ResolversTypes['Response'], ParentType, ContextType, RequireFields<MutationForgetPasswordArgs, 'data'>>;
   login?: Resolver<Maybe<ResolversTypes['Response']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'data'>>;
   testMutation?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  updateSwap?: Resolver<Maybe<ResolversTypes['Swap']>, ParentType, ContextType, RequireFields<MutationUpdateSwapArgs, 'input'>>;
+  updateSwap?: Resolver<Maybe<ResolversTypes['Swap']>, ParentType, ContextType, RequireFields<MutationUpdateSwapArgs, 'data'>>;
   updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, Partial<MutationUpdateUserArgs>>;
   upsertMessage?: Resolver<Maybe<ResolversTypes['Chat']>, ParentType, ContextType, RequireFields<MutationUpsertMessageArgs, 'data'>>;
   verifyOtpAndSaveNewPassword?: Resolver<ResolversTypes['Response'], ParentType, ContextType, RequireFields<MutationVerifyOtpAndSaveNewPasswordArgs, 'otp'>>;
@@ -1269,8 +1285,8 @@ export interface SemVerScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
 }
 
 export type SessionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Session'] = ResolversParentTypes['Session']> = {
-  date?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
-  recievedBy?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  date?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  receivedBy?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   skill?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['ScheduleStatus'], ParentType, ContextType>;
   taughtBy?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -1330,7 +1346,7 @@ export type TimeTableResolvers<ContextType = any, ParentType extends ResolversPa
   dayOfweek?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   durationInWeeks?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   skill?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  startDate?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  startDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   taughtBy?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   time?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

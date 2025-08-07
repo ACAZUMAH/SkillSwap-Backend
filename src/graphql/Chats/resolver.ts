@@ -58,7 +58,6 @@ const unreadMessagesCount = {
       return pubsub.asyncIterableIterator(SUBSCRIPTION_EVENTS.NEW_MESSAGE);
     },
     (payload, variables) => {
-      console.log("is a match:", payload.userId === variables.userId);
       return payload.userId === variables.userId;
     }
   ),

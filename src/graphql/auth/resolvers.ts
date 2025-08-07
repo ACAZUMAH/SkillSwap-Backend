@@ -3,10 +3,11 @@ import {
   MutationChangePasswordArgs,
   MutationCompleteAuthAndSignTokenArgs,
   MutationCreateAccountArgs,
+  MutationForgetPasswordArgs,
   MutationLoginArgs,
   MutationVerifyOtpAndSaveNewPasswordArgs,
 } from "src/common/interfaces";
-import { register, loginUser, updatePassword } from "src/services/auth";
+import { register, loginUser, updatePassword, changeNewPassword } from "src/services/auth";
 import { verifyAndSaveNewPassword, verifyOtpAndSignJwt } from "src/services/auth/auth";
 
 const createAccount = (_: any, args: MutationCreateAccountArgs) => {
@@ -21,12 +22,16 @@ const login = (_: any, args: MutationLoginArgs) => {
   return loginUser({ ...args.data });
 };
 
-const changePassword = async ( _: any, args: MutationChangePasswordArgs, { user }: GraphqlContext) => {
+const changePassword = ( _: any, args: MutationChangePasswordArgs, { user }: GraphqlContext) => {
   return updatePassword({ ...args.data, userId: user?._id });
 };
 
-const verifyOtpAndSaveNewPassword = async (_: any, { otp }: MutationVerifyOtpAndSaveNewPasswordArgs) => {
-  return await verifyAndSaveNewPassword(otp);
+const verifyOtpAndSaveNewPassword = (_: any, { otp }: MutationVerifyOtpAndSaveNewPasswordArgs) => {
+  return verifyAndSaveNewPassword(otp);
+}
+
+const forgetPassword = (_: any, args:MutationForgetPasswordArgs) => {
+  return changeNewPassword({ ...args.data });
 }
 
 export const authResolvers = {
@@ -36,5 +41,6 @@ export const authResolvers = {
     login,
     changePassword,
     verifyOtpAndSaveNewPassword,
+    forgetPassword,
   },
 };

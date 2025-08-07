@@ -222,12 +222,12 @@ export const getSwapByUserIds = async (data: swapByUsers) => {
  * @returns The updated swap request.
  */
 export const updateSwap = async (data: updateSwapData) => {
-  const swap = await getSwapById(data.swapId);
+  const swap = await getSwapById(data.id);
 
   const update = {
     ...(data.skills?.length! > 0 && { skills: data.skills }),
     ...(data.timeTable && { timeTable: data.timeTable }),
-    ...(data.session && { sessions: [...swap?.sessions!, data.session] }),
+    ...(data.sessions && { sessions: [...swap?.sessions!, ...data.sessions] }),
     ...(data.status && { status: data.status }),
   };
 

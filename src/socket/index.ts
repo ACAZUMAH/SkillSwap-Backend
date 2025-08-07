@@ -1,7 +1,7 @@
 import { Socket } from "socket.io";
 import * as services from "../services/chats"
 import logger from "src/loggers/logger";
-import { NewMessageInput } from "src/common/interfaces";
+import { NewMessageInput, videoData } from "src/common/interfaces";
 
 const disconnection = (socket: Socket) => {
   logger.info(`User ${socket.id} disconnected`);
@@ -45,6 +45,35 @@ const sendMessage = async (socket: Socket, message: NewMessageInput) => {
   }
 };
 
+const sendVideoCall = (socket: Socket, data: videoData) => {
+  const receiverSocket = global.onlineUsers.get(data.to);
+  if (receiverSocket) {
+    socket.to(receiverSocket).emit("incoming-call", {
+      from: data.from,
+      type: data.type,
+      roomId: data.roomId,
+      users: data.users,
+      chatId: data.chatId,
+    });
+    logger.info(`Video call from ${data.from.id} to ${data.to} in room ${data.roomId}`);
+  }
+}
+
+const AcceptVideoCall = (socket: Socket, id: string) => {
+  const senderSocket = global.onlineUsers.get(id);
+  if(senderSocket){
+    socket.to(senderSocket).emit("call-accepted")
+  }
+}
+
+const rejectVideoCall = (socket: Socket, id: string) => { 
+  const senderSocket = global.onlineUsers.get(id);
+  if (senderSocket) {
+    socket.to(senderSocket).emit("call-rejected");
+    logger.info(`Video call rejected`);
+  }
+}
+
 export const connection = (socket: Socket) => {
   const userId = socket.handshake.auth.userId as string;
   logger.info(`User ${userId} connected with socket ID: ${socket.id}`);
@@ -57,6 +86,12 @@ export const connection = (socket: Socket) => {
   });
 
   socket.on("sendMessage", (message) => sendMessage(socket, message));
+
+  socket.on("outgoing-call", (data) => sendVideoCall(socket, data));
+
+  socket.on("accept-incoming-call", ({ id }) => AcceptVideoCall(socket, id));
+
+  socket.on("reject-incoming-call", ({ id }) => rejectVideoCall(socket, id));
 
   socket.on("disconnect", () => disconnection(socket));
 };
