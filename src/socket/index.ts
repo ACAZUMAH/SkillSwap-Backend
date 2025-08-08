@@ -47,6 +47,7 @@ const sendMessage = async (socket: Socket, message: NewMessageInput) => {
 
 const sendVideoCall = (socket: Socket, data: videoData) => {
   const receiverSocket = global.onlineUsers.get(data.to);
+  console.log(receiverSocket)
   if (receiverSocket) {
     socket.to(receiverSocket).emit("incoming-call", {
       from: data.from,
