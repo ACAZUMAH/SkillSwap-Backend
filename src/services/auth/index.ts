@@ -3,7 +3,6 @@ import {
   CreateUser,
   LoginUser,
   NewPasswordInput,
-  UserDocument,
 } from "src/common/interfaces";
 import {
   checkUserExist,
@@ -16,7 +15,7 @@ import { createAuth } from "./auth";
 import { isDevelopment } from "src/common/constants";
 import createError from "http-errors";
 import { sendNaloSms } from "../notifications/nalo";
-import { passwordModel } from "src/models/password/passwordModel";
+import { passwordModel } from "src/models";
 
 /**
  * Registers a new user by creating their account, hashing their password, and generating an OTP.

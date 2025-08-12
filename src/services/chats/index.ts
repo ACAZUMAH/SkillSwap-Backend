@@ -1,9 +1,9 @@
-import { chatModel } from "src/models/chats";
 import createError from "http-errors";
 import { Types } from "mongoose";
 import { ChatInput, GetMessages } from "src/common/interfaces";
 import { MessagesStatus } from "src/common/enums";
 import { pubsub, SUBSCRIPTION_EVENTS } from "src/common/pubsub";
+import { chatModel } from "src/models";
 
 /**
  * create a new chat between two users
@@ -30,7 +30,8 @@ export const createChat = async (data: any) => {
  * @returns- The chat document with messages
  */
 export const upsertMessage = async (data: ChatInput) => {
-  if (!Types.ObjectId.isValid(data.chatId)) throw createError(400, "Invalid chat ID");
+  if (!Types.ObjectId.isValid(data.chatId))
+    throw createError(400, "Invalid chat ID");
 
   const onlineReciever = onlineUsers.get(data.to);
 
@@ -63,7 +64,8 @@ export const upsertMessage = async (data: ChatInput) => {
  * @returns - The chat document
  */
 export const getChatById = async (chatId: string | Types.ObjectId) => {
-  if (!Types.ObjectId.isValid(chatId)) throw createError(400, "Invalid chat ID");
+  if (!Types.ObjectId.isValid(chatId))
+    throw createError(400, "Invalid chat ID");
 
   const chat = await chatModel.findById(chatId);
 
@@ -79,7 +81,8 @@ export const getChatById = async (chatId: string | Types.ObjectId) => {
  * @returns - An array of chat documents
  */
 export const getAllChatsByUserId = async (userId: string | Types.ObjectId) => {
-  if (!Types.ObjectId.isValid(userId)) throw createError(400, "Invalid user ID");
+  if (!Types.ObjectId.isValid(userId))
+    throw createError(400, "Invalid user ID");
 
   const chats = await chatModel
     .find({
@@ -145,7 +148,9 @@ export const getUpdatedMessages = async (data: GetMessages) => {
  * @param userId - The ID of the user to get unread messages count for
  * @returns - The count of unread messages
  */
-export const getUnreadMessagesCount = async (userId: string | Types.ObjectId) => {
+export const getUnreadMessagesCount = async (
+  userId: string | Types.ObjectId
+) => {
   if (!Types.ObjectId.isValid(userId))
     throw createError(400, "Invalid user ID");
 
@@ -175,11 +180,12 @@ export const getUnreadMessagesCount = async (userId: string | Types.ObjectId) =>
         },
       },
     },
-    { $project: { 
-        _id: 0, 
-        chatId: "$_id", 
-        unreadCount: { $size: "$unreadMessages" } 
-      } 
+    {
+      $project: {
+        _id: 0,
+        chatId: "$_id",
+        unreadCount: { $size: "$unreadMessages" },
+      },
     },
   ]);
 

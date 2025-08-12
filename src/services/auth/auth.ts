@@ -1,10 +1,10 @@
 import { generateOtp, jwtSign } from "src/common/helpers";
-import { authModel } from "src/models/auth";
 import createError from 'http-errors'
 import { getUserById, updateIsAuthenticated, updateUserPassword } from "../user";
 import { Types } from "mongoose";
 import { passwordModel } from "src/models/password/passwordModel";
 import { generateToken04 } from "src/common/helpers/zegoServerAssistance";
+import { authModel } from "src/models";
 
 /**
  * Creates or updates an authentication record for a user with a unique OTP.

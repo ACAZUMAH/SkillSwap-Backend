@@ -65,10 +65,7 @@ export const upsertSwapRequest = async (data: SwapRequest) => {
  * @returns The canceled swap request.
  */
 export const cancelSwapRequest = async (filter: Request) => {
-  if (
-    !Types.ObjectId.isValid(filter.senderId!) &&
-    !Types.ObjectId.isValid(filter.swapId!)
-  )
+  if (!Types.ObjectId.isValid(filter.senderId!) && !Types.ObjectId.isValid(filter.swapId!))
     throw createError.BadRequest("Invalid user or swap id");
 
   return await swapModel.findOneAndDelete({
@@ -128,7 +125,6 @@ export const acceptOrDeclineSwapRequest = async (data: AcceptOrDeclineSwap) => {
       userId: swap?.receiverId.toString(),
     });
   }
-
   return swap;
 };
 
@@ -170,9 +166,9 @@ export const getSwapRequests = async (filter: Request) => {
   const page = getSanitizePage(filter.page);
   const skip = getSanitizeOffset(limit, page);
 
-  const oprions: QueryOptions = { skip, limit, sort: { createdAt: -1 } };
+  const options: QueryOptions = { skip, limit, sort: { createdAt: -1 } };
 
-  const swaps = await swapModel.find(query, null, oprions);
+  const swaps = await swapModel.find(query, null, options);
 
   return getPageConnection(swaps, page, limit);
 };

@@ -99,7 +99,7 @@ export type Authenticated = {
 
 export type CancelSwapRequestInput = {
   swapId: Scalars['ID']['input'];
-  userId: Scalars['ID']['input'];
+  userId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type Chat = {
@@ -124,6 +124,13 @@ export type ChatUsers = {
 export type ChatUsersInput = {
   receiverId: Scalars['ID']['input'];
   senderId: Scalars['ID']['input'];
+};
+
+export type CreateReviewInput = {
+  comments?: InputMaybe<Scalars['String']['input']>;
+  ratings: Scalars['Int']['input'];
+  revieweeId: Scalars['ID']['input'];
+  reviewerId: Scalars['ID']['input'];
 };
 
 export type Education = {
@@ -202,7 +209,9 @@ export type Mutation = {
   changePassword: Response;
   completeAuthAndSignToken: Authenticated;
   createAccount: Response;
+  createReview: Review;
   createSwapRequest: Swap;
+  deleteReview: Review;
   forgetPassword: Response;
   login?: Maybe<Response>;
   testMutation?: Maybe<Scalars['String']['output']>;
@@ -238,8 +247,18 @@ export type MutationCreateAccountArgs = {
 };
 
 
+export type MutationCreateReviewArgs = {
+  data: CreateReviewInput;
+};
+
+
 export type MutationCreateSwapRequestArgs = {
   input: SwapRequestInput;
+};
+
+
+export type MutationDeleteReviewArgs = {
+  revieweeId: Scalars['ID']['input'];
 };
 
 
@@ -288,10 +307,12 @@ export type Query = {
   getChatByUserId: Array<Maybe<Chat>>;
   getMessages: Chat;
   getRequestedSwaps?: Maybe<SwapConnection>;
+  getReviews: ReviewConnection;
   getSwapByUsers?: Maybe<Swap>;
   getSwapRequest?: Maybe<Swap>;
   getSwapRequests?: Maybe<SwapConnection>;
   getUnreadMessagesCount?: Maybe<Array<Maybe<UnreadCount>>>;
+  getUserReviews: Array<Review>;
   hello?: Maybe<Scalars['String']['output']>;
   me?: Maybe<User>;
   recommendation?: Maybe<RecomendationConnection>;
@@ -325,6 +346,11 @@ export type QueryGetRequestedSwapsArgs = {
 };
 
 
+export type QueryGetReviewsArgs = {
+  filters: Reviewfilters;
+};
+
+
 export type QueryGetSwapByUsersArgs = {
   data?: InputMaybe<SwapByUsers>;
 };
@@ -337,6 +363,11 @@ export type QueryGetSwapRequestArgs = {
 
 export type QueryGetSwapRequestsArgs = {
   filter?: InputMaybe<SwapFilter>;
+};
+
+
+export type QueryGetUserReviewsArgs = {
+  userId: Scalars['ID']['input'];
 };
 
 
@@ -372,6 +403,35 @@ export type RecomendationConnection = {
 export type Response = {
   __typename?: 'Response';
   message?: Maybe<Scalars['String']['output']>;
+};
+
+export type Review = {
+  __typename?: 'Review';
+  comments?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  ratings: Scalars['Int']['output'];
+  reviewee: User;
+  revieweeId: Scalars['ID']['output'];
+  reviewer: User;
+  reviewerId: Scalars['ID']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type ReviewConnection = {
+  __typename?: 'ReviewConnection';
+  edges?: Maybe<Array<Review>>;
+  pageInfo?: Maybe<PageInfo>;
+};
+
+export type Reviewfilters = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  ratings?: InputMaybe<Scalars['Int']['input']>;
+  revieweeId?: InputMaybe<Scalars['ID']['input']>;
+  reviewerId?: InputMaybe<Scalars['ID']['input']>;
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<Scalars['String']['input']>;
 };
 
 export enum ScheduleStatus {
@@ -702,6 +762,7 @@ export type ResolversTypes = {
   ChatUsersInput: ChatUsersInput;
   CountryCode: ResolverTypeWrapper<Scalars['CountryCode']['output']>;
   CountryName: ResolverTypeWrapper<Scalars['CountryName']['output']>;
+  CreateReviewInput: CreateReviewInput;
   Cuid: ResolverTypeWrapper<Scalars['Cuid']['output']>;
   Currency: ResolverTypeWrapper<Scalars['Currency']['output']>;
   DID: ResolverTypeWrapper<Scalars['DID']['output']>;
@@ -769,6 +830,9 @@ export type ResolversTypes = {
   Recomendation: ResolverTypeWrapper<Recomendation>;
   RecomendationConnection: ResolverTypeWrapper<RecomendationConnection>;
   Response: ResolverTypeWrapper<Response>;
+  Review: ResolverTypeWrapper<Review>;
+  ReviewConnection: ResolverTypeWrapper<ReviewConnection>;
+  Reviewfilters: Reviewfilters;
   RoutingNumber: ResolverTypeWrapper<Scalars['RoutingNumber']['output']>;
   SESSN: ResolverTypeWrapper<Scalars['SESSN']['output']>;
   SafeInt: ResolverTypeWrapper<Scalars['SafeInt']['output']>;
@@ -828,6 +892,7 @@ export type ResolversParentTypes = {
   ChatUsersInput: ChatUsersInput;
   CountryCode: Scalars['CountryCode']['output'];
   CountryName: Scalars['CountryName']['output'];
+  CreateReviewInput: CreateReviewInput;
   Cuid: Scalars['Cuid']['output'];
   Currency: Scalars['Currency']['output'];
   DID: Scalars['DID']['output'];
@@ -893,6 +958,9 @@ export type ResolversParentTypes = {
   Recomendation: Recomendation;
   RecomendationConnection: RecomendationConnection;
   Response: Response;
+  Review: Review;
+  ReviewConnection: ReviewConnection;
+  Reviewfilters: Reviewfilters;
   RoutingNumber: Scalars['RoutingNumber']['output'];
   SESSN: Scalars['SESSN']['output'];
   SafeInt: Scalars['SafeInt']['output'];
@@ -1152,7 +1220,9 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   changePassword?: Resolver<ResolversTypes['Response'], ParentType, ContextType, RequireFields<MutationChangePasswordArgs, 'data'>>;
   completeAuthAndSignToken?: Resolver<ResolversTypes['Authenticated'], ParentType, ContextType, RequireFields<MutationCompleteAuthAndSignTokenArgs, 'otp'>>;
   createAccount?: Resolver<ResolversTypes['Response'], ParentType, ContextType, RequireFields<MutationCreateAccountArgs, 'data'>>;
+  createReview?: Resolver<ResolversTypes['Review'], ParentType, ContextType, RequireFields<MutationCreateReviewArgs, 'data'>>;
   createSwapRequest?: Resolver<ResolversTypes['Swap'], ParentType, ContextType, RequireFields<MutationCreateSwapRequestArgs, 'input'>>;
+  deleteReview?: Resolver<ResolversTypes['Review'], ParentType, ContextType, RequireFields<MutationDeleteReviewArgs, 'revieweeId'>>;
   forgetPassword?: Resolver<ResolversTypes['Response'], ParentType, ContextType, RequireFields<MutationForgetPasswordArgs, 'data'>>;
   login?: Resolver<Maybe<ResolversTypes['Response']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'data'>>;
   testMutation?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1229,10 +1299,12 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   getChatByUserId?: Resolver<Array<Maybe<ResolversTypes['Chat']>>, ParentType, ContextType, Partial<QueryGetChatByUserIdArgs>>;
   getMessages?: Resolver<ResolversTypes['Chat'], ParentType, ContextType, RequireFields<QueryGetMessagesArgs, 'data'>>;
   getRequestedSwaps?: Resolver<Maybe<ResolversTypes['SwapConnection']>, ParentType, ContextType, Partial<QueryGetRequestedSwapsArgs>>;
+  getReviews?: Resolver<ResolversTypes['ReviewConnection'], ParentType, ContextType, RequireFields<QueryGetReviewsArgs, 'filters'>>;
   getSwapByUsers?: Resolver<Maybe<ResolversTypes['Swap']>, ParentType, ContextType, Partial<QueryGetSwapByUsersArgs>>;
   getSwapRequest?: Resolver<Maybe<ResolversTypes['Swap']>, ParentType, ContextType, RequireFields<QueryGetSwapRequestArgs, 'swapId'>>;
   getSwapRequests?: Resolver<Maybe<ResolversTypes['SwapConnection']>, ParentType, ContextType, Partial<QueryGetSwapRequestsArgs>>;
   getUnreadMessagesCount?: Resolver<Maybe<Array<Maybe<ResolversTypes['UnreadCount']>>>, ParentType, ContextType>;
+  getUserReviews?: Resolver<Array<ResolversTypes['Review']>, ParentType, ContextType, RequireFields<QueryGetUserReviewsArgs, 'userId'>>;
   hello?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   recommendation?: Resolver<Maybe<ResolversTypes['RecomendationConnection']>, ParentType, ContextType, Partial<QueryRecommendationArgs>>;
@@ -1265,6 +1337,25 @@ export type RecomendationConnectionResolvers<ContextType = any, ParentType exten
 
 export type ResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['Response'] = ResolversParentTypes['Response']> = {
   message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ReviewResolvers<ContextType = any, ParentType extends ResolversParentTypes['Review'] = ResolversParentTypes['Review']> = {
+  comments?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  ratings?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  reviewee?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  revieweeId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  reviewer?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  reviewerId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ReviewConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['ReviewConnection'] = ResolversParentTypes['ReviewConnection']> = {
+  edges?: Resolver<Maybe<Array<ResolversTypes['Review']>>, ParentType, ContextType>;
+  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1496,6 +1587,8 @@ export type Resolvers<ContextType = any> = {
   Recomendation?: RecomendationResolvers<ContextType>;
   RecomendationConnection?: RecomendationConnectionResolvers<ContextType>;
   Response?: ResponseResolvers<ContextType>;
+  Review?: ReviewResolvers<ContextType>;
+  ReviewConnection?: ReviewConnectionResolvers<ContextType>;
   RoutingNumber?: GraphQLScalarType;
   SESSN?: GraphQLScalarType;
   SafeInt?: GraphQLScalarType;

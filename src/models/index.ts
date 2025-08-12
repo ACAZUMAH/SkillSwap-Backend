@@ -1,2 +1,6 @@
 export * from './user/userModel'
 export * from './swaps/swapsModel'
+export * from './reviews/reviewsModel'
+export * from './chats/index'
+export * from './password/passwordModel'
+export * from './auth/index'

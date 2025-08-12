@@ -85,7 +85,7 @@ export const swapsTypeDef = `#graphql
 
     input CancelSwapRequestInput {
         swapId: ID!
-        userId: ID!
+        userId: ID
     }
 
     input SwappedSkillInput {

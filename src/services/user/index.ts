@@ -6,7 +6,7 @@ import {
   RecommendationFilter,
   UpdatePassword,
 } from "src/common/interfaces";
-import { userModel } from "src/models";
+import { reviewsModel, userModel } from "src/models";
 import { validateCreateUserData } from "./user-validation";
 import createError from "http-errors";
 import { FilterQuery, QueryOptions, Types } from "mongoose";
@@ -180,7 +180,7 @@ export const searchUsersOrSkills = async (data: UserFilters) => {
   const page = getSanitizePage(data.page);
   const skip = getSanitizeOffset(limit, page);
 
-  const oprions: QueryOptions = {
+  const options: QueryOptions = {
     limit: limit + 1,
     lean: true,
     page,
@@ -188,7 +188,7 @@ export const searchUsersOrSkills = async (data: UserFilters) => {
     sort: { createdAt: 1 },
   };
 
-  const result = await userModel.find(query, null, oprions);
+  const result = await userModel.find(query, null, options);
 
   return getPageConnection(result, page, limit);
 };
@@ -376,3 +376,25 @@ export const getRecommendations = async (filters: RecommendationFilter) => {
   ]);
   return getPageConnection(recommendations, page, limit);
 };
+
+/** 
+ * Updates the average rating of a user based on their reviews.
+ *
+ * @param userId - The ID of the user whose average rating needs to be updated.
+ * @returns The updated average rating of the user.
+ * @throws Will throw an error if the user ID is invalid.
+ */
+export const updateAverageRating = async (userId: string | Types.ObjectId) => {
+  if (!Types.ObjectId.isValid(userId)) throw createError.BadRequest("Invalid user id");
+
+  const reviews = await reviewsModel.find({ revieweeId: userId }).lean();
+
+  if (!reviews.length) return;
+
+  const totalRatings = reviews.reduce((acc, review) => acc + review.ratings, 0);
+  const averageRating = totalRatings / reviews.length;
+
+  await userModel.findByIdAndUpdate({ _id: userId },{ $set: { averageRating } },{ new: true });
+
+  return averageRating;
+}
