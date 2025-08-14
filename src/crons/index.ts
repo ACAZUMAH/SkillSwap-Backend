@@ -10,7 +10,7 @@ const cronJobs: CronJobConfig[] = [
     job: async () => {
       scheduleUpdateUserAverageRating();
     },
-    start: true,
+    runOnInit: true,
   },
 ];
 
@@ -32,7 +32,7 @@ export const applyCronJobs = () => {
       true, // Start the job immediately
       "UTC", // Timezone
       undefined,
-      jobConfig.start
+      jobConfig.runOnInit
     );
     
     job.start();

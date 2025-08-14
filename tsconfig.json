@@ -7,8 +7,7 @@
     "noImplicitAny": true,
     "moduleResolution": "node",
     "sourceMap": true,
-    "outDir": "./dist",
-    "rootDir": "./src",
+    "outDir": "dist",
     "baseUrl": ".",
     "paths": {
       "src/*": ["src/*"]
@@ -20,7 +19,7 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist"],
+  "include": ["src/"],
+  //"exclude": ["node_modules"],
   "ts-node": { "files": true }
 }

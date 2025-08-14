@@ -9,7 +9,7 @@ import connectDB from "./common/helpers/connectDB";
 import { errorHandler } from "./middlewares/error-handler";
 import { applyMiddlewares } from "./middlewares";
 import { createSocketIoServer } from "./servers/createSocketIoServer";
-import { applyCronJobs } from "./cron";
+import { applyCronJobs } from "./crons";
 
 const PORT = process.env.PORT || 8800;
 global.onlineUsers = new Map<string, string>();
