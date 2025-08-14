@@ -31,7 +31,7 @@ const startServer = async () => {
   app.use(errorHandler as any);
 
   app.all("*", (_req, _res, next) => {
-    return next(createError(400, "Unable to retrive the request resource!"));
+    return next(createError(400, "Unable to retrieve the request resource!"));
   });
 
   await new Promise<void>((resolve) => httpServer.listen({ port: PORT }, resolve));
