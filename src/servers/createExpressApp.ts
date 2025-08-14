@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import cors from "cors";
 import { isDevelopment, isProduction, whitelist } from "src/common/constants";
 import helmet, { HelmetOptions } from "helmet";
+import logger from "src/loggers/logger";
 
 const helmetOptions: HelmetOptions = {
   contentSecurityPolicy: false,
@@ -19,7 +20,7 @@ const corsOptions = {
     if (!origin) return callback(null, true);
     if (isDevelopment) return callback(null, true);
     if (isProduction && whitelist.includes(origin)) return callback(null, true);
-    console.warn("[CORS] Blocked origin:", origin, {
+    logger.warn("[CORS] Blocked origin:", origin, {
       isProduction,
       whitelist,
     });
