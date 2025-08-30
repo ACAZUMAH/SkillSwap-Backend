@@ -6,7 +6,6 @@
     "target": "esnext",
     "noImplicitAny": true,
     "moduleResolution": "node",
-    "ignoreDeprecations": "6.0",
     "sourceMap": true,
     "outDir": "dist",
     "baseUrl": ".",
