@@ -222,7 +222,7 @@ export const updateSwap = async (data: updateSwapData) => {
 
   const update = {
     ...(data.skills?.length! > 0 && { skills: data.skills }),
-    ...(data.timeTable && { timeTable: data.timeTable }),
+    ...(data.timeTable && { timeTable: [...swap?.timeTable!, ...data.timeTable] }),
     ...(data.sessions && { sessions: [...swap?.sessions!, ...data.sessions] }),
     ...(data.status && { status: data.status }),
   };
