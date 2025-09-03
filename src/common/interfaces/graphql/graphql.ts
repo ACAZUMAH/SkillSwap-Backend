@@ -212,10 +212,13 @@ export type Mutation = {
   createReview: Review;
   createSwapRequest: Swap;
   deleteReview: Review;
+  deleteSessionEntry?: Maybe<Swap>;
+  deleteTimeTableEntry?: Maybe<Swap>;
   forgetPassword: Response;
   login?: Maybe<Response>;
   testMutation?: Maybe<Scalars['String']['output']>;
   updateSwap?: Maybe<Swap>;
+  updateSwapSession?: Maybe<Swap>;
   updateUser: User;
   upsertMessage?: Maybe<Chat>;
   verifyOtpAndSaveNewPassword: Response;
@@ -262,6 +265,16 @@ export type MutationDeleteReviewArgs = {
 };
 
 
+export type MutationDeleteSessionEntryArgs = {
+  sessionId: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteTimeTableEntryArgs = {
+  entryId: Scalars['ID']['input'];
+};
+
+
 export type MutationForgetPasswordArgs = {
   data: ForgetPasswordInput;
 };
@@ -274,6 +287,11 @@ export type MutationLoginArgs = {
 
 export type MutationUpdateSwapArgs = {
   data: UpdateSwapInput;
+};
+
+
+export type MutationUpdateSwapSessionArgs = {
+  data: UpdateSwapSessionInput;
 };
 
 
@@ -443,6 +461,7 @@ export enum ScheduleStatus {
 export type Session = {
   __typename?: 'Session';
   date: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
   receivedBy: Scalars['ID']['output'];
   skill: Scalars['String']['output'];
   status: ScheduleStatus;
@@ -562,6 +581,7 @@ export type TimeTable = {
   __typename?: 'TimeTable';
   dayOfweek: Scalars['String']['output'];
   durationInWeeks: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
   skill: Scalars['String']['output'];
   startDate: Scalars['DateTime']['output'];
   taughtBy: Scalars['ID']['output'];
@@ -586,6 +606,16 @@ export type UnreadCount = {
 export type UpdatePasswordInput = {
   newPassword: Scalars['String']['input'];
   oldPassword: Scalars['String']['input'];
+};
+
+export type UpdateSwapSessionInput = {
+  date?: InputMaybe<Scalars['DateTime']['input']>;
+  receivedBy?: InputMaybe<Scalars['ID']['input']>;
+  sessionId: Scalars['ID']['input'];
+  skill?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<ScheduleStatus>;
+  taughtBy?: InputMaybe<Scalars['ID']['input']>;
+  time?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateUserInput = {
@@ -864,6 +894,7 @@ export type ResolversTypes = {
   UnsignedFloat: ResolverTypeWrapper<Scalars['UnsignedFloat']['output']>;
   UnsignedInt: ResolverTypeWrapper<Scalars['UnsignedInt']['output']>;
   UpdatePasswordInput: UpdatePasswordInput;
+  UpdateSwapSessionInput: UpdateSwapSessionInput;
   UpdateUserInput: UpdateUserInput;
   User: ResolverTypeWrapper<User>;
   UserConnection: ResolverTypeWrapper<UserConnection>;
@@ -990,6 +1021,7 @@ export type ResolversParentTypes = {
   UnsignedFloat: Scalars['UnsignedFloat']['output'];
   UnsignedInt: Scalars['UnsignedInt']['output'];
   UpdatePasswordInput: UpdatePasswordInput;
+  UpdateSwapSessionInput: UpdateSwapSessionInput;
   UpdateUserInput: UpdateUserInput;
   User: User;
   UserConnection: UserConnection;
@@ -1223,10 +1255,13 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createReview?: Resolver<ResolversTypes['Review'], ParentType, ContextType, RequireFields<MutationCreateReviewArgs, 'data'>>;
   createSwapRequest?: Resolver<ResolversTypes['Swap'], ParentType, ContextType, RequireFields<MutationCreateSwapRequestArgs, 'input'>>;
   deleteReview?: Resolver<ResolversTypes['Review'], ParentType, ContextType, RequireFields<MutationDeleteReviewArgs, 'revieweeId'>>;
+  deleteSessionEntry?: Resolver<Maybe<ResolversTypes['Swap']>, ParentType, ContextType, RequireFields<MutationDeleteSessionEntryArgs, 'sessionId'>>;
+  deleteTimeTableEntry?: Resolver<Maybe<ResolversTypes['Swap']>, ParentType, ContextType, RequireFields<MutationDeleteTimeTableEntryArgs, 'entryId'>>;
   forgetPassword?: Resolver<ResolversTypes['Response'], ParentType, ContextType, RequireFields<MutationForgetPasswordArgs, 'data'>>;
   login?: Resolver<Maybe<ResolversTypes['Response']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'data'>>;
   testMutation?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updateSwap?: Resolver<Maybe<ResolversTypes['Swap']>, ParentType, ContextType, RequireFields<MutationUpdateSwapArgs, 'data'>>;
+  updateSwapSession?: Resolver<Maybe<ResolversTypes['Swap']>, ParentType, ContextType, RequireFields<MutationUpdateSwapSessionArgs, 'data'>>;
   updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, Partial<MutationUpdateUserArgs>>;
   upsertMessage?: Resolver<Maybe<ResolversTypes['Chat']>, ParentType, ContextType, RequireFields<MutationUpsertMessageArgs, 'data'>>;
   verifyOtpAndSaveNewPassword?: Resolver<ResolversTypes['Response'], ParentType, ContextType, RequireFields<MutationVerifyOtpAndSaveNewPasswordArgs, 'otp'>>;
@@ -1377,6 +1412,7 @@ export interface SemVerScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
 
 export type SessionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Session'] = ResolversParentTypes['Session']> = {
   date?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   receivedBy?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   skill?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['ScheduleStatus'], ParentType, ContextType>;
@@ -1436,6 +1472,7 @@ export interface TimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 export type TimeTableResolvers<ContextType = any, ParentType extends ResolversParentTypes['TimeTable'] = ResolversParentTypes['TimeTable']> = {
   dayOfweek?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   durationInWeeks?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   skill?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   startDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   taughtBy?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;

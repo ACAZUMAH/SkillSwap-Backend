@@ -13,6 +13,7 @@ export const swapsTypeDef = `#graphql
     }
 
     type TimeTable {
+        id: ID!
         skill: String!
         taughtBy: ID!
         dayOfweek: String!
@@ -22,6 +23,7 @@ export const swapsTypeDef = `#graphql
     }
 
     type Session {
+        id: ID!
         taughtBy: ID!
         receivedBy: ID!
         skill: String!
@@ -120,11 +122,24 @@ export const swapsTypeDef = `#graphql
         sessions: [SessionInput]
     }
 
+    input UpdateSwapSessionInput {
+        sessionId: ID!
+        date: DateTime
+        time: String
+        skill: String
+        taughtBy: ID
+        receivedBy: ID
+        status: ScheduleStatus
+    }
+
     extend type Mutation {
         createSwapRequest(input: SwapRequestInput!): Swap!
         acceptOrDeclineSwapRequest(input: AcceptOrDeclineSwapInput!): Swap!
         cancelSwapRequest(input: CancelSwapRequestInput!): Swap!
         updateSwap(data: updateSwapInput!): Swap
+        updateSwapSession(data: UpdateSwapSessionInput!): Swap
+        deleteSessionEntry(sessionId: ID!): Swap
+        deleteTimeTableEntry(entryId: ID!): Swap
     }
 
     extend type Subscription {

@@ -54,3 +54,8 @@ export interface UnreadMessages {
     chatId: Types.ObjectId;
     unreadCount: number;
 }
+
+export interface TypingData {
+    to: string;
+    chatId: string;
+}

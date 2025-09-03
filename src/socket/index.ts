@@ -1,8 +1,41 @@
 import { Socket } from "socket.io";
-import * as services from "../services/chats"
+import * as services from "../services/chats";
 import logger from "src/loggers/logger";
-import { NewMessageInput, videoData } from "src/common/interfaces";
+import { NewMessageInput, TypingData, videoData } from "src/common/interfaces";
 
+/**
+ * Handles a new socket connection.
+ * @param socket Socket instance
+ */
+export const connection = (socket: Socket) => {
+  const userId = socket.handshake.auth.userId as string;
+  logger.info(`User ${userId} connected with socket ID: ${socket.id}`);
+  global.socket = socket;
+  global.userSocketMap.set(userId, socket.id);
+
+  socket.emit("online-users", Array.from(global.onlineUsers.keys()));
+
+  socket.on("add-online-user", (userId) => addOnlineUser(socket, userId));
+
+  socket.on("typing", ({ to, chatId }) => sendTyping(socket, { to, chatId }));
+
+  socket.on("stopped-typing", ({ to, chatId }) => sendStoppedTyping(socket, { to, chatId }));
+
+  socket.on("sendMessage", (message) => sendMessage(socket, message));
+
+  socket.on("outgoing-call", (data) => sendVideoCall(socket, data));
+
+  socket.on("accept-incoming-call", ({ id }) => AcceptVideoCall(socket, id));
+
+  socket.on("reject-incoming-call", ({ id }) => rejectVideoCall(socket, id));
+
+  socket.on("disconnect", () => disconnection(socket));
+};
+
+/**
+ * Handles a socket disconnection.
+ * @param socket - Socket instance
+ */
 const disconnection = (socket: Socket) => {
   logger.info(`User ${socket.id} disconnected`);
   const userId = Array.from(global.userSocketMap.entries()).find(
@@ -10,10 +43,57 @@ const disconnection = (socket: Socket) => {
   )?.[0];
   if (userId) {
     userSocketMap.delete(userId);
+    global.onlineUsers.delete(userId);
     logger.info(`User ${userId} disconnected`);
+
+    socket.broadcast.emit("user-offline", { userId });
   }
 };
 
+/**
+ * Handles adding a user to the online users list.
+ * @param socket - Socket instance
+ * @param userId - ID of the user who came online
+ */
+const addOnlineUser = (socket: Socket, userId: string) => {
+  global.onlineUsers.set(userId, socket.id);
+  logger.info(`User ${userId} is online with socket ID: ${socket.id}`);
+  socket.broadcast.emit("user-online", { userId });
+};
+
+/**
+ * Handles sending typing notifications to the receiver.
+ * @param socket - Socket instance
+ * @param data - Typing data including sender and chat ID
+ */
+const sendTyping = (socket: Socket, data: TypingData) => {
+  const from = socket.handshake.auth.userId as string;
+  const toSocketId = global.onlineUsers.get(data.to);
+
+  if (toSocketId) {
+    socket.to(toSocketId).emit("typing", { from, chatId: data.chatId });
+  }
+}
+
+/**
+ * Handles sending stopped typing notifications to the receiver.
+ * @param socket - Socket instance
+ * @param data - Typing data including sender and chat ID
+ */
+const sendStoppedTyping = (socket: Socket, data: TypingData) => {
+  const from = socket.handshake.auth.userId as string;
+  const toSocketId = global.onlineUsers.get(data.to);
+
+  if (toSocketId) {
+    socket.to(toSocketId).emit("stopped-typing", { from, chatId: data.chatId });
+  }
+}
+
+/**
+ * Handles sending a message from one user to another.
+ * @param socket - Socket instance
+ * @param message - New message input data
+ */
 const sendMessage = async (socket: Socket, message: NewMessageInput) => {
   const sender = global.onlineUsers.get(message.from);
   const receiver = global.onlineUsers.get(message.to);
@@ -39,15 +119,20 @@ const sendMessage = async (socket: Socket, message: NewMessageInput) => {
     if (sender) {
       socket.emit("sentMessage", {
         chatId: newMessage._id.toString(),
-        message:  newMessage.recentMessage,
+        message: newMessage.recentMessage,
       });
     }
   }
 };
 
+/**
+ * Handles sending a video call to a receiver.
+ * @param socket - Socket instance
+ * @param data - Video call data including sender, receiver, type, roomId, users, and chatId
+ */
 const sendVideoCall = (socket: Socket, data: videoData) => {
   const receiverSocket = global.onlineUsers.get(data.to);
-  console.log(receiverSocket)
+  console.log(receiverSocket);
   if (receiverSocket) {
     socket.to(receiverSocket).emit("incoming-call", {
       from: data.from,
@@ -56,43 +141,33 @@ const sendVideoCall = (socket: Socket, data: videoData) => {
       users: data.users,
       chatId: data.chatId,
     });
-    logger.info(`Video call from ${data.from.id} to ${data.to} in room ${data.roomId}`);
+    logger.info(
+      `Video call from ${data.from.id} to ${data.to} in room ${data.roomId}`
+    );
   }
-}
+};
 
+/**
+ * Handles acceptance of an incoming video call.
+ * @param socket - Socket instance
+ * @param id - ID of the user who initiated the call
+ */
 const AcceptVideoCall = (socket: Socket, id: string) => {
   const senderSocket = global.onlineUsers.get(id);
-  if(senderSocket){
-    socket.to(senderSocket).emit("call-accepted")
+  if (senderSocket) {
+    socket.to(senderSocket).emit("call-accepted");
   }
-}
+};
 
-const rejectVideoCall = (socket: Socket, id: string) => { 
+/**
+ * Handles rejection of an incoming video call.
+ * @param socket - Socket instance
+ * @param id - ID of the user who initiated the call
+ */
+const rejectVideoCall = (socket: Socket, id: string) => {
   const senderSocket = global.onlineUsers.get(id);
   if (senderSocket) {
     socket.to(senderSocket).emit("call-rejected");
     logger.info(`Video call rejected`);
   }
-}
-
-export const connection = (socket: Socket) => {
-  const userId = socket.handshake.auth.userId as string;
-  logger.info(`User ${userId} connected with socket ID: ${socket.id}`);
-  global.socket = socket;
-  global.userSocketMap.set(userId, socket.id);
-
-  socket.on("add-online-user", (userId: string) => {
-    global.onlineUsers.set(userId, socket.id);
-    logger.info(`User ${userId} is online with socket ID: ${socket.id}`);
-  });
-
-  socket.on("sendMessage", (message) => sendMessage(socket, message));
-
-  socket.on("outgoing-call", (data) => sendVideoCall(socket, data));
-
-  socket.on("accept-incoming-call", ({ id }) => AcceptVideoCall(socket, id));
-
-  socket.on("reject-incoming-call", ({ id }) => rejectVideoCall(socket, id));
-
-  socket.on("disconnect", () => disconnection(socket));
 };

@@ -2,7 +2,10 @@ import {
   GraphqlContext,
   MutationAcceptOrDeclineSwapRequestArgs,
   MutationCreateSwapRequestArgs,
+  MutationDeleteSessionEntryArgs,
+  MutationDeleteTimeTableEntryArgs,
   MutationUpdateSwapArgs,
+  MutationUpdateSwapSessionArgs,
   QueryGetRequestedSwapsArgs,
   QueryGetSwapByUsersArgs,
   QueryGetSwapRequestArgs,
@@ -13,20 +16,19 @@ import * as services from "src/services/swaps";
 import { pubsub, SUBSCRIPTION_EVENTS } from "src/common/pubsub";
 import { withFilter } from "graphql-subscriptions";
 import logger from "src/loggers/logger";
+import { swapSessionResolver } from "./session.resolver";
+import { SwapTimeTableResolver } from "./timeTable.resolver";
 
-const createSwapRequest = async (_: any, args: MutationCreateSwapRequestArgs, { user }: GraphqlContext) => {
+const createSwapRequest = async (_: any, args: MutationCreateSwapRequestArgs,{ user }: GraphqlContext) => {
   return services.upsertSwapRequest({ ...args?.input, senderId: user._id });
 };
 
-const cancelSwapRequest = (_: any,args: MutationCreateSwapRequestArgs,{ user }: GraphqlContext) => {
+const cancelSwapRequest = ( _: any, args: MutationCreateSwapRequestArgs, { user }: GraphqlContext) => {
   return services.cancelSwapRequest({ ...args?.input, senderId: user._id });
 };
 
-const acceptOrDeclineSwapRequest = (_: any,args: MutationAcceptOrDeclineSwapRequestArgs,{ user }: GraphqlContext) => {
-  return services.acceptOrDeclineSwapRequest({
-    userId: user._id,
-    ...args?.input,
-  });
+const acceptOrDeclineSwapRequest = (_: any, args: MutationAcceptOrDeclineSwapRequestArgs, { user }: GraphqlContext) => {
+  return services.acceptOrDeclineSwapRequest({ userId: user._id, ...args?.input });
 };
 
 const getSwapRequests = (_: any,args: QueryGetSwapRequestsArgs,{ user }: GraphqlContext) => {
@@ -45,11 +47,11 @@ const getSwapByUsers = async (_: any, args: QueryGetSwapByUsersArgs) => {
   return services.getSwapByUserIds({ ...args.data! });
 };
 
-const sender = (parent: SwapDocument,_: any,{ userLoader }: GraphqlContext) => {
+const sender = (parent: SwapDocument, _: any,{ userLoader }: GraphqlContext) => {
   return parent.senderId ? userLoader.load(parent.senderId.toString()) : null;
 };
 
-const receiver = (parent: SwapDocument, _: any,{ userLoader }: GraphqlContext) => {
+const receiver = (parent: SwapDocument,_: any,{ userLoader }: GraphqlContext) => {
   return parent.receiverId
     ? userLoader.load(parent.receiverId.toString())
     : null;
@@ -89,9 +91,24 @@ const newSwapRequest = {
 
 const updateSwap = (_: any, args: MutationUpdateSwapArgs) => {
   return services.updateSwap({ ...args.data });
+};
+
+const updateSwapSession = (_: any, args: MutationUpdateSwapSessionArgs) => {
+  return services.updateSwapSession({ ...args.data });
+};
+
+export const deleteSessionEntry = (_: any, args: MutationDeleteSessionEntryArgs) => {
+  return services.deleteSwapSessionEntry(args.sessionId);
+}
+
+export const deleteTimeTableEntry = (_: any, args: MutationDeleteTimeTableEntryArgs) => {
+  return services.deleteSwapTimeTableEntry(args.entryId);
 }
 
 export const swapResolver = {
+  ...swapSessionResolver,
+  ...SwapTimeTableResolver,
+
   Query: {
     getSwapRequests,
     getRequestedSwaps,
@@ -109,7 +126,10 @@ export const swapResolver = {
     createSwapRequest,
     cancelSwapRequest,
     acceptOrDeclineSwapRequest,
-    updateSwap
+    updateSwap,
+    updateSwapSession,
+    deleteSessionEntry,
+    deleteTimeTableEntry
   },
 
   Subscription: {

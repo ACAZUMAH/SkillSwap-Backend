@@ -6,6 +6,7 @@ import {
   SwapDocument,
   SwapRequest,
   updateSwapData,
+  UpdateSwapSessionInput,
 } from "src/common/interfaces";
 import createError from "http-errors";
 import { swapModel } from "src/models";
@@ -229,3 +230,64 @@ export const updateSwap = async (data: updateSwapData) => {
 
   return await swapModel.findByIdAndUpdate(swap._id, update, { new: true });
 };
+
+/**
+ * Updates a specific swap session with new data.
+ * @param data - The input data for updating a swap session.
+ * @param data.sessionId - The ID of the session to update.
+ * @param data.date - (Optional) The new date for the session.
+ * @param data.time - (Optional) The new time for the session.
+ * @param data.skill - (Optional) The new skill for the session.
+ * @param data.taughtBy - (Optional) The ID of the user teaching the session.
+ * @param data.receivedBy - (Optional) The ID of the user receiving the session.
+ * @param data.status - (Optional) The new status for the session.
+ * @returns 
+ */
+export const updateSwapSession = async (data: UpdateSwapSessionInput) => {
+  if (!Types.ObjectId.isValid(data.sessionId))  throw createError.BadRequest("Invalid session id");
+
+  console.log("Updating session with data:", JSON.stringify(data, null, 2));
+
+  return await swapModel.findOneAndUpdate(
+    { "sessions._id": data.sessionId },
+    { $set: {
+      ...(data.date && { "sessions.$.date": data.date }),
+      ...(data.time && { "sessions.$.time": data.time }),
+      ...(data.skill && { "sessions.$.skill": data.skill }),
+      ...(data.taughtBy && { "sessions.$.taughtBy": data.taughtBy }),
+      ...(data.receivedBy && { "sessions.$.receivedBy": data.receivedBy }),
+      ...(data.status && { "sessions.$.status": data.status }),
+    } },
+    { new: true }
+  );
+}
+
+/**
+ * Deletes a specific session entry from a swap.
+ * @param sessionId - The ID of the session to delete.
+ * @returns The updated swap document after deletion.
+ */
+export const deleteSwapSessionEntry = async (sessionId: string | Types.ObjectId) => {
+  if (!Types.ObjectId.isValid(sessionId)) throw createError.BadRequest("Invalid session id");
+
+  return await swapModel.findOneAndUpdate(
+    { "sessions._id": sessionId },
+    { $pull: { sessions: { _id: sessionId } } },
+    { new: true }
+  )
+}
+
+/**
+ * Deletes a specific time table entry from a swap.  
+ * @param recordId - The ID of the time table record to delete.
+ * @returns The updated swap document after deletion.
+ */
+export const deleteSwapTimeTableEntry = async (recordId: string | Types.ObjectId) => {
+  if (!Types.ObjectId.isValid(recordId)) throw createError.BadRequest("Invalid time table record id");
+
+  return await swapModel.findOneAndUpdate(
+    { "timeTable._id": recordId },
+    { $pull: { timeTable: { _id: recordId } } },
+    { new: true }
+  )
+}

@@ -6,7 +6,7 @@ export const skillSchema = new mongoose.Schema<SkillDocument>({
     level: { type: Number, required: true }
 })
 
-export const swappedskillSchema = new mongoose.Schema<Swapped>({
+export const swappedSkillSchema = new mongoose.Schema<Swapped>({
     By: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "users" },
     name: { type: String, required: true },
     level: { type: Number, required: true }
