@@ -38,7 +38,7 @@ export interface SwapSessionInput {
   status?: ScheduleStatus | null;
 }
 
-export interface UpdateSwapSessionInput {
+export interface SwapSessionUpdateInput {
   sessionId: string | Types.ObjectId;
   date?: Date;
   time?: string;

@@ -5,8 +5,8 @@ import {
   swapByUsers,
   SwapDocument,
   SwapRequest,
+  SwapSessionUpdateInput,
   updateSwapData,
-  UpdateSwapSessionInput,
 } from "src/common/interfaces";
 import createError from "http-errors";
 import { swapModel } from "src/models";
@@ -243,7 +243,7 @@ export const updateSwap = async (data: updateSwapData) => {
  * @param data.status - (Optional) The new status for the session.
  * @returns 
  */
-export const updateSwapSession = async (data: UpdateSwapSessionInput) => {
+export const updateSwapSession = async (data: SwapSessionUpdateInput) => {
   if (!Types.ObjectId.isValid(data.sessionId))  throw createError.BadRequest("Invalid session id");
 
   console.log("Updating session with data:", JSON.stringify(data, null, 2));
