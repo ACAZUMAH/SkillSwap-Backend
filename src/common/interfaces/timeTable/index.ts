@@ -40,10 +40,10 @@ export interface SwapSessionInput {
 
 export interface SwapSessionUpdateInput {
   sessionId: string | Types.ObjectId;
-  date?: Date;
-  time?: string;
-  skill?: string;
-  taughtBy?: Types.ObjectId | string;
-  receivedBy?: Types.ObjectId | string;
-  status?: ScheduleStatus;
+  date?: Date | null;
+  time?: string | null;
+  skill?: string | null;
+  taughtBy?: Types.ObjectId | string | null;
+  receivedBy?: Types.ObjectId | string | null;
+  status?: ScheduleStatus | null;
 }
