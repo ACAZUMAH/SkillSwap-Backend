@@ -54,7 +54,7 @@ const newChatCreated = {
 const unreadMessagesCount = {
   subscribe: withFilter(
     () => {
-      logger.info("UreadMessagesCount subscription started");
+      logger.info("UnreadMessagesCount subscription started");
       return pubsub.asyncIterableIterator(SUBSCRIPTION_EVENTS.NEW_MESSAGE);
     },
     (payload, variables) => {
@@ -62,7 +62,7 @@ const unreadMessagesCount = {
     }
   ),
   resolve: (payload: any) => {
-    return payload.UreadMessagesCount;
+    return payload.UnreadMessagesCount;
   },
 };
 

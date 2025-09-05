@@ -33,9 +33,9 @@ export const upsertMessage = async (data: ChatInput) => {
   if (!Types.ObjectId.isValid(data.chatId))
     throw createError(400, "Invalid chat ID");
 
-  const onlineReciever = onlineUsers.get(data.to);
+  const onlineReceiver = onlineUsers.get(data.to);
 
-  const message = onlineReciever
+  const message = onlineReceiver
     ? { ...data.message, status: MessagesStatus.DELIVERED }
     : { ...data.message, status: MessagesStatus.SENT };
 
@@ -46,7 +46,7 @@ export const upsertMessage = async (data: ChatInput) => {
   );
 
   pubsub.publish(SUBSCRIPTION_EVENTS.NEW_MESSAGE, {
-    UreadMessagesCount: await getUnreadMessagesCount(
+    UnreadMessagesCount: await getUnreadMessagesCount(
       new Types.ObjectId(data.to)
     ),
     userId: data.to.toString(),
@@ -135,7 +135,7 @@ export const getUpdatedMessages = async (data: GetMessages) => {
   }
 
   pubsub.publish(SUBSCRIPTION_EVENTS.NEW_MESSAGE, {
-    UreadMessagesCount: await getUnreadMessagesCount(userId),
+    UnreadMessagesCount: await getUnreadMessagesCount(userId),
     userId: userId.toString(),
   });
 

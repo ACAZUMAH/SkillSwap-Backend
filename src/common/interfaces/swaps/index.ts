@@ -27,6 +27,7 @@ export interface AcceptOrDeclineSwap {
 
 export interface Request {
     swapId?: string | Types.ObjectId | null
+    userId?: string | Types.ObjectId | null
     senderId?: string | Types.ObjectId | null
     receiverId?: string | Types.ObjectId | null
     status?: Status | null

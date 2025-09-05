@@ -71,7 +71,7 @@ export const cancelSwapRequest = async (filter: Request) => {
 
   return await swapModel.findOneAndDelete({
     _id: filter.swapId,
-    senderId: filter.senderId,
+    or: [{ senderId: filter.userId }, { receiverId: filter.userId }],
   });
 };
 
