@@ -1,4 +1,4 @@
-export const chatTypeDeffs = `#graphql
+export const chatTypeDefs = `#graphql
     enum MessageType {
         TEXT 
         IMAGE 

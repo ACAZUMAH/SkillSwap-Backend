@@ -24,7 +24,7 @@ const createSwapRequest = async (_: any, args: MutationCreateSwapRequestArgs,{ u
 };
 
 const cancelSwapRequest = ( _: any, args: MutationCreateSwapRequestArgs, { user }: GraphqlContext) => {
-  return services.cancelSwapRequest({ ...args?.input, senderId: user._id });
+  return services.cancelSwapRequest({ ...args?.input, userId: user._id });
 };
 
 const acceptOrDeclineSwapRequest = (_: any, args: MutationAcceptOrDeclineSwapRequestArgs, { user }: GraphqlContext) => {

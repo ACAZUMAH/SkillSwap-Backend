@@ -7,7 +7,7 @@ import { swapsTypeDef } from "./swaps";
 import { swapResolver } from "./swaps";
 import { skillResolvers } from "./skills";
 import { typeDefs as scalarTypeDefs, resolvers as scalarResolvers } from "graphql-scalars"
-import { chatResolver, chatTypeDeffs } from "./Chats";
+import { chatResolver, chatTypeDefs } from "./Chats";
 import { reviewsTypeDefs, reviewResolvers } from "./reviews";
 
 const typeDefs = [
@@ -16,7 +16,7 @@ const typeDefs = [
     userTypeDefs,
     scalarTypeDefs,
     swapsTypeDef,
-    chatTypeDeffs,
+    chatTypeDefs,
     reviewsTypeDefs
 ]
 

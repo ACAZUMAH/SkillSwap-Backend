@@ -37,15 +37,12 @@ export const connection = (socket: Socket) => {
  * @param socket - Socket instance
  */
 const disconnection = (socket: Socket) => {
-  logger.info(`User ${socket.id} disconnected`);
   const userId = Array.from(global.userSocketMap.entries()).find(
     ([_, id]) => id === socket.id
   )?.[0];
   if (userId) {
     userSocketMap.delete(userId);
     global.onlineUsers.delete(userId);
-    logger.info(`User ${userId} disconnected`);
-
     socket.broadcast.emit("user-offline", { userId });
   }
 };
@@ -69,7 +66,6 @@ const addOnlineUser = (socket: Socket, userId: string) => {
 const sendTyping = (socket: Socket, data: TypingData) => {
   const from = socket.handshake.auth.userId as string;
   const toSocketId = global.onlineUsers.get(data.to);
-
   if (toSocketId) {
     socket.to(toSocketId).emit("typing", { from, chatId: data.chatId });
   }
@@ -83,7 +79,6 @@ const sendTyping = (socket: Socket, data: TypingData) => {
 const sendStoppedTyping = (socket: Socket, data: TypingData) => {
   const from = socket.handshake.auth.userId as string;
   const toSocketId = global.onlineUsers.get(data.to);
-
   if (toSocketId) {
     socket.to(toSocketId).emit("stopped-typing", { from, chatId: data.chatId });
   }
@@ -115,7 +110,6 @@ const sendMessage = async (socket: Socket, message: NewMessageInput) => {
         });
       }
     }
-
     if (sender) {
       socket.emit("sentMessage", {
         chatId: newMessage._id.toString(),
@@ -132,7 +126,6 @@ const sendMessage = async (socket: Socket, message: NewMessageInput) => {
  */
 const sendVideoCall = (socket: Socket, data: videoData) => {
   const receiverSocket = global.onlineUsers.get(data.to);
-  console.log(receiverSocket);
   if (receiverSocket) {
     socket.to(receiverSocket).emit("incoming-call", {
       from: data.from,

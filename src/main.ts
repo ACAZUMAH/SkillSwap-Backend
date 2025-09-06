@@ -10,7 +10,7 @@ const main = async () => {
 }
 
 main().catch((err: Error) => {
-    logger.error(`An unhadle error occured ${err}`)
+    logger.error(`An Unhandled error occurred ${err}`)
     process.exit(1)
 })
 
