@@ -10,6 +10,7 @@ import { errorHandler } from "./middlewares/error-handler";
 import { applyMiddlewares } from "./middlewares";
 import { createSocketIoServer } from "./servers/createSocketIoServer";
 import { applyCronJobs } from "./crons";
+import { applyAppRouters } from "./routes";
 
 const PORT = process.env.PORT || 8800;
 global.onlineUsers = new Map<string, string>();
@@ -21,6 +22,8 @@ const startServer = async () => {
   const httpServer = http.createServer(app);
 
   applyMiddlewares(app);
+
+  applyAppRouters(app);
 
   await connectDB();
 
