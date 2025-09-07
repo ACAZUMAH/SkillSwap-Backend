@@ -2,6 +2,10 @@ import { Socket } from "socket.io";
 import * as services from "../services/chats";
 import logger from "src/loggers/logger";
 import { NewMessageInput, TypingData, videoData } from "src/common/interfaces";
+import { sendPushNotification } from "src/services/notifications/web-push";
+import { getUserSubscription } from "src/services/pushSub";
+import { getUserById } from "src/services/user";
+import { isDevelopment } from "src/common/constants";
 
 /**
  * Handles a new socket connection.
@@ -19,7 +23,9 @@ export const connection = (socket: Socket) => {
 
   socket.on("typing", ({ to, chatId }) => sendTyping(socket, { to, chatId }));
 
-  socket.on("stopped-typing", ({ to, chatId }) => sendStoppedTyping(socket, { to, chatId }));
+  socket.on("stopped-typing", ({ to, chatId }) =>
+    sendStoppedTyping(socket, { to, chatId })
+  );
 
   socket.on("sendMessage", (message) => sendMessage(socket, message));
 
@@ -69,7 +75,7 @@ const sendTyping = (socket: Socket, data: TypingData) => {
   if (toSocketId) {
     socket.to(toSocketId).emit("typing", { from, chatId: data.chatId });
   }
-}
+};
 
 /**
  * Handles sending stopped typing notifications to the receiver.
@@ -82,7 +88,7 @@ const sendStoppedTyping = (socket: Socket, data: TypingData) => {
   if (toSocketId) {
     socket.to(toSocketId).emit("stopped-typing", { from, chatId: data.chatId });
   }
-}
+};
 
 /**
  * Handles sending a message from one user to another.
@@ -116,6 +122,15 @@ const sendMessage = async (socket: Socket, message: NewMessageInput) => {
         message: newMessage.recentMessage,
       });
     }
+
+    const user = await getUserById(message.from);
+    await sendPushNotification(message.to, {
+      title: user.firstName!,
+      body: "Sent you a new message",
+      url: isDevelopment
+        ? '"http://localhost:5173"'
+        : "https://mini-skill-swap.netlify.app",
+    });
   }
 };
 

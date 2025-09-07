@@ -3,7 +3,7 @@ import pushSubscriptionRouter from "./push.router"
 
 const routes: { path: string, router: Router }[] = [
     {
-        path: '/api/',
+        path: '/api',
         router: pushSubscriptionRouter
     }
 ]

@@ -3,6 +3,6 @@ import { pushSubscriptionController } from "src/controllers";
 
 const routes = Router();
 
-routes.post('subscribe', pushSubscriptionController)
+routes.post('/subscribe', pushSubscriptionController)
 
 export default routes;
