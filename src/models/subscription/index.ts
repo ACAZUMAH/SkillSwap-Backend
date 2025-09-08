@@ -5,10 +5,10 @@ const pushNotificationSubscriptionSchema = new Schema<PushSubscriptionDocument>(
   {
     userId: { type: String, required: true, ref: "User" },
     subscription: {
-      endpoint: { type: String, required: true },
+      endpoint: { type: String },
       keys: {
-        p256dh: { type: String, required: true },
-        auth: { type: String, required: true },
+        p256dh: { type: String },
+        auth: { type: String },
       },
     },
   },
