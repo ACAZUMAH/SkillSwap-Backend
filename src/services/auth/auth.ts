@@ -32,6 +32,7 @@ export const createAuth = async (userId: string | Types.ObjectId, len: number) =
 const generateZegoToken = async (userId: string | Types.ObjectId) => {
   const appId = parseInt(`${process.env.ZEGO_APP_ID}`);
   const serverSecret = `${process.env.ZEGO_SERVER_SECRET}`;
+  //console.log(appId, serverSecret)
   const effectiveTimeInSeconds = 50 * 24 * 60 * 60; // 50 days in seconds
   const payload = '';
   if (!appId || !serverSecret) {

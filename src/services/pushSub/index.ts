@@ -7,19 +7,28 @@ import { PushNotificationSubscriptionModel } from "src/models";
  * @param subscription - The push subscription details to be saved
  * @returns Promise resolving to the saved or updated subscription document
  */
-export const saveSubscription = async (subscription: PushSubscriptionInput) => {
+export const saveSubscription = async ({ userId, subscription }: PushSubscriptionInput) => {
+  const filter = userId
+    ? { userId: userId, "subscription.endpoint": subscription.endpoint }
+    : { "subscription.endpoint": subscription.endpoint };
+
+  const update = {
+    $set: { subscription, userId },
+    $setOnInsert: { createdAt: new Date() },
+  };
+
+  const options = {
+    upsert: true,
+    new: true,
+    runValidators: true,
+    context: "query",
+  };
+
   return await PushNotificationSubscriptionModel.findOneAndUpdate(
-    { 'subscription.endpoint': subscription.subscription.endpoint },
-    {
-      $set: {
-        userId: subscription.userId,
-        subscription: {
-          ...subscription.subscription,
-        },
-      },
-    },
-    { upsert: true, new: true }
-  );
+    filter,
+    update,
+    options
+  ).exec();
 };
 
 /**

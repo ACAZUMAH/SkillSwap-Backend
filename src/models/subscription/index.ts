@@ -15,6 +15,8 @@ const pushNotificationSubscriptionSchema = new Schema<PushSubscriptionDocument>(
   { timestamps: true }
 );
 
+pushNotificationSubscriptionSchema.index({ 'subscription.endpoint': 1 }, { unique: true, sparse: true });
+
 export const PushNotificationSubscriptionModel =
   model<PushSubscriptionDocument>(
     "PushNotificationSubscription",
